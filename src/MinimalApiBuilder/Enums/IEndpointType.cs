@@ -4,6 +4,6 @@ public enum EndpointType
 {
     Empty,
     Request,
-    RequestWithParameters,
-    Parameters
+    Parameters,
+    RequestWithParameters
 }

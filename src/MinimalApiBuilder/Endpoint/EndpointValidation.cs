@@ -14,7 +14,7 @@ public abstract partial class EndpointBase
 
     protected bool HasValidationErrors => ValidationErrors.Count > 0;
 
-    internal async Task<bool> ValidateAsync<T>(T request, CancellationToken cancellationToken)
+    internal async ValueTask<bool> ValidateAsync<T>(T request, CancellationToken cancellationToken)
     {
         var validator = (IValidator?)HttpContext.RequestServices.GetService(typeof(IValidator<T>));
 
