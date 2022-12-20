@@ -5,9 +5,14 @@ namespace MinimalApiBuilder;
 [EndpointType(EndpointType.Empty)]
 public abstract class Endpoint : EndpointBase
 {
-    internal Task<IResult> ExecuteAsync(HttpContext context, CancellationToken cancellationToken)
+    protected static class ArgumentIndex
     {
-        HttpContext = context;
+        public const int Endpoint = 0;
+        public const int CancellationToken = 1;
+    }
+
+    internal Task<IResult> ExecuteAsync(CancellationToken cancellationToken)
+    {
         return HandleAsync(cancellationToken);
     }
 
@@ -18,11 +23,15 @@ public abstract class Endpoint : EndpointBase
 public abstract class Endpoint<TRequest> : EndpointBase
     where TRequest : notnull
 {
-    internal async Task<IResult> ExecuteAsync(TRequest request, HttpContext context,
-        CancellationToken cancellationToken)
+    protected static class ArgumentIndex
     {
-        HttpContext = context;
+        public const int Request = 0;
+        public const int Endpoint = 1;
+        public const int CancellationToken = 2;
+    }
 
+    internal async Task<IResult> ExecuteAsync(TRequest request, CancellationToken cancellationToken)
+    {
         bool isValid = await ValidateAsync(request, cancellationToken);
 
         if (!isValid)
@@ -40,10 +49,20 @@ public abstract class Endpoint<TRequest> : EndpointBase
 public abstract class EndpointWithParameters<TParameters> : EndpointBase
     where TParameters : notnull
 {
-    internal Task<IResult> ExecuteAsync(TParameters parameters, HttpContext context,
-        CancellationToken cancellationToken)
+    protected static class ArgumentIndex
     {
-        HttpContext = context;
+        public const int Parameters = 0;
+        public const int Endpoint = 1;
+        public const int CancellationToken = 2;
+    }
+
+    internal static Task<IResult> RequestHandler(TParameters parameters,
+        EndpointWithParameters<TParameters> endpoint,
+        CancellationToken cancellationToken) =>
+        endpoint.ExecuteAsync(parameters, cancellationToken);
+
+    internal Task<IResult> ExecuteAsync(TParameters parameters, CancellationToken cancellationToken)
+    {
         return HandleAsync(parameters, cancellationToken);
     }
 
@@ -55,11 +74,17 @@ public abstract class EndpointWithParameters<TRequest, TParameters> : EndpointBa
     where TRequest : notnull
     where TParameters : notnull
 {
-    internal async Task<IResult> ExecuteAsync(TRequest request, TParameters parameters, HttpContext context,
+    protected static class ArgumentIndex
+    {
+        public const int Request = 0;
+        public const int Parameters = 1;
+        public const int Endpoint = 2;
+        public const int CancellationToken = 3;
+    }
+
+    internal async Task<IResult> ExecuteAsync(TRequest request, TParameters parameters,
         CancellationToken cancellationToken)
     {
-        HttpContext = context;
-
         bool isValid = await ValidateAsync(request, cancellationToken);
 
         if (!isValid)

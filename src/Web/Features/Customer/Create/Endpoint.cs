@@ -1,17 +1,19 @@
-﻿namespace Web.Features.Customer.Create;
+﻿using ILogger = Serilog.ILogger;
+
+namespace Web.Features.Customer.Create;
 
 public class CustomerCreate : MinimalApiBuilder.Endpoint
 {
-    private readonly ILogger<CustomerCreate> _logger;
+    private readonly ILogger _logger;
 
-    public CustomerCreate(ILogger<CustomerCreate> logger)
+    public CustomerCreate(ILogger logger)
     {
         _logger = logger;
     }
 
     protected override Task<IResult> HandleAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Customer Create");
+        _logger.Information("Customer create endpoint");
         return Task.FromResult(Results.Ok());
     }
 }

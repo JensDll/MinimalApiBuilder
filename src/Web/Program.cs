@@ -1,15 +1,18 @@
 using MinimalApiBuilder;
+using Web.Extensions;
 using Web.Features.Admin.Login;
 using Web.Features.Customer.Create;
 using Web.Features.Customer.List;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.AddSerilogLogger();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpoints();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {

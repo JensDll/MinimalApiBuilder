@@ -10,30 +10,62 @@ namespace MinimalApiBuilder;
 public static class WebApplicationExtensions
 {
     public static RouteHandlerBuilder MapGet<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase =>
-        app.Configure<TEndpoint>().MapGet(pattern, EndpointHandlers.CreateHandler<TEndpoint>());
-
-    public static RouteHandlerBuilder MapPost<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase =>
-        app.Configure<TEndpoint>().MapPost(pattern, EndpointHandlers.CreateHandler<TEndpoint>());
-
-    public static RouteHandlerBuilder MapPut<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase =>
-        app.Configure<TEndpoint>().MapPut(pattern, EndpointHandlers.CreateHandler<TEndpoint>());
-
-    public static RouteHandlerBuilder MapDelete<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase =>
-        app.Configure<TEndpoint>().MapDelete(pattern, EndpointHandlers.CreateHandler<TEndpoint>());
-
-    private static IEndpointRouteBuilder Configure<TEndpoint>(this IEndpointRouteBuilder app)
         where TEndpoint : EndpointBase
     {
-        using var scope = app.ServiceProvider.CreateScope();
+        return app.MapGet(pattern, EndpointHandlers.CreateHandler<TEndpoint>(out int endpointArgumentIndex))
+            .Configure<TEndpoint>(app.ServiceProvider, endpointArgumentIndex);
+    }
 
-        var endpoint = scope.ServiceProvider.GetService<TEndpoint>()!;
-        endpoint.Configure();
 
-        return app;
+    public static RouteHandlerBuilder MapPost<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+        where TEndpoint : EndpointBase
+    {
+        return app.MapPost(pattern, EndpointHandlers.CreateHandler<TEndpoint>(out int endpointArgumentIndex))
+            .Configure<TEndpoint>(app.ServiceProvider, endpointArgumentIndex);
+    }
+
+
+    public static RouteHandlerBuilder MapPut<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+        where TEndpoint : EndpointBase
+    {
+        return app.MapPut(pattern, EndpointHandlers.CreateHandler<TEndpoint>(out int endpointArgumentIndex))
+            .Configure<TEndpoint>(app.ServiceProvider, endpointArgumentIndex);
+    }
+
+    public static RouteHandlerBuilder MapPatch<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+        where TEndpoint : EndpointBase
+    {
+        return app.MapPatch(pattern, EndpointHandlers.CreateHandler<TEndpoint>(out int endpointArgumentIndex))
+            .Configure<TEndpoint>(app.ServiceProvider, endpointArgumentIndex);
+    }
+
+    public static RouteHandlerBuilder MapDelete<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+        where TEndpoint : EndpointBase
+    {
+        return app.MapDelete(pattern, EndpointHandlers.CreateHandler<TEndpoint>(out int endpointArgumentIndex))
+            .Configure<TEndpoint>(app.ServiceProvider, endpointArgumentIndex);
+    }
+
+    private static RouteHandlerBuilder Configure<TEndpoint>(this RouteHandlerBuilder builder,
+        IServiceProvider serviceProvider, int endpointArgumentIndex)
+        where TEndpoint : EndpointBase
+    {
+        EndpointConfiguration configuration = new();
+
+        builder.AddEndpointFilter((context, next) =>
+        {
+            TEndpoint endpoint = context.GetArgument<TEndpoint>(endpointArgumentIndex);
+            endpoint.Assign(configuration, context.HttpContext);
+            return next(context);
+        });
+
+        using var scope = serviceProvider.CreateScope();
+
+        TEndpoint endpoint = scope.ServiceProvider.GetService<TEndpoint>()!;
+        endpoint.Assign(configuration, new DefaultHttpContext());
+        endpoint.Configure(builder);
+
+        return builder;
     }
 }
 
@@ -55,7 +87,7 @@ internal static class EndpointHandlers
             .ToArray();
     }
 
-    public static Delegate CreateHandler<TEndpoint>()
+    public static Delegate CreateHandler<TEndpoint>(out int endpointArgumentIndex)
         where TEndpoint : EndpointBase
     {
         Type tEndpoint = typeof(TEndpoint);
@@ -68,42 +100,42 @@ internal static class EndpointHandlers
         genericArguments[0] = tEndpoint;
         tEndpointParent.GenericTypeArguments.CopyTo(genericArguments, 1);
 
-        Debug.Assert(Handlers[(int)endpointTypeAttribute.Type].Type == endpointTypeAttribute.Type);
+        Handler handler = Handlers[(int)endpointTypeAttribute.Type];
 
-        return Handlers[(int)endpointTypeAttribute.Type].AsDelegate(genericArguments);
+        Debug.Assert(handler.Type == endpointTypeAttribute.Type);
+
+        endpointArgumentIndex = handler.ParameterCount - 2;
+
+        return handler.AsDelegate(genericArguments);
     }
 
     private static Task<IResult> RequestHandler<TEndpoint>(
-        HttpContext context,
         TEndpoint endpoint,
         CancellationToken cancellationToken)
-        where TEndpoint : Endpoint => endpoint.ExecuteAsync(context, cancellationToken);
+        where TEndpoint : Endpoint => endpoint.ExecuteAsync(cancellationToken);
 
     private static Task<IResult> RequestHandler<TEndpoint, TRequest>(
         TRequest request,
-        HttpContext context,
         TEndpoint endpoint,
         CancellationToken cancellationToken)
         where TEndpoint : Endpoint<TRequest>
-        where TRequest : notnull => endpoint.ExecuteAsync(request, context, cancellationToken);
+        where TRequest : notnull => endpoint.ExecuteAsync(request, cancellationToken);
 
     private static Task<IResult> RequestWithParametersHandler<TEndpoint, TParameters>(
         [AsParameters] TParameters parameters,
-        HttpContext context,
         TEndpoint endpoint,
         CancellationToken cancellationToken)
         where TEndpoint : EndpointWithParameters<TParameters>
-        where TParameters : notnull => endpoint.ExecuteAsync(parameters, context, cancellationToken);
+        where TParameters : notnull => endpoint.ExecuteAsync(parameters, cancellationToken);
 
     private static Task<IResult> RequestWithParametersHandler<TEndpoint, TRequest, TParameters>(
         TRequest request,
         [AsParameters] TParameters parameters,
-        HttpContext context,
         TEndpoint endpoint,
         CancellationToken cancellationToken)
         where TEndpoint : EndpointWithParameters<TRequest, TParameters>
         where TRequest : notnull
-        where TParameters : notnull => endpoint.ExecuteAsync(request, parameters, context, cancellationToken);
+        where TParameters : notnull => endpoint.ExecuteAsync(request, parameters, cancellationToken);
 
     private class Handler
     {
@@ -115,7 +147,9 @@ internal static class EndpointHandlers
 
         private Handler(MethodInfo methodInfo)
         {
-            string funcTypeName = $"System.Func`{methodInfo.GetParameters().Length + 1}";
+            ParameterCount = methodInfo.GetParameters().Length;
+
+            string funcTypeName = $"System.Func`{ParameterCount + 1}";
             Type funcType = FuncAssembly.GetType(funcTypeName).ThrowIfNull($"Could not find type \"{funcTypeName}\"");
 
             Type endpointType = methodInfo.GetGenericArguments()[0].GetGenericParameterConstraints()[0];
@@ -129,14 +163,17 @@ internal static class EndpointHandlers
             Type = endpointTypeAttribute.Type;
         }
 
-        private Handler(MethodInfo methodInfo, Type funcType, EndpointType type)
+        private Handler(MethodInfo methodInfo, Type funcType, EndpointType type, int parameterCount)
         {
             _methodInfo = methodInfo;
             _funcType = funcType;
             Type = type;
+            ParameterCount = parameterCount;
         }
 
         public EndpointType Type { get; }
+
+        public int ParameterCount { get; }
 
         public static Handler Construct(MethodInfo methodInfo) => new(methodInfo);
 
@@ -157,12 +194,12 @@ internal static class EndpointHandlers
 
             Type funcType = _funcType.MakeGenericType(funcArguments);
 
-            return new Handler(methodInfo, funcType, Type);
+            return new Handler(methodInfo, funcType, Type, ParameterCount);
         }
 
         public Delegate AsDelegate(params Type[] genericArguments)
         {
-            (MethodInfo handlerMethodInfo, Type handlerFuncType) = MakeGeneric(genericArguments);
+            var (handlerMethodInfo, handlerFuncType) = MakeGeneric(genericArguments);
             return Delegate.CreateDelegate(handlerFuncType, handlerMethodInfo);
         }
     }
