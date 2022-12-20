@@ -1,8 +1,9 @@
-﻿using ILogger = Serilog.ILogger;
+﻿using MinimalApiBuilder;
+using ILogger = Serilog.ILogger;
 
 namespace Web.Features.Customer.List;
 
-public class CustomerList : MinimalApiBuilder.EndpointWithParameters<Parameters>
+public class CustomerList : Endpoint<CustomerList>
 {
     private readonly ILogger _logger;
 
@@ -11,9 +12,10 @@ public class CustomerList : MinimalApiBuilder.EndpointWithParameters<Parameters>
         _logger = logger;
     }
 
-    protected override Task<IResult> HandleAsync(Parameters parameters, CancellationToken cancellationToken)
+    public static Task<IResult> HandleAsync([AsParameters] Parameters parameters, CustomerList endpoint,
+        CancellationToken cancellationToken)
     {
-        _logger.Information("Customer list endpoint");
+        endpoint._logger.Information("Customer list endpoint");
         return Task.FromResult(Results.Ok(parameters));
     }
 }

@@ -2,33 +2,7 @@
 
 namespace MinimalApiBuilder;
 
-public abstract partial class EndpointBase
-{
-    protected IResult ErrorResult(string message, int statusCode)
-    {
-        return Results.BadRequest(new
-        {
-            StatusCode = statusCode,
-            Message = message,
-            Errors = ValidationErrors
-        });
-    }
-
-    protected IResult ErrorResult(string message)
-    {
-        return Results.BadRequest(new
-        {
-            StatusCode = 400,
-            Message = message,
-            Errors = ValidationErrors
-        });
-    }
-
-    protected static IResult BodyWriterStreamResult(Func<Stream, Task> streamWriterCallback, string contentType,
-        string fileDownloadName) => new BodyWriterStreamResult(streamWriterCallback, contentType, fileDownloadName);
-}
-
-internal class BodyWriterStreamResult : IResult
+internal sealed class BodyWriterStreamResult : IResult
 {
     private readonly Func<Stream, Task> _streamWriterCallback;
     private readonly string _contentType;

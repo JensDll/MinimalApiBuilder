@@ -1,8 +1,9 @@
-﻿using ILogger = Serilog.ILogger;
+﻿using MinimalApiBuilder;
+using ILogger = Serilog.ILogger;
 
 namespace Web.Features.Admin.Login;
 
-public class AdminLogin : MinimalApiBuilder.Endpoint<Request>
+public class AdminLogin : Endpoint<AdminLogin>
 {
     private readonly ILogger _logger;
 
@@ -13,41 +14,45 @@ public class AdminLogin : MinimalApiBuilder.Endpoint<Request>
 
     protected override void Configure(RouteHandlerBuilder builder)
     {
-        builder.AddEndpointFilter(TestFilter);
+        Validate<Request, RequestValidator>(builder);
+        builder.AddEndpointFilter(LogFilter);
     }
 
-    protected override Task<IResult> HandleAsync(Request request, CancellationToken cancellationToken)
+    public static IResult Handle(Request request, AdminLogin endpoint)
     {
-        _logger.Information("[AdminLogin] HandleAsync");
+        endpoint._logger.Information("[AdminLogin] Executing {Handler}", nameof(Handle));
 
         if (request is not { UserName: "admin", Password: "admin" })
         {
-            AddValidationError("Invalid request");
-            return Task.FromResult(ErrorResult("Authentication failed"));
+            endpoint.AddValidationError("Invalid request");
+            endpoint._logger.Information("[AdminLogin] Has validation errors {Value}",
+                endpoint.HasValidationErrors);
+            return endpoint.ErrorResult("Authentication failed");
         }
 
         DateTime expiryDate = DateTime.UtcNow.AddDays(1);
 
-        return Task.FromResult(Results.Ok(new Response
+        return Results.Ok(new Response
         {
             JwtToken = "Some Token",
             ExpiryDate = expiryDate,
             Permissions = new[] { "Admin" }
-        }));
+        });
     }
 
-    private static async ValueTask<object?> TestFilter(EndpointFilterInvocationContext context,
+    private static async ValueTask<object?> LogFilter(EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
     {
-        Request request = context.GetArgument<Request>(ArgumentIndex.Request);
-        AdminLogin adminLogin = context.GetArgument<AdminLogin>(ArgumentIndex.Endpoint);
-        CancellationToken cancellationToken = context.GetArgument<CancellationToken>(ArgumentIndex.CancellationToken);
+        Request request = context.GetArgument<Request>(0);
+        AdminLogin adminLogin = context.GetArgument<AdminLogin>(1);
 
-        adminLogin._logger.Information("[AdminLogin] Filter before");
+        adminLogin._logger.Information("[AdminLogin] Filter before (UserName = {UserName})",
+            request.UserName);
 
-        object? result = await next(context);
+        var result = await next(context);
 
-        adminLogin._logger.Information("[AdminLogin] Filter after");
+        adminLogin._logger.Information("[AdminLogin] Filter after (UserName = {UserName})",
+            request.UserName);
 
         return result;
     }

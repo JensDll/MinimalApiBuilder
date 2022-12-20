@@ -8,9 +8,10 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddSerilogLogger();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddEndpoints();
+builder.Services
+    .AddEndpointsApiExplorer()
+    .AddSwaggerGen()
+    .AddMinimalApiBuilderEndpoints();
 
 WebApplication app = builder.Build();
 
@@ -25,10 +26,9 @@ if (app.Environment.IsDevelopment())
 
 RouteGroupBuilder admin = app.MapGroup("/admin").WithTags("Admin");
 admin.MapPost<AdminLogin>("/login");
-admin.MapPut<AdminLogin>("/login");
 
-RouteGroupBuilder customers = app.MapGroup("/customers").WithTags("Customers");
-customers.MapGet<CustomerCreate>("/create");
-customers.MapPost<CustomerList>("/list");
+RouteGroupBuilder customers = app.MapGroup("/customer").WithTags("Customer");
+customers.MapPost<CustomerCreate>("/create");
+customers.MapGet<CustomerList>("/list");
 
 app.Run();
