@@ -40,19 +40,19 @@ public class AdminLogin : Endpoint<AdminLogin>
         });
     }
 
-    private static async ValueTask<object?> LogFilter(EndpointFilterInvocationContext context,
+    private static async ValueTask<object?> LogFilter(EndpointFilterInvocationContext invocationContext,
         EndpointFilterDelegate next)
     {
-        Request request = context.GetArgument<Request>(0);
-        AdminLogin adminLogin = context.GetArgument<AdminLogin>(1);
+        Request request = invocationContext.GetArgument<Request>(0);
+        AdminLogin endpoint = invocationContext.GetArgument<AdminLogin>(1);
 
-        adminLogin._logger.Information("[AdminLogin] Filter before (UserName = {UserName})",
-            request.UserName);
+        endpoint._logger.Information("[AdminLogin] Filter before (Verb = {Verb}; UserName = {UserName})",
+            endpoint.Configuration.Verb, request.UserName);
 
-        var result = await next(context);
+        var result = await next(invocationContext);
 
-        adminLogin._logger.Information("[AdminLogin] Filter after (UserName = {UserName})",
-            request.UserName);
+        endpoint._logger.Information("[AdminLogin] Filter after (Verb = {Verb}; UserName = {UserName})",
+            endpoint.Configuration.Verb, request.UserName);
 
         return result;
     }

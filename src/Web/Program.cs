@@ -26,6 +26,7 @@ if (app.Environment.IsDevelopment())
 
 RouteGroupBuilder admin = app.MapGroup("/admin").WithTags("Admin");
 admin.MapPost<AdminLogin>("/login");
+admin.MapPatch<AdminLogin>("/login");
 
 RouteGroupBuilder customers = app.MapGroup("/customer").WithTags("Customer");
 customers.MapPost<CustomerCreate>("/create");

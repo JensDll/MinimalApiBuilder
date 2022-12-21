@@ -6,52 +6,71 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalApiBuilder;
 
-public static class WebApplicationExtensions
+public static class MainExtensions
 {
     public static RouteHandlerBuilder MapGet<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint => app
-        .MapGet(pattern, EndpointHandler.Create<TEndpoint>())
-        .Configure<TEndpoint>(app.ServiceProvider);
+        where TEndpoint : EndpointBase, IEndpoint
+    {
+        return app
+            .MapGet(pattern, EndpointHandler.Create<TEndpoint>())
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Get);
+    }
 
     public static RouteHandlerBuilder MapPost<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint => app
-        .MapPost(pattern, EndpointHandler.Create<TEndpoint>())
-        .Configure<TEndpoint>(app.ServiceProvider);
+        where TEndpoint : EndpointBase, IEndpoint
+    {
+        return app
+            .MapPost(pattern, EndpointHandler.Create<TEndpoint>())
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Post);
+    }
 
     public static RouteHandlerBuilder MapPut<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint => app
-        .MapPut(pattern, EndpointHandler.Create<TEndpoint>())
-        .Configure<TEndpoint>(app.ServiceProvider);
+        where TEndpoint : EndpointBase, IEndpoint
+    {
+        return app
+            .MapPut(pattern, EndpointHandler.Create<TEndpoint>())
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Put);
+    }
 
     public static RouteHandlerBuilder MapPatch<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint => app
-        .MapPatch(pattern, EndpointHandler.Create<TEndpoint>())
-        .Configure<TEndpoint>(app.ServiceProvider);
+        where TEndpoint : EndpointBase, IEndpoint
+    {
+        return app
+            .MapPatch(pattern, EndpointHandler.Create<TEndpoint>())
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Patch);
+    }
 
     public static RouteHandlerBuilder MapDelete<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint => app
-        .MapDelete(pattern, EndpointHandler.Create<TEndpoint>())
-        .Configure<TEndpoint>(app.ServiceProvider);
+        where TEndpoint : EndpointBase, IEndpoint
+    {
+        return app
+            .MapDelete(pattern, EndpointHandler.Create<TEndpoint>())
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Delete);
+    }
 
     private static RouteHandlerBuilder Configure<TEndpoint>(
         this RouteHandlerBuilder builder,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider, HttpVerbs verb)
         where TEndpoint : EndpointBase, IEndpoint
     {
-        EndpointConfiguration configuration = new();
+        EndpointConfiguration configuration = new()
+        {
+            Verb = verb
+        };
 
         int endpointArgumentIndex = TEndpoint.ArgumentPositions[typeof(TEndpoint)];
 
-        builder.AddEndpointFilter((context, next) =>
+        builder.AddEndpointFilter((invocationContext, next) =>
         {
-            TEndpoint endpoint = context.GetArgument<TEndpoint>(endpointArgumentIndex);
+            TEndpoint endpoint = invocationContext.GetArgument<TEndpoint>(endpointArgumentIndex);
             endpoint.Configuration = configuration;
-            return next(context);
+            return next(invocationContext);
         });
 
         using var scope = serviceProvider.CreateScope();
 
-        TEndpoint endpoint = scope.ServiceProvider.GetService<TEndpoint>()!;
+        TEndpoint endpoint = scope.ServiceProvider.GetService<TEndpoint>()
+            .ThrowIfNull($"Endpoint \"{typeof(TEndpoint)}\" not found");
         endpoint.Configuration = configuration;
         endpoint.Configure(builder);
 
@@ -63,7 +82,6 @@ internal static class EndpointHandler
 {
     private static readonly Assembly FuncAssembly = Assembly.GetAssembly(typeof(Func<>))
         .ThrowIfNull($"Could not find required delegate type \"{typeof(Func<>)}\"");
-
 
     public static Delegate Create<TEndpoint>()
         where TEndpoint : IEndpoint
@@ -79,15 +97,16 @@ internal static class EndpointHandler
         string funcTypeName = $"System.Func`{parameters.Length + 1}";
         Type funcType = FuncAssembly.GetType(funcTypeName).ThrowIfNull($"Could not find type \"{funcTypeName}\"");
 
-        Type[] funcArguments = parameters
-            .Select((parameterInfo, i) =>
+        IEnumerable<Type> funcArgumentsEnumerable = TEndpoint.ArgumentPositions.Count == 0
+            ? parameters.Select((parameterInfo, index) =>
             {
                 Type parameterType = parameterInfo.ParameterType;
-                TEndpoint.ArgumentPositions.Add(parameterType, i);
+                TEndpoint.ArgumentPositions.Add(parameterType, index);
                 return parameterType;
             })
-            .Append(handler.ReturnType)
-            .ToArray();
+            : parameters.Select(parameterInfo => parameterInfo.ParameterType);
+
+        Type[] funcArguments = funcArgumentsEnumerable.Append(handler.ReturnType).ToArray();
 
         return Delegate.CreateDelegate(funcType.MakeGenericType(funcArguments), handler);
     }
