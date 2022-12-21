@@ -25,8 +25,8 @@ public class AdminLogin : Endpoint<AdminLogin>
         if (request is not { UserName: "admin", Password: "admin" })
         {
             endpoint.AddValidationError("Invalid request");
-            endpoint._logger.Information("[AdminLogin] Has validation errors {Value}",
-                endpoint.HasValidationErrors);
+            endpoint._logger.Information("[AdminLogin] Has validation error {Value}",
+                endpoint.HasValidationError);
             return endpoint.ErrorResult("Authentication failed");
         }
 

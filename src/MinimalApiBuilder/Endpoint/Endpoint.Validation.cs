@@ -13,7 +13,7 @@ public abstract partial class Endpoint<TEndpoint>
         ValidationErrors.Add(message);
     }
 
-    protected bool HasValidationErrors => ValidationErrors.Count > 0;
+    protected bool HasValidationError => ValidationErrors.Count > 0;
 
     protected void Validate<T1, T1Validator>(RouteHandlerBuilder builder)
         where T1Validator : IValidator<T1>, new()
