@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Builder;
 
 namespace MinimalApiBuilder;
 
-public abstract partial class EndpointBase
+public abstract class EndpointBase
 {
-    protected internal HttpContext HttpContext { get; internal set; } = null!;
+    internal List<string> ValidationErrors { get; } = new();
+    protected internal EndpointConfiguration Configuration { get; internal set; } = null!;
 
-    protected internal virtual void Configure() { }
+    protected internal virtual void Configure(RouteHandlerBuilder builder) { }
 }

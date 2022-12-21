@@ -15,9 +15,9 @@ public class Response
     public required IEnumerable<string> Permissions { get; init; }
 }
 
-public class Validator : AbstractValidator<Request>
+public class RequestValidator : AbstractValidator<Request>
 {
-    public Validator()
+    public RequestValidator()
     {
         RuleFor(request => request.UserName)
             .MaximumLength(50).WithMessage("Username cannot exceed 50 characters");
