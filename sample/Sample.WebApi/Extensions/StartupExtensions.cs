@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using ILogger = Serilog.ILogger;
 
-namespace Web.Extensions;
+namespace Sample.WebApi.Extensions;
 
 public static class StartupExtensions
 {

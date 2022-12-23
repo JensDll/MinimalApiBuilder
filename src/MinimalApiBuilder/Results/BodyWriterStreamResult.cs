@@ -5,9 +5,9 @@ namespace MinimalApiBuilder;
 
 internal sealed class BodyWriterStreamResult : IResult
 {
-    private readonly Func<Stream, Task> _streamWriterCallback;
     private readonly string? _contentType;
     private readonly string? _fileDownloadName;
+    private readonly Func<Stream, Task> _streamWriterCallback;
 
     public BodyWriterStreamResult(
         Func<Stream, Task> streamWriterCallback,
