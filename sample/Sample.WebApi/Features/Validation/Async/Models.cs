@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using MinimalApiBuilder;
 
 namespace Sample.WebApi.Features.Validation.Async;
 
@@ -21,11 +20,12 @@ public class RequestValidator : AbstractValidator<Request>
     }
 }
 
-[RegisterValidatorAsDependency]
 public class ParametersValidator : AbstractValidator<Parameters>
 {
-    public ParametersValidator()
+    public ParametersValidator(Serilog.ILogger logger)
     {
+        logger.Information("ParametersValidator constructed");
+
         RuleFor(parameters => parameters.A)
             .GreaterThan(0).WithMessage("A must be greater than 0");
         RuleFor(parameters => parameters.B)

@@ -2,9 +2,9 @@
 
 namespace Sample.WebApi.Features.Validation.Sync;
 
-public class ValidationSync : Endpoint<ValidationSync>
+public partial class ValidationSync : Endpoint<ValidationSync>
 {
-    public static IResult Handle(ValidationSync endpoint)
+    private static IResult Handle(ValidationSync endpoint)
     {
         return Results.Ok();
     }

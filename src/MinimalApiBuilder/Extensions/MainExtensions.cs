@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,43 +8,38 @@ namespace MinimalApiBuilder;
 public static class MainExtensions
 {
     public static RouteHandlerBuilder MapGet<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint
+        where TEndpoint : EndpointBase, IEndpointHandler, IEndpoint
     {
-        return app
-            .MapGet(pattern, EndpointHandler.Create<TEndpoint>())
-            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Get);
+        return app.MapPost(pattern, TEndpoint.Handler)
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Post);
     }
 
     public static RouteHandlerBuilder MapPost<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint
+        where TEndpoint : EndpointBase, IEndpointHandler, IEndpoint
     {
-        return app
-            .MapPost(pattern, EndpointHandler.Create<TEndpoint>())
+        return app.MapPost(pattern, TEndpoint.Handler)
             .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Post);
     }
 
     public static RouteHandlerBuilder MapPut<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint
+        where TEndpoint : EndpointBase, IEndpointHandler, IEndpoint
     {
-        return app
-            .MapPut(pattern, EndpointHandler.Create<TEndpoint>())
-            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Put);
+        return app.MapPost(pattern, TEndpoint.Handler)
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Post);
     }
 
     public static RouteHandlerBuilder MapPatch<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint
+        where TEndpoint : EndpointBase, IEndpointHandler, IEndpoint
     {
-        return app
-            .MapPatch(pattern, EndpointHandler.Create<TEndpoint>())
-            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Patch);
+        return app.MapPost(pattern, TEndpoint.Handler)
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Post);
     }
 
     public static RouteHandlerBuilder MapDelete<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
-        where TEndpoint : EndpointBase, IEndpoint
+        where TEndpoint : EndpointBase, IEndpointHandler, IEndpoint
     {
-        return app
-            .MapDelete(pattern, EndpointHandler.Create<TEndpoint>())
-            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Delete);
+        return app.MapPost(pattern, TEndpoint.Handler)
+            .Configure<TEndpoint>(app.ServiceProvider, HttpVerbs.Post);
     }
 
     private static RouteHandlerBuilder Configure<TEndpoint>(
@@ -75,39 +69,5 @@ public static class MainExtensions
         endpoint.Configure(builder);
 
         return builder;
-    }
-}
-
-internal static class EndpointHandler
-{
-    private static readonly Assembly FuncAssembly = Assembly.GetAssembly(typeof(Func<>))
-        .ThrowIfNull($"Could not find required delegate type \"{typeof(Func<>)}\"");
-
-    public static Delegate Create<TEndpoint>()
-        where TEndpoint : IEndpoint
-    {
-        Type tEndpoint = typeof(TEndpoint);
-
-        MethodInfo? handle = tEndpoint.GetMethod("Handle", BindingFlags.Static | BindingFlags.Public);
-        MethodInfo? handleAsync = tEndpoint.GetMethod("HandleAsync", BindingFlags.Static | BindingFlags.Public);
-        MethodInfo handler = (handle ?? handleAsync).ThrowIfNull("Could not find a suitable handler method");
-
-        ParameterInfo[] parameters = handler.GetParameters();
-
-        string funcTypeName = $"System.Func`{parameters.Length + 1}";
-        Type funcType = FuncAssembly.GetType(funcTypeName).ThrowIfNull($"Could not find type \"{funcTypeName}\"");
-
-        IEnumerable<Type> funcArgumentsEnumerable = TEndpoint.ArgumentPositions.Count == 0
-            ? parameters.Select((parameterInfo, index) =>
-            {
-                Type parameterType = parameterInfo.ParameterType;
-                TEndpoint.ArgumentPositions.Add(parameterType, index);
-                return parameterType;
-            })
-            : parameters.Select(parameterInfo => parameterInfo.ParameterType);
-
-        Type[] funcArguments = funcArgumentsEnumerable.Append(handler.ReturnType).ToArray();
-
-        return Delegate.CreateDelegate(funcType.MakeGenericType(funcArguments), handler);
     }
 }
