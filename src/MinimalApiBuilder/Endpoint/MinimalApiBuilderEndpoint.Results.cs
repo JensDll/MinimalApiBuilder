@@ -3,20 +3,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace MinimalApiBuilder;
 
-public abstract partial class Endpoint<TEndpoint>
-    where TEndpoint : EndpointBase, IEndpoint
+public abstract partial class MinimalApiBuilderEndpoint
 {
-    public IResult ErrorResult(string message)
-    {
-        return Results.BadRequest(new
-        {
-            StatusCode = HttpStatusCode.BadRequest,
-            Message = message,
-            Errors = ValidationErrors
-        });
-    }
-
-    public IResult ErrorResult(string message, HttpStatusCode statusCode)
+    public IResult ErrorResult(string message, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
     {
         return Results.BadRequest(new
         {

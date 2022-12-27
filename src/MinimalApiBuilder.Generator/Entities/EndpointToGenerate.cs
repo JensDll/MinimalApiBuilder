@@ -6,21 +6,24 @@ namespace MinimalApiBuilder.Generator.Entities;
 
 internal class EndpointToGenerate
 {
-    private EndpointToGenerate(string id, string className, string namespaceName, string handlerMethodName)
+    private readonly string _identifier;
+
+    private EndpointToGenerate(string identifier, string className, string namespaceName,
+        EndpointToGenerateHandler handler)
     {
-        Id = id;
+        _identifier = identifier;
         ClassName = className;
         NamespaceName = namespaceName;
-        HandlerMethodName = handlerMethodName;
+        Handler = handler;
     }
-
-    public string Id { get; }
 
     public string ClassName { get; }
 
     public string NamespaceName { get; }
 
-    public string HandlerMethodName { get; }
+    public EndpointToGenerateHandler Handler { get; }
+
+    public override string ToString() => _identifier;
 
     public static IEnumerable<EndpointToGenerate> Collect(Compilation compilation,
         ImmutableArray<ClassDeclarationSyntax> endpointDeclarations,
@@ -32,43 +35,106 @@ internal class EndpointToGenerate
 
             SemanticModel semanticModel = compilation.GetSemanticModel(endpointDeclaration.SyntaxTree);
 
-            if (semanticModel.GetDeclaredSymbol(endpointDeclaration) is not INamedTypeSymbol endpointSymbol)
+            if (semanticModel.GetDeclaredSymbol(endpointDeclaration) is not INamespaceOrTypeSymbol endpointSymbol)
             {
                 continue;
             }
 
-            string? handlerMethodName = null;
-
-            foreach (ISymbol member in endpointSymbol.GetMembers())
-            {
-                if (member is not IMethodSymbol methodSymbol)
-                {
-                    continue;
-                }
-
-                string methodName = methodSymbol.Name;
-
-                switch (methodName)
-                {
-                    case "Handle":
-                    case "HandleAsync":
-                        handlerMethodName = methodName;
-                        break;
-                    case "Configure":
-                        break;
-                }
-            }
-
-            if (handlerMethodName is null)
+            if (!TryGetHandler(endpointSymbol, out EndpointToGenerateHandler? handler))
             {
                 continue;
             }
 
-            yield return new EndpointToGenerate(
-                id: endpointSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            EndpointToGenerate endpoint = new(
+                identifier: endpointSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 namespaceName: endpointSymbol.ContainingNamespace.ToDisplayString(),
-                className: endpointDeclaration.Identifier.Text,
-                handlerMethodName: handlerMethodName);
+                className: endpointSymbol.Name,
+                handler: handler!);
+
+            yield return endpoint;
         }
     }
+
+    private static bool TryGetHandler(INamespaceOrTypeSymbol endpointSymbol, out EndpointToGenerateHandler? handler)
+    {
+        handler = null;
+
+        foreach (ISymbol member in endpointSymbol.GetMembers())
+        {
+            if (member is not IMethodSymbol methodSymbol)
+            {
+                continue;
+            }
+
+            switch (methodSymbol.Name)
+            {
+                case "Handle":
+                case "HandleAsync":
+                    var parameters = new EndpointToGenerateHandlerParameter[methodSymbol.Parameters.Length];
+                    EndpointToGenerateHandlerParameter? endpointParameter = null;
+
+                    for (int i = 0; i < methodSymbol.Parameters.Length; ++i)
+                    {
+                        IParameterSymbol parameterSymbol = methodSymbol.Parameters[i];
+
+                        parameters[i] =
+                            new EndpointToGenerateHandlerParameter(
+                                identifier: parameterSymbol.Type.ToDisplayString(
+                                    SymbolDisplayFormat.FullyQualifiedFormat),
+                                position: i);
+
+                        if (SymbolEqualityComparer.Default.Equals(parameterSymbol.Type, endpointSymbol))
+                        {
+                            endpointParameter = parameters[i];
+                        }
+                    }
+
+                    if (endpointParameter is null)
+                    {
+                        return false;
+                    }
+
+                    handler = new EndpointToGenerateHandler(
+                        name: methodSymbol.Name,
+                        endpointParameter: endpointParameter,
+                        parameters: parameters);
+
+                    return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+internal class EndpointToGenerateHandler
+{
+    public EndpointToGenerateHandler(string name, EndpointToGenerateHandlerParameter endpointParameter,
+        EndpointToGenerateHandlerParameter[] parameters)
+    {
+        Name = name;
+        EndpointParameter = endpointParameter;
+        Parameters = parameters;
+    }
+
+    public string Name { get; }
+
+    public EndpointToGenerateHandlerParameter EndpointParameter { get; }
+
+    public EndpointToGenerateHandlerParameter[] Parameters { get; }
+}
+
+internal class EndpointToGenerateHandlerParameter
+{
+    private readonly string _identifier;
+
+    public EndpointToGenerateHandlerParameter(string identifier, int position)
+    {
+        _identifier = identifier;
+        Position = position;
+    }
+
+    public int Position { get; }
+
+    public override string ToString() => _identifier;
 }

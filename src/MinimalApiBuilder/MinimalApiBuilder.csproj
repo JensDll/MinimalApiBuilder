@@ -5,12 +5,18 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>MinimalApiBuilder</RootNamespace>
+    <Description>Reflectionless, source-generated, thin abstraction layer over the ASP.NET Core
+      Minimal APIs interface</Description>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.4.0" />
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="FluentValidation" Version="11.4.0"/>
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj"/>
   </ItemGroup>
 
 </Project>

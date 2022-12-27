@@ -1,7 +1,7 @@
 ﻿[CmdletBinding()]
 param (
   [Parameter(Position = 0, Mandatory)]
-  [ValidateSet('pack', 'foo')]
+  [ValidateSet('pack')]
   [Alias('t')]
   [string[]]$Targets,
   [string]$Configuration = 'Release'
