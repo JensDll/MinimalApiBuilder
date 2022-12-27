@@ -3,14 +3,14 @@
 namespace MinimalApiBuilder;
 
 [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-public sealed class RegisterValidatorAsDependencyAttribute : Attribute
+public sealed class RegisterValidatorAttribute : Attribute
 {
-    public RegisterValidatorAsDependencyAttribute()
+    public RegisterValidatorAttribute()
     {
         Lifetime = ServiceLifetime.Singleton;
     }
 
-    public RegisterValidatorAsDependencyAttribute(ServiceLifetime lifetime)
+    public RegisterValidatorAttribute(ServiceLifetime lifetime)
     {
         Lifetime = lifetime;
     }

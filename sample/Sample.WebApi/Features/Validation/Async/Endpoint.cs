@@ -3,7 +3,7 @@ using ILogger = Serilog.ILogger;
 
 namespace Sample.WebApi.Features.Validation.Async;
 
-public class ValidationAsync : Endpoint<ValidationAsync>, ITest
+public partial class ValidationAsync : MinimalApiBuilderEndpoint
 {
     private readonly ILogger _logger;
 
@@ -12,11 +12,15 @@ public class ValidationAsync : Endpoint<ValidationAsync>, ITest
         _logger = logger;
     }
 
-    public static Task<IResult> HandleAsync(Request request, [AsParameters] Parameters parameters,
+    private static Task<IResult> Handle(Request request, [AsParameters] Parameters parameters,
         ValidationAsync endpoint, CancellationToken cancellationToken)
     {
+        endpoint._logger.Information("Handling request {@Request}", request.Foo);
         return Task.FromResult(Results.Ok());
     }
-}
 
-public interface ITest { }
+    public static void Configure(RouteHandlerBuilder builder)
+    {
+        builder.AddEndpointFilter(static async (ctx, next) => await next(ctx));
+    }
+}
