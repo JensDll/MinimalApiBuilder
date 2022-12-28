@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MinimalApiBuilder.Generator.CodeGeneration;
+using MinimalApiBuilder.Generator.CodeGeneration.Builders;
 using MinimalApiBuilder.Generator.Entities;
 using MinimalApiBuilder.Generator.Providers;
 
@@ -40,7 +40,29 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
         IReadOnlyDictionary<string, ValidatorToGenerate> validators =
             ValidatorToGenerate.Collect(compilation, validatorDeclarations, context.CancellationToken);
 
-        SourceBuilder builder = new MainBuilder(endpoints: endpoints, validators: validators);
-        builder.AddSource(context);
+        AddSource(endpoints, validators, context);
+    }
+
+    private static void AddSource(
+        IEnumerable<EndpointToGenerate> endpoints,
+        IReadOnlyDictionary<string, ValidatorToGenerate> validators,
+        SourceProductionContext context)
+    {
+        EndpointBuilder endpointBuilder = new(validators);
+        DependencyInjectionBuilder dependencyInjectionBuilder = new();
+
+        foreach (EndpointToGenerate endpoint in endpoints)
+        {
+            dependencyInjectionBuilder.AddService(endpoint);
+            endpointBuilder.AddEndpoint(endpoint);
+        }
+
+        foreach (KeyValuePair<string, ValidatorToGenerate> entry in validators)
+        {
+            dependencyInjectionBuilder.AddService(entry);
+        }
+
+        dependencyInjectionBuilder.AddSource(context);
+        endpointBuilder.AddSource(context);
     }
 }

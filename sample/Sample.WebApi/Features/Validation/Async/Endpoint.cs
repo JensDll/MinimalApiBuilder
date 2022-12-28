@@ -15,12 +15,9 @@ public partial class ValidationAsync : MinimalApiBuilderEndpoint
     private static Task<IResult> Handle(Request request, [AsParameters] Parameters parameters,
         ValidationAsync endpoint, CancellationToken cancellationToken)
     {
-        endpoint._logger.Information("Handling request {@Request}", request.Foo);
+        endpoint._logger.Information("Handling async validation request");
         return Task.FromResult(Results.Ok());
     }
 
-    public static void Configure(RouteHandlerBuilder builder)
-    {
-        builder.AddEndpointFilter(static async (ctx, next) => await next(ctx));
-    }
+    public static void Configure(RouteHandlerBuilder builder) { }
 }

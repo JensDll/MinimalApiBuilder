@@ -18,7 +18,7 @@ public class RequestValidator : AbstractValidator<Request>
         logger.Information("Async request validator constructed");
 
         RuleFor(static request => request.Foo)
-            .NotEmpty().WithMessage("Foo is required");
+            .NotEmpty().WithMessage("Foo is required").MustAsync((_, _) => Task.FromResult(true));
     }
 }
 

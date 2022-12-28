@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
+using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.CodeGeneration;
 
@@ -17,6 +18,8 @@ internal abstract class SourceBuilder
 
     private int _indent;
 
+    protected SourceBuilder() { }
+
     protected SourceBuilder(params string[] usingStatements)
     {
         foreach (string usingStatement in usingStatements)
@@ -27,16 +30,30 @@ internal abstract class SourceBuilder
         _builder.AppendLine();
     }
 
-    protected OpenBlockResult OpenBlock(string value)
+    public bool IsAdded { get; protected set; }
+
+    public abstract void AddSource(SourceProductionContext context);
+
+    public override string ToString() => _builder.ToString();
+
+    protected IDisposable OpenBlock(string value)
     {
         WriteBlockStart(value);
-        return new OpenBlockResult(this);
+        return new Disposable(() =>
+        {
+            DecreaseIndent();
+            AppendLine("}");
+        });
     }
 
-    protected OpenBlockResult OpenBlock(string value, string afterClose)
+    protected IDisposable OpenBlock(string value, string afterClose)
     {
         WriteBlockStart(value);
-        return new OpenBlockResult(this, afterClose);
+        return new Disposable(() =>
+        {
+            DecreaseIndent();
+            AppendLine($"}}{afterClose}");
+        });
     }
 
     protected void AppendLine(string value)
@@ -44,10 +61,6 @@ internal abstract class SourceBuilder
         _builder.Append(' ', _indent);
         _builder.AppendLine(value);
     }
-
-    public abstract void AddSource(SourceProductionContext context);
-
-    public override string ToString() => _builder.ToString();
 
     private void IncreaseIndent()
     {
@@ -66,28 +79,5 @@ internal abstract class SourceBuilder
         _builder.Append(' ', _indent);
         _builder.AppendLine("{");
         IncreaseIndent();
-    }
-
-    protected readonly struct OpenBlockResult : IDisposable
-    {
-        private readonly SourceBuilder _builder;
-        private readonly string? _afterClose;
-
-        public OpenBlockResult(SourceBuilder builder)
-        {
-            _builder = builder;
-        }
-
-        public OpenBlockResult(SourceBuilder builder, string afterClose)
-        {
-            _builder = builder;
-            _afterClose = afterClose;
-        }
-
-        public void Dispose()
-        {
-            _builder.DecreaseIndent();
-            _builder.AppendLine(string.IsNullOrEmpty(_afterClose) ? "}" : $"}}{_afterClose}");
-        }
     }
 }

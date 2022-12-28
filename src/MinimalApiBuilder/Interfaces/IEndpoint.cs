@@ -16,8 +16,6 @@ public interface IEndpoint
 
     static abstract void Configure(RouteHandlerBuilder builder);
 
-    static bool Invalid(ValidationResult result) => !result.IsValid;
-
     static IResult GetErrorResult(MinimalApiBuilderEndpoint endpoint, ValidationResult result)
     {
         foreach (ValidationFailure failure in result.Errors)

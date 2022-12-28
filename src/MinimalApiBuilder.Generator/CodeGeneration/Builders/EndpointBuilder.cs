@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using MinimalApiBuilder.Generator.Entities;
 
-namespace MinimalApiBuilder.Generator.CodeGeneration;
+namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 
 internal class EndpointBuilder : SourceBuilder
 {
@@ -107,7 +107,7 @@ internal class EndpointBuilder : SourceBuilder
             AppendLine(
                 $"ValidationResult[] results = {{ {string.Join(", ", parameters.Select(GetValidationResult))} }};");
             AppendLine(
-                "return results.Any(IEndpoint.Invalid) ? ValueTask.FromResult<object?>(IEndpoint.GetErrorResult(endpoint, results)) : next(invocationContext);");
+                "return results.Any(static result => !result.IsValid) ? ValueTask.FromResult<object?>(IEndpoint.GetErrorResult(endpoint, results)) : next(invocationContext);");
         }
     }
 
@@ -134,7 +134,7 @@ internal class EndpointBuilder : SourceBuilder
             AppendLine(
                 $"ValidationResult[] results = await Task.WhenAll({string.Join(", ", parameters.Select(GetValidationResultAsync))});");
             AppendLine(
-                "return results.Any(IEndpoint.Invalid) ? IEndpoint.GetErrorResult(endpoint, results) : await next(invocationContext);");
+                "return results.Any(static result => !result.IsValid) ? IEndpoint.GetErrorResult(endpoint, results) : await next(invocationContext);");
         }
     }
 
