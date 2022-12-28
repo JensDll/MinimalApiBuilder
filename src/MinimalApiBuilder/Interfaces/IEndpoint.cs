@@ -9,14 +9,14 @@ namespace MinimalApiBuilder;
 public interface IEndpoint
 {
 #pragma warning disable IDE1006 // Naming Styles
-    static abstract Delegate _auto_generated_Handler { get; }
+    public static abstract Delegate _auto_generated_Handler { get; }
 
-    static abstract void _auto_generated_Configure(RouteHandlerBuilder builder);
+    public static abstract void _auto_generated_Configure(RouteHandlerBuilder builder);
 #pragma warning restore IDE1006 // Naming Styles
 
-    static abstract void Configure(RouteHandlerBuilder builder);
+    public static abstract void Configure(RouteHandlerBuilder builder);
 
-    static IResult GetErrorResult(MinimalApiBuilderEndpoint endpoint, ValidationResult result)
+    public static IResult GetErrorResult(MinimalApiBuilderEndpoint endpoint, ValidationResult result)
     {
         foreach (ValidationFailure failure in result.Errors)
         {
@@ -26,7 +26,7 @@ public interface IEndpoint
         return ErrorResult(endpoint);
     }
 
-    static IResult GetErrorResult(MinimalApiBuilderEndpoint endpoint, params ValidationResult[] results)
+    public static IResult GetErrorResult(MinimalApiBuilderEndpoint endpoint, params ValidationResult[] results)
     {
         foreach (ValidationResult result in results)
         {
@@ -39,5 +39,6 @@ public interface IEndpoint
         return ErrorResult(endpoint);
     }
 
-    static IResult ErrorResult(MinimalApiBuilderEndpoint endpoint) => endpoint.ErrorResult("Validation failed");
+    public static IResult ErrorResult(MinimalApiBuilderEndpoint endpoint) =>
+        endpoint.ErrorResult("Validation failed");
 }

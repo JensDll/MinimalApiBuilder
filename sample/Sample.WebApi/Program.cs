@@ -1,7 +1,8 @@
 using MinimalApiBuilder;
 using Sample.WebApi.Extensions;
-using Sample.WebApi.Features.Validation.Async;
-using Sample.WebApi.Features.Validation.Sync;
+using Sample.WebApi.Features.Validation.Asynchronous;
+using Sample.WebApi.Features.Validation.Combination;
+using Sample.WebApi.Features.Validation.Synchronous;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,13 @@ if (app.Environment.IsDevelopment())
 }
 
 RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation");
-validation.MapPost<ValidationAsync>("/async");
-validation.MapPost<ValidationSync>("/sync");
+
+validation.MapPost<SyncValidationSingleEndpoint>("/sync/single");
+validation.MapPatch<SyncValidationMultipleEndpoint>("/sync/multiple");
+
+validation.MapPost<AsyncValidationSingleEndpoint>("/async/single");
+validation.MapPatch<AsyncValidationMultipleEndpoint>("/async/multiple");
+
+validation.MapPut<SyncAsyncValidationEndpoint>("/combination");
 
 app.Run();
