@@ -4,7 +4,8 @@ param (
   [ValidateSet('pack')]
   [Alias('t')]
   [string[]]$Targets,
-  [string]$Configuration = 'Release'
+  [string]$Configuration = 'Release',
+  [string]$Version = '0.1.0'
 )
 
 $solution_file = Join-Path $PSScriptRoot "MinimalApiBuilder.Build.slnf"
@@ -12,7 +13,7 @@ $output_path = Join-Path $PSScriptRoot "dist"
 
 switch ($Targets) {
   pack {
-    dotnet pack $solution_file --configuration $Configuration --output $output_path
+    dotnet pack $solution_file --configuration $Configuration --output $output_path -p:Version=$Version
 
     if (-not (Test-Path "$output_path")) {
       New-Item -ItemType Directory -Path "$output_path"

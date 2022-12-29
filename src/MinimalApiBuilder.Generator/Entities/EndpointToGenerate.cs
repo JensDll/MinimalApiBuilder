@@ -61,46 +61,41 @@ internal class EndpointToGenerate
 
         foreach (ISymbol member in endpointSymbol.GetMembers())
         {
-            if (member is not IMethodSymbol methodSymbol)
+            if (member is not IMethodSymbol { Name: ("Handle" or "HandleAsync") } methodSymbol)
             {
                 continue;
             }
 
-            switch (methodSymbol.Name)
+            var parameters = new EndpointToGenerateHandlerParameter[methodSymbol.Parameters.Length];
+            EndpointToGenerateHandlerParameter? endpointParameter = null;
+
+            for (int i = 0; i < methodSymbol.Parameters.Length; ++i)
             {
-                case "Handle":
-                case "HandleAsync":
-                    var parameters = new EndpointToGenerateHandlerParameter[methodSymbol.Parameters.Length];
-                    EndpointToGenerateHandlerParameter? endpointParameter = null;
+                IParameterSymbol parameterSymbol = methodSymbol.Parameters[i];
 
-                    for (int i = 0; i < methodSymbol.Parameters.Length; ++i)
-                    {
-                        IParameterSymbol parameterSymbol = methodSymbol.Parameters[i];
+                parameters[i] =
+                    new EndpointToGenerateHandlerParameter(
+                        identifier: parameterSymbol.Type.ToDisplayString(
+                            SymbolDisplayFormat.FullyQualifiedFormat),
+                        position: i);
 
-                        parameters[i] =
-                            new EndpointToGenerateHandlerParameter(
-                                identifier: parameterSymbol.Type.ToDisplayString(
-                                    SymbolDisplayFormat.FullyQualifiedFormat),
-                                position: i);
-
-                        if (SymbolEqualityComparer.Default.Equals(parameterSymbol.Type, endpointSymbol))
-                        {
-                            endpointParameter = parameters[i];
-                        }
-                    }
-
-                    if (endpointParameter is null)
-                    {
-                        return false;
-                    }
-
-                    handler = new EndpointToGenerateHandler(
-                        name: methodSymbol.Name,
-                        endpointParameter: endpointParameter,
-                        parameters: parameters);
-
-                    return true;
+                if (SymbolEqualityComparer.Default.Equals(parameterSymbol.Type, endpointSymbol))
+                {
+                    endpointParameter = parameters[i];
+                }
             }
+
+            if (endpointParameter is null)
+            {
+                return false;
+            }
+
+            handler = new EndpointToGenerateHandler(
+                name: methodSymbol.Name,
+                endpointParameter: endpointParameter!,
+                parameters: parameters);
+
+            return true;
         }
 
         return false;

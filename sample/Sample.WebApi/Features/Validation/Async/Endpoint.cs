@@ -1,7 +1,7 @@
 ﻿using MinimalApiBuilder;
 using ILogger = Serilog.ILogger;
 
-namespace Sample.WebApi.Features.Validation.Asynchronous;
+namespace Sample.WebApi.Features.Validation.Async;
 
 public partial class AsyncValidationSingleEndpoint : MinimalApiBuilderEndpoint
 {

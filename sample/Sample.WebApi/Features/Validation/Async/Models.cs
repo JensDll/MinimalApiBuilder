@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Sample.WebApi.Features.Validation.Asynchronous;
+namespace Sample.WebApi.Features.Validation.Async;
 
 public class AsyncValidationRequest
 {
@@ -17,7 +17,7 @@ public class AsyncValidationRequestValidator : AbstractValidator<AsyncValidation
             .MustAsync(static async (foo, cancellationToken) =>
             {
                 await Task.Delay(0, cancellationToken);
-                return foo.Length > 1;
+                return foo is not ("invalid" or "false" or "no");
             });
     }
 }

@@ -1,6 +1,6 @@
 ﻿using MinimalApiBuilder;
-using Sample.WebApi.Features.Validation.Asynchronous;
-using Sample.WebApi.Features.Validation.Synchronous;
+using Sample.WebApi.Features.Validation.Async;
+using Sample.WebApi.Features.Validation.Sync;
 
 namespace Sample.WebApi.Features.Validation.Combination;
 

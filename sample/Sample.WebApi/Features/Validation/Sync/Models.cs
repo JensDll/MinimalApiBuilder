@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Sample.WebApi.Features.Validation.Synchronous;
+namespace Sample.WebApi.Features.Validation.Sync;
 
 public class SyncValidationRequest
 {
@@ -13,7 +13,7 @@ public class SyncValidationRequestValidator : AbstractValidator<SyncValidationRe
 {
     public SyncValidationRequestValidator()
     {
-        RuleFor(request => request.Foo.Length).GreaterThan(1);
+        RuleFor(request => request.Foo).Must(foo => foo is not ("invalid" or "false" or "no"));
     }
 }
 

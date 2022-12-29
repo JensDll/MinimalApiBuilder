@@ -1,6 +1,6 @@
 ﻿using MinimalApiBuilder;
 
-namespace Sample.WebApi.Features.Validation.Synchronous;
+namespace Sample.WebApi.Features.Validation.Sync;
 
 public partial class SyncValidationSingleEndpoint : MinimalApiBuilderEndpoint
 {

@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace MinimalApiBuilder.IntegrationTest;
 
 [SetUpFixture]
-public class TestContext
+public class TestSetup
 {
     internal static TestWebApplicationFactory<Program> Factory = null!;
     internal static HttpClient Client = null!;

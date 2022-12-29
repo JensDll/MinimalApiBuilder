@@ -46,16 +46,15 @@ internal class ValidatorToGenerate
 
                 foreach (SyntaxNode node in constructorDeclaration.DescendantNodes())
                 {
-                    if (node is not IdentifierNameSyntax validatorNode ||
-                        node.Parent is not MemberAccessExpressionSyntax ||
-                        node.Parent.Parent is not InvocationExpressionSyntax ||
-                        validatorNode.Identifier.Text is not ("MustAsync" or "WhenAsync" or "CustomAsync"))
+                    if (node is IdentifierNameSyntax validatorNode &&
+                        node.Parent is MemberAccessExpressionSyntax &&
+                        node.Parent.Parent is InvocationExpressionSyntax &&
+                        validatorNode.Identifier.Text is "MustAsync" or "WhenAsync" or "UnlessAsync" or "CustomAsync"
+                            or "SetAsyncValidator")
                     {
-                        continue;
+                        isAsync = true;
+                        break;
                     }
-
-                    isAsync = true;
-                    break;
                 }
             }
 
