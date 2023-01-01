@@ -1,4 +1,4 @@
-﻿namespace MinimalApiBuilder.Generator.IntegrationTest.Tests;
+﻿namespace MinimalApiBuilder.Generator.IntegrationTest;
 
 public class BasicTests
 {

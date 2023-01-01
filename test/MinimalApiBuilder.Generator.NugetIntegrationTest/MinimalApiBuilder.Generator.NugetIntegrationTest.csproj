@@ -1,10 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MinimalApiBuilder.Generator.IntegrationTest\*.cs"
+      Link="%(Filename)%(Extension)"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MinimalApiBuilder" Version="0.1.0-beta.2"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3">
@@ -20,10 +29,7 @@
     <PackageReference Include="Verify" Version="19.5.0"/>
     <PackageReference Include="Verify.NUnit" Version="19.5.0"/>
     <PackageReference Include="Verify.SourceGenerators" Version="2.0.1"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj"/>
+    <PackageReference Include="FluentValidation" Version="11.4.0"/>
   </ItemGroup>
 
 </Project>

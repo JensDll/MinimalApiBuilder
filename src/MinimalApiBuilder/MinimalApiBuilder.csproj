@@ -4,12 +4,19 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <RootNamespace>MinimalApiBuilder</RootNamespace>
-    <Description>Reflectionless, source-generated, thin abstraction layer over the ASP.NET Core
-      Minimal APIs interface
-    </Description>
-    <RepositoryUrl>https://github.com/JensDll/MinimalApiBuilder/tree/main/src/MinimalApiBuilder</RepositoryUrl>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>
+      Reflectionless, source-generated, thin abstraction layer over the ASP.NET Core Minimal APIs
+      interface
+    </Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.4.0"/>
@@ -17,7 +24,32 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj"/>
+    <ProjectReference Include="..\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Name>Generator</Name>
+    </ProjectReference>
   </ItemGroup>
+
+  <Target Name="CopyGeneratorDll" BeforeTargets="Build">
+    <MSBuild
+      Projects="@(ProjectReference)"
+      Targets="Build"
+      BuildInParallel="true"
+      Condition="'%(Name)'=='Generator'">
+      <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies"/>
+    </MSBuild>
+    <Copy SourceFiles="@(OutputAssemblies)"
+      DestinationFolder="$(OutputPath)"
+      SkipUnchangedFiles="true">
+      <Output
+        TaskParameter="CopiedFiles"
+        PropertyName="CopiedFiles"/>
+    </Copy>
+    <ItemGroup>
+      <None Include="$(CopiedFiles)" Pack="true"
+        PackagePath="analyzers/dotnet/cs"
+        Visible="false"/>
+    </ItemGroup>
+  </Target>
 
 </Project>

@@ -455,4 +455,6 @@ $RECYCLE.BIN/
 
 .build/
 dist/
+packages/
+artifacts/
 *.received.cs

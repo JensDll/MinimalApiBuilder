@@ -8,7 +8,7 @@ using MinimalApiBuilder.Generator.Providers;
 namespace MinimalApiBuilder.Generator;
 
 [Generator(LanguageNames.CSharp)]
-internal class MinimalApiBuilderGenerator : IIncrementalGenerator
+public class MinimalApiBuilderGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

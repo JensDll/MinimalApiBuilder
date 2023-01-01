@@ -3,15 +3,21 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
     <IsRoslynComponent>true</IsRoslynComponent>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>Latest</LangVersion>
-    <Description>Source generator for MinimalApiBuilder</Description>
-    <RepositoryUrl>
-      https://github.com/JensDll/MinimalApiBuilder/tree/main/src/MinimalApiBuilder.Generator</RepositoryUrl>
   </PropertyGroup>
+
+  <PropertyGroup>
+    <Description>Source generator for MinimalApiBuilder</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" PrivateAssets="all"/>
@@ -19,16 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="bin\Debug\netstandard2.0\\MinimalApiBuilder.Generator.dll"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs"
       Visible="false"/>
   </ItemGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="MinimalApiBuilder.Generator.IntegrationTest"/>
-  </ItemGroup>
-
 </Project>

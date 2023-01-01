@@ -1,11 +1,11 @@
 ﻿[CmdletBinding()]
 param (
   [Parameter(Position = 0, Mandatory)]
-  [ValidateSet('pack')]
+  [ValidateSet('pack', 'test-nuget')]
   [Alias('t')]
   [string[]]$Targets,
   [string]$Configuration = 'Release',
-  [string]$Version = '0.1.0'
+  [string]$Version = '0.1.0-beta.2'
 )
 
 $solution_file = Join-Path $PSScriptRoot "MinimalApiBuilder.Build.slnf"
@@ -28,5 +28,13 @@ switch ($Targets) {
         Expand-Archive -Path "$file_path" -DestinationPath "$destination_path"
       }
     }
+  }
+  'test-nuget' {
+    $configFile = Join-Path $PSScriptRoot "nuget.integration-test.config"
+
+    dotnet restore .\test\MinimalApiBuilder.Generator.NugetIntegrationTest --packages ./packages --configfile $configFile
+
+    dotnet build .\test\MinimalApiBuilder.Generator.NugetIntegrationTest `
+      -c Release --packages ./packages --no-restore
   }
 }

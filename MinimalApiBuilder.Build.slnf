@@ -2,7 +2,6 @@
   "solution": {
     "path": "MinimalApiBuilder.sln",
     "projects": [
-      "src\\MinimalApiBuilder.Generator\\MinimalApiBuilder.Generator.csproj",
       "src\\MinimalApiBuilder\\MinimalApiBuilder.csproj"
     ]
   }

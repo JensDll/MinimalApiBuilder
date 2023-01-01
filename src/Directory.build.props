@@ -1,9 +1,12 @@
 <Project>
   <PropertyGroup>
-    <VersionPrefix>0.0.1</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Authors>Jens Döllmann</Authors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RepositoryUrl>https://github.com/JensDll/MinimalApiBuilder</RepositoryUrl>
+    <RespositoryType>git</RespositoryType>
+    <Copyright>Copyright (c) 2022 Jens Döllmann</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <!-- <IncludeSymbols>true</IncludeSymbols> -->
   </PropertyGroup>
 </Project>
