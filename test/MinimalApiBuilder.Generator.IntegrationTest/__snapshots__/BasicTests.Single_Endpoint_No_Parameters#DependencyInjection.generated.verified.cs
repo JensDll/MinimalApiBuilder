@@ -6,6 +6,7 @@
 // </auto-generated>
 
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalApiBuilder
 {

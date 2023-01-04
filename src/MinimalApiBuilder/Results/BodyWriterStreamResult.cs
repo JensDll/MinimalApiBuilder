@@ -5,9 +5,9 @@ namespace MinimalApiBuilder;
 
 internal sealed class BodyWriterStreamResult : IResult
 {
+    private readonly Func<Stream, Task> _streamWriterCallback;
     private readonly string? _contentType;
     private readonly string? _fileDownloadName;
-    private readonly Func<Stream, Task> _streamWriterCallback;
 
     public BodyWriterStreamResult(
         Func<Stream, Task> streamWriterCallback,
@@ -23,12 +23,14 @@ internal sealed class BodyWriterStreamResult : IResult
     {
         httpContext.Response.ContentType = _contentType;
 
-        if (!string.IsNullOrEmpty(_fileDownloadName))
+        if (string.IsNullOrEmpty(_fileDownloadName))
         {
-            var contentDisposition = new ContentDispositionHeaderValue("attachment");
-            contentDisposition.SetHttpFileName(_fileDownloadName);
-            httpContext.Response.Headers.ContentDisposition = contentDisposition.ToString();
+            return _streamWriterCallback(httpContext.Response.BodyWriter.AsStream());
         }
+
+        ContentDispositionHeaderValue contentDisposition = new("attachment");
+        contentDisposition.SetHttpFileName(_fileDownloadName);
+        httpContext.Response.Headers.ContentDisposition = contentDisposition.ToString();
 
         return _streamWriterCallback(httpContext.Response.BodyWriter.AsStream());
     }

@@ -30,25 +30,17 @@
     </ProjectReference>
   </ItemGroup>
 
-  <Target Name="CopyGeneratorDll" BeforeTargets="Build">
-    <MSBuild
-      Projects="@(ProjectReference)"
-      Targets="Build"
-      BuildInParallel="true"
-      Condition="'%(Name)'=='Generator'">
+  <Target Name="PackGenerator" BeforeTargets="Build">
+    <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="true"
+             Condition="'%(Name)'=='Generator'">
       <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies"/>
     </MSBuild>
-    <Copy SourceFiles="@(OutputAssemblies)"
-      DestinationFolder="$(OutputPath)"
-      SkipUnchangedFiles="true">
-      <Output
-        TaskParameter="CopiedFiles"
-        PropertyName="CopiedFiles"/>
+    <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(OutputPath)"
+          SkipUnchangedFiles="true">
+      <Output TaskParameter="CopiedFiles" PropertyName="CopiedFiles"/>
     </Copy>
     <ItemGroup>
-      <None Include="$(CopiedFiles)" Pack="true"
-        PackagePath="analyzers/dotnet/cs"
-        Visible="false"/>
+      <None Include="$(CopiedFiles)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
     </ItemGroup>
   </Target>
 

@@ -5,7 +5,7 @@ param (
   [Alias('t')]
   [string[]]$Targets,
   [string]$Configuration = 'Release',
-  [string]$Version = '0.1.0-beta.2'
+  [string]$Version
 )
 
 $solution_file = Join-Path $PSScriptRoot "MinimalApiBuilder.Build.slnf"

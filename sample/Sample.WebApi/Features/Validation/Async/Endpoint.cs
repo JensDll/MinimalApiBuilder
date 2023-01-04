@@ -1,4 +1,5 @@
-﻿using MinimalApiBuilder;
+﻿using System.Diagnostics;
+using MinimalApiBuilder;
 using ILogger = Serilog.ILogger;
 
 namespace Sample.WebApi.Features.Validation.Async;
@@ -12,12 +13,16 @@ public partial class AsyncValidationSingleEndpoint : MinimalApiBuilderEndpoint
         _logger = logger;
     }
 
-    private static Task<IResult> HandleAsync(
+    private static async Task<IResult> HandleAsync(
         AsyncValidationSingleEndpoint endpoint,
         AsyncValidationRequest request,
+        HttpContext context,
         CancellationToken cancellationToken)
     {
-        return Task.FromResult(Results.Ok());
+        MultipartReader? reader = MultipartReader.Create(context);
+        Trace.Assert(reader is null);
+        await Task.Delay(0, cancellationToken);
+        return Results.Ok();
     }
 
     public static void Configure(RouteHandlerBuilder builder)

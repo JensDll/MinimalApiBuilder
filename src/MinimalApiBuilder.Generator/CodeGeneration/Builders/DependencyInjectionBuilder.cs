@@ -9,7 +9,8 @@ internal class DependencyInjectionBuilder : SourceBuilder
     private readonly IDisposable _classDisposable;
     private readonly IDisposable _methodDisposable;
 
-    public DependencyInjectionBuilder() : base("FluentValidation")
+    public DependencyInjectionBuilder() : base("FluentValidation",
+        "Microsoft.Extensions.DependencyInjection")
     {
         _namespaceDisposable = OpenBlock("namespace MinimalApiBuilder");
         _classDisposable = OpenBlock("public static class DependencyInjection");
@@ -34,6 +35,6 @@ internal class DependencyInjectionBuilder : SourceBuilder
 
     public void AddService(KeyValuePair<string, ValidatorToGenerate> entry)
     {
-        AppendLine($"services.AddSingleton<IValidator<{entry.Key}>, {entry.Value}>();");
+        AppendLine($"services.Add{entry.Value.ServiceLifetime}<IValidator<{entry.Key}>, {entry.Value}>();");
     }
 }

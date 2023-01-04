@@ -28,4 +28,5 @@ validation.MapPost<AsyncValidationSingleEndpoint>("/async/single");
 validation.MapPatch<AsyncValidationMultipleEndpoint>("/async/multiple");
 validation.MapPut<SyncAsyncValidationEndpoint>("/combination");
 
+
 app.Run();

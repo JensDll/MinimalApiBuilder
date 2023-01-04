@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MinimalApiBuilder;
 
 namespace Sample.WebApi.Features.Validation.Async;
 
@@ -9,6 +10,7 @@ public class AsyncValidationRequest
 
 public record struct AsyncValidationParameters(int Bar);
 
+[RegisterValidator(ServiceLifetime.Transient)]
 public class AsyncValidationRequestValidator : AbstractValidator<AsyncValidationRequest>
 {
     public AsyncValidationRequestValidator()

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Immutable;
+using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -8,13 +9,15 @@ internal class ValidatorToGenerate
 {
     private readonly string _identifier;
 
-    private ValidatorToGenerate(string identifier, bool isAsync)
+    private ValidatorToGenerate(string identifier, bool isAsync, string serviceLifetime)
     {
         _identifier = identifier;
         IsAsync = isAsync;
+        ServiceLifetime = serviceLifetime;
     }
 
     public bool IsAsync { get; }
+    public string ServiceLifetime { get; }
 
     public override string ToString() => _identifier;
 
@@ -58,9 +61,12 @@ internal class ValidatorToGenerate
                 }
             }
 
+            string serviceLifetime = GetValidatorServiceLifetime(validatorSymbol);
+
             ValidatorToGenerate validator = new(
                 identifier: validatorSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                isAsync: isAsync);
+                isAsync: isAsync,
+                serviceLifetime: serviceLifetime);
 
             validators.Add(
                 validatorSymbol.BaseType!.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
@@ -68,5 +74,25 @@ internal class ValidatorToGenerate
         }
 
         return validators;
+    }
+
+    private static string GetValidatorServiceLifetime(ISymbol validatorSymbol)
+    {
+        foreach (AttributeData attributeData in validatorSymbol.GetAttributes())
+        {
+            string name = attributeData.ToString();
+
+            if (!name.StartsWith("MinimalApiBuilder.RegisterValidatorAttribute"))
+            {
+                continue;
+            }
+
+            const string pattern = @"ServiceLifetime\.(?<lifetime>\w+)";
+            Match match = Regex.Match(name, pattern);
+
+            return match.Groups["lifetime"].Value;
+        }
+
+        return "Singleton";
     }
 }

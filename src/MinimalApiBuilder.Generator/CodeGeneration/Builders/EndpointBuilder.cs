@@ -142,8 +142,8 @@ internal class EndpointBuilder : SourceBuilder
         $"{endpointParameter} endpoint = invocationContext.GetArgument<{endpointParameter}>({endpointParameter.Position});";
 
     private static string GetValidationResult(EndpointToGenerateHandlerParameter parameter) =>
-        $"invocationContext.HttpContext.RequestServices.GetService<IValidator<{parameter}>>()!.Validate(invocationContext.GetArgument<{parameter}>({parameter.Position}))";
+        $"invocationContext.HttpContext.RequestServices.GetRequiredService<IValidator<{parameter}>>().Validate(invocationContext.GetArgument<{parameter}>({parameter.Position}))";
 
     private static string GetValidationResultAsync(EndpointToGenerateHandlerParameter parameter) =>
-        $"invocationContext.HttpContext.RequestServices.GetService<IValidator<{parameter}>>()!.ValidateAsync(invocationContext.GetArgument<{parameter}>({parameter.Position}))";
+        $"invocationContext.HttpContext.RequestServices.GetRequiredService<IValidator<{parameter}>>().ValidateAsync(invocationContext.GetArgument<{parameter}>({parameter.Position}))";
 }
