@@ -1,0 +1,33 @@
+name: NuGet Publish
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  nuget:
+    defaults:
+      run:
+        shell: bash
+    environment: NuGet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checking out the repository
+        uses: actions/checkout@v3
+
+      - name: Setting up dotnet
+        uses: actions/setup-dotnet@v3.0.3
+
+      - name: Debug information
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+          STEPS_CONTEXT: ${{ toJSON(steps) }}
+          NEEDS_CONTEXT: ${{ toJSON(needs) }}
+        run: env
+
+      - name: Packing NuGet package
+        run: pwsh ./scripts/pack.ps1 -Version "0.1.0"
+
+      # - name: Publishing NuGet package
+      #   run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

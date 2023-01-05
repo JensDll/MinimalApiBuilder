@@ -35,6 +35,9 @@ internal class DependencyInjectionBuilder : SourceBuilder
 
     public void AddService(KeyValuePair<string, ValidatorToGenerate> entry)
     {
-        AppendLine($"services.Add{entry.Value.ServiceLifetime}<IValidator<{entry.Key}>, {entry.Value}>();");
+        string validatedType = entry.Key;
+        ValidatorToGenerate validator = entry.Value;
+
+        AppendLine($"services.Add{validator.ServiceLifetime}<IValidator<{validatedType}>, {validator}>();");
     }
 }

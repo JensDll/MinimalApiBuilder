@@ -18,7 +18,7 @@
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs"
-      Visible="false"/>
+          Visible="false"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -26,4 +26,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" PrivateAssets="all"/>
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="MinimalApiBuilder.Generator.IntegrationTest"/>
+  </ItemGroup>
 </Project>

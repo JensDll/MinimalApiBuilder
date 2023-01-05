@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using MinimalApiBuilder;
+﻿using MinimalApiBuilder;
 using ILogger = Serilog.ILogger;
 
 namespace Sample.WebApi.Features.Validation.Async;
@@ -19,9 +18,14 @@ public partial class AsyncValidationSingleEndpoint : MinimalApiBuilderEndpoint
         HttpContext context,
         CancellationToken cancellationToken)
     {
-        MultipartReader? reader = MultipartReader.Create(context);
-        Trace.Assert(reader is null);
         await Task.Delay(0, cancellationToken);
+        MultipartReader? reader = MultipartReader.Create(context);
+
+        if (reader is not null)
+        {
+            return Results.BadRequest();
+        }
+
         return Results.Ok();
     }
 
