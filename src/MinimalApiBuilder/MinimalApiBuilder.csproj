@@ -11,12 +11,9 @@
       Reflectionless, source-generated, thin abstraction layer over the ASP.NET Core Minimal APIs
       interface
     </Description>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>
       aspnetcore;minimal-api;source-generation;source-generator;source-gen;sourcegenerator
     </PackageTags>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <ItemGroup>

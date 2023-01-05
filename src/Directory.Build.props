@@ -1,4 +1,5 @@
 <Project>
+
   <PropertyGroup>
     <VersionSuffix></VersionSuffix>
     <Authors>Jens Döllmann</Authors>
@@ -9,5 +10,13 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
 </Project>
