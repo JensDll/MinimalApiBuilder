@@ -22,11 +22,8 @@ jobs:
       - name: Installing dependencies
         run: dotnet restore
 
-      - name: Building the project
-        run: dotnet build --configuration Release --no-restore
-
       - name: Packing NuGet package
-        run: pwsh ./scripts/pack.ps1 -Version "${{ github.event.release.tag_name }}"
+        run: pwsh ./scripts/pack.ps1 -Version "${{ github.event.release.tag_name }}" -Configuration Release
 
       # - name: Publishing NuGet package
       #   run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
