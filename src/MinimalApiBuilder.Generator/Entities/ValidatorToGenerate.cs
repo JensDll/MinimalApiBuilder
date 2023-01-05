@@ -61,7 +61,7 @@ internal class ValidatorToGenerate
                 }
             }
 
-            string serviceLifetime = GetValidatorServiceLifetime(validatorSymbol);
+            string serviceLifetime = GetValidatorServiceLifetime(validatorDeclaration);
 
             ValidatorToGenerate validator = new(
                 identifier: validatorSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
@@ -76,21 +76,19 @@ internal class ValidatorToGenerate
         return validators;
     }
 
-    private static string GetValidatorServiceLifetime(ISymbol validatorSymbol)
+    private static string GetValidatorServiceLifetime(ClassDeclarationSyntax validatorDeclaration)
     {
-        foreach (AttributeData attributeData in validatorSymbol.GetAttributes())
+        foreach (AttributeListSyntax attribute in validatorDeclaration.AttributeLists)
         {
-            string name = attributeData.ToString();
+            string name = attribute.ToString();
 
-            if (!name.StartsWith("MinimalApiBuilder.RegisterValidatorAttribute"))
-            {
-                continue;
-            }
-
-            const string pattern = @"ServiceLifetime\.(?<lifetime>\w+)";
+            const string pattern = @"RegisterValidator\(ServiceLifetime\.(?<lifetime>\w+)";
             Match match = Regex.Match(name, pattern);
 
-            return match.Groups["lifetime"].Value;
+            if (match.Success)
+            {
+                return match.Groups["lifetime"].Value;
+            }
         }
 
         return "Singleton";

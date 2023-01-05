@@ -43,7 +43,7 @@ public partial class Endpoint1 : MinimalApiBuilderEndpoint
 
 public partial class Endpoint2 : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(Endpoint2 endpoint)
+    private static IResult HandleAsync(Endpoint2 endpoint)
     {
         return Results.Ok();
     }

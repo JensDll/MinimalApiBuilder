@@ -10,15 +10,9 @@
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <Description>Source generator for MinimalApiBuilder</Description>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-  </PropertyGroup>
-
   <ItemGroup>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs"
-          Visible="false"/>
+      Visible="false"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -29,4 +23,5 @@
   <ItemGroup>
     <InternalsVisibleTo Include="MinimalApiBuilder.Generator.IntegrationTest"/>
   </ItemGroup>
+
 </Project>

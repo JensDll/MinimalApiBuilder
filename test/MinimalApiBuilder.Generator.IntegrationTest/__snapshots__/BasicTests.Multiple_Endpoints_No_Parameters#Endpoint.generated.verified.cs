@@ -23,7 +23,7 @@ namespace Features
 {
     public partial class Endpoint2 : IEndpoint
     {
-        public static Delegate _auto_generated_Handler { get; } = Handle;
+        public static Delegate _auto_generated_Handler { get; } = HandleAsync;
         public static void _auto_generated_Configure(RouteHandlerBuilder builder)
         {
         }
