@@ -12,6 +12,11 @@
       interface
     </Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>
+      aspnetcore;minimal-api;source-generation;source-generator;source-gen;sourcegenerator
+    </PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,6 +25,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.4.0"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All"/>
     <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
 
@@ -32,11 +38,11 @@
 
   <Target Name="PackGenerator" BeforeTargets="Build">
     <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="true"
-             Condition="'%(Name)'=='Generator'">
+      Condition="'%(Name)'=='Generator'">
       <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies"/>
     </MSBuild>
     <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(OutputPath)"
-          SkipUnchangedFiles="true">
+      SkipUnchangedFiles="true">
       <Output TaskParameter="CopiedFiles" PropertyName="CopiedFiles"/>
     </Copy>
     <ItemGroup>
