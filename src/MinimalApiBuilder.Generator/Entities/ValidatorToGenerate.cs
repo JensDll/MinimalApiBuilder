@@ -52,8 +52,8 @@ internal class ValidatorToGenerate
                     if (node is IdentifierNameSyntax validatorNode &&
                         node.Parent is MemberAccessExpressionSyntax &&
                         node.Parent.Parent is InvocationExpressionSyntax &&
-                        validatorNode.Identifier.Text is "MustAsync" or "WhenAsync" or "UnlessAsync" or "CustomAsync"
-                            or "SetAsyncValidator")
+                        validatorNode.Identifier.Text is "MustAsync" or "WhenAsync" or "UnlessAsync"
+                            or "CustomAsync" or "SetAsyncValidator")
                     {
                         isAsync = true;
                         break;

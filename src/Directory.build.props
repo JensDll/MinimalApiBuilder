@@ -7,6 +7,11 @@
     <RespositoryType>git</RespositoryType>
     <Copyright>Copyright (c) 2022 Jens Döllmann</Copyright>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <!-- <IncludeSymbols>true</IncludeSymbols> -->
+    <PackageTags>
+      aspnetcore;minimal-api;source-generation;source-generator;source-gen;sourcegenerator
+    </PackageTags>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 </Project>

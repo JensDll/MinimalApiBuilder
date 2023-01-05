@@ -34,7 +34,7 @@ internal abstract class SourceBuilder
 
     public abstract void AddSource(SourceProductionContext context);
 
-    public override string ToString() => _builder.ToString();
+    public sealed override string ToString() => _builder.ToString();
 
     protected IDisposable OpenBlock(string value)
     {

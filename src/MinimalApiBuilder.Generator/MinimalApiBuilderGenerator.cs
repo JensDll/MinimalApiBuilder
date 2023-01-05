@@ -8,7 +8,7 @@ using MinimalApiBuilder.Generator.Providers;
 namespace MinimalApiBuilder.Generator;
 
 [Generator(LanguageNames.CSharp)]
-public class MinimalApiBuilderGenerator : IIncrementalGenerator
+internal class MinimalApiBuilderGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -16,8 +16,7 @@ public class MinimalApiBuilderGenerator : IIncrementalGenerator
         IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedEndpointDeclarations =
             endpointDeclarations.Collect();
 
-        IncrementalValuesProvider<ClassDeclarationSyntax> validatorDeclarations =
-            context.ForValidatorWithDependenciesDeclarations();
+        IncrementalValuesProvider<ClassDeclarationSyntax> validatorDeclarations = context.ForValidatorDeclarations();
         IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedValidatorDeclarations =
             validatorDeclarations.Collect();
 

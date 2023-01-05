@@ -73,11 +73,9 @@ internal class EndpointToGenerate
             {
                 IParameterSymbol parameterSymbol = methodSymbol.Parameters[i];
 
-                parameters[i] =
-                    new EndpointToGenerateHandlerParameter(
-                        identifier: parameterSymbol.Type.ToDisplayString(
-                            SymbolDisplayFormat.FullyQualifiedFormat),
-                        position: i);
+                parameters[i] = new EndpointToGenerateHandlerParameter(
+                    identifier: parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                    position: i);
 
                 if (SymbolEqualityComparer.Default.Equals(parameterSymbol.Type, endpointSymbol))
                 {
@@ -92,7 +90,7 @@ internal class EndpointToGenerate
 
             handler = new EndpointToGenerateHandler(
                 name: methodSymbol.Name,
-                endpointParameter: endpointParameter!,
+                endpointParameter: endpointParameter,
                 parameters: parameters);
 
             return true;

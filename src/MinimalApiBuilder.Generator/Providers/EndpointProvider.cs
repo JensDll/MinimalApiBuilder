@@ -12,7 +12,7 @@ internal static class EndpointProvider
             .CreateSyntaxProvider(
                 predicate: static (s, _) => IsEndpointDeclaration(s),
                 transform: static (ctx, _) => (ClassDeclarationSyntax)ctx.Node)
-            .Where(static endpointDeclaration => endpointDeclaration is not null)!;
+            .Where(static endpointDeclaration => endpointDeclaration is not null);
     }
 
     private static bool IsEndpointDeclaration(SyntaxNode node)
