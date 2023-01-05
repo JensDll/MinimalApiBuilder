@@ -8,7 +8,7 @@ param (
 $solution_file = Join-Path $PSScriptRoot ".." "MinimalApiBuilder.Build.slnf"
 $output_path = Join-Path $PSScriptRoot ".." "artifacts"
 
-dotnet pack $solution_file --no-build --output $output_path -p:Version=$Version
+dotnet pack $solution_file --no-restore --output $output_path -p:Version=$Version
 
 if (-not (Test-Path "$output_path")) {
   New-Item -ItemType Directory -Path "$output_path"
