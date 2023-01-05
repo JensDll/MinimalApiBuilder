@@ -19,15 +19,8 @@ jobs:
       - name: Setting up dotnet
         uses: actions/setup-dotnet@v3.0.3
 
-      - name: Debug information
-        env:
-          GITHUB_CONTEXT: ${{ toJSON(github) }}
-          STEPS_CONTEXT: ${{ toJSON(steps) }}
-          NEEDS_CONTEXT: ${{ toJSON(needs) }}
-        run: env
-
       - name: Packing NuGet package
-        run: pwsh ./scripts/pack.ps1 -Version "0.1.0"
+        run: pwsh ./scripts/pack.ps1 -Version "${{ github.event.release.tag_name }}"
 
-      # - name: Publishing NuGet package
-      #   run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      - name: Publishing NuGet package
+        run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
