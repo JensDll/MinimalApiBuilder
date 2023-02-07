@@ -1,14 +1,13 @@
 ﻿using MinimalApiBuilder;
-using Sample.WebApi.Features.Validation.Async;
-using Sample.WebApi.Features.Validation.Sync;
+using Fixture.TestApi.Features.Validation;
 
-namespace Sample.WebApi.Features.Validation.Combination;
+namespace Fixture.TestApi.Features.Validation.Combination;
 
-public partial class SyncAsyncValidationEndpoint : MinimalApiBuilderEndpoint
+public partial class Endpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(AsyncValidationRequest request,
-        [AsParameters] SyncValidationParameters parameters,
-        SyncAsyncValidationEndpoint endpoint)
+    private static IResult Handle(Asynchronous.Request request,
+        [AsParameters] Synchronous.Parameters parameters,
+        Endpoint endpoint)
     {
         return Results.Ok();
     }

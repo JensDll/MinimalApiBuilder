@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checking out the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.3.0
 
       - name: Setting up dotnet
         uses: actions/setup-dotnet@v3.0.3
@@ -26,7 +26,7 @@ jobs:
         run: dotnet restore
 
       - name: Packing NuGet package
-        run: pwsh ./script/pack.ps1 -Version "${{ github.event.release.tag_name }}" -Configuration Release
+        run: pwsh ./script/pack.ps1 -Version '${{ github.event.release.tag_name }}' -Configuration Release
 
       - name: Publishing NuGet package
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

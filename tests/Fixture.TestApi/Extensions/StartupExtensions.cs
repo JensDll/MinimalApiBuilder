@@ -1,7 +1,7 @@
 ﻿using Serilog;
 using ILogger = Serilog.ILogger;
 
-namespace Sample.WebApi.Extensions;
+namespace Fixture.TestApi.Extensions;
 
 public static class StartupExtensions
 {

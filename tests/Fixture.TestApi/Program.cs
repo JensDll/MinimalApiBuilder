@@ -1,8 +1,5 @@
+using Fixture.TestApi.Extensions;
 using MinimalApiBuilder;
-using Sample.WebApi.Extensions;
-using Sample.WebApi.Features.Validation.Async;
-using Sample.WebApi.Features.Validation.Combination;
-using Sample.WebApi.Features.Validation.Sync;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +19,10 @@ if (app.Environment.IsDevelopment())
 }
 
 RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation");
-validation.MapPost<SyncValidationSingleEndpoint>("/sync/single");
-validation.MapPatch<SyncValidationMultipleEndpoint>("/sync/multiple");
-validation.MapPost<AsyncValidationSingleEndpoint>("/async/single");
-validation.MapPatch<AsyncValidationMultipleEndpoint>("/async/multiple");
-validation.MapPut<SyncAsyncValidationEndpoint>("/combination");
-
+validation.MapPost<Fixture.TestApi.Features.Validation.Synchronous.EndpointSingle>("/sync/single");
+validation.MapPatch<Fixture.TestApi.Features.Validation.Synchronous.EndpointMultiple>("/sync/multiple");
+validation.MapPost<Fixture.TestApi.Features.Validation.Asynchronous.EndpointSingle>("/async/single");
+validation.MapPatch<Fixture.TestApi.Features.Validation.Asynchronous.EndpointMultiple>("/async/multiple");
+validation.MapPut<Fixture.TestApi.Features.Validation.Combination.Endpoint>("/combination");
 
 app.Run();
