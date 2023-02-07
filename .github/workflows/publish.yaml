@@ -1,9 +1,12 @@
-name: NuGet Publish
+name: Publish NuGet package
 
 on:
-  release:
-    types:
-      - published
+  workflow_dispatch:
+  workflow_call:
+    secrets:
+      NUGET_API_KEY:
+        description: "Nuget API key"
+        required: true
 
 jobs:
   nuget:
