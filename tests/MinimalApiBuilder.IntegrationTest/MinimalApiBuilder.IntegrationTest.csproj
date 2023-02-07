@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\sample\Sample.WebApi\Sample.WebApi.csproj"/>
+    <ProjectReference Include="..\Fixture.TestApi\Fixture.TestApi.csproj"/>
   </ItemGroup>
 
 </Project>
