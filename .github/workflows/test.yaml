@@ -1,15 +1,16 @@
-name: Testing
+name: Test
 
 on:
   workflow_call:
 
 jobs:
-  testing:
+  dotnet:
     strategy:
       matrix:
         configuration: [Debug, Release]
         os: [ubuntu-22.04, windows-2022, macos-12]
     runs-on: ${{ matrix.os }}
+    name: Testing on ${{ matrix.os }} (${{ matrix.configuration }})
     steps:
       - name: Checking out the repository
         uses: actions/checkout@v3.3.0
