@@ -1,0 +1,28 @@
+name: Test
+
+on:
+  workflow_call:
+
+jobs:
+  dotnet:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        os: [ubuntu-22.04, windows-2022, macos-12]
+    runs-on: ${{ matrix.os }}
+    name: Testing on ${{ matrix.os }} (${{ matrix.configuration }})
+    steps:
+      - name: Checking out the repository
+        uses: actions/checkout@v3.3.0
+
+      - name: Setting up dotnet
+        uses: actions/setup-dotnet@v3.0.3
+
+      - name: Installing dependencies
+        run: dotnet restore
+
+      - name: Building the project
+        run: dotnet build --configuration ${{ matrix.configuration }} --no-restore
+
+      - name: Running tests
+        run: dotnet test --no-restore

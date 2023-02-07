@@ -1,0 +1,21 @@
+name: Main
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+  release:
+    types:
+      - "published"
+
+jobs:
+  test:
+    uses: ./.github/workflows/test.yaml
+
+  publish:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs:
+      - test
+    uses: ./.github/workflows/publish.yaml
+    secrets: inherit
