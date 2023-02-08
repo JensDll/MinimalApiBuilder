@@ -3,14 +3,15 @@ param (
   [Parameter(Mandatory)]
   [string]$Version,
   [switch]$Unzip,
+  [ValidateSet("Debug", "Release")]
   [string]$Configuration = "Release"
 )
 
-$solutionFile = Join-Path $PSScriptRoot ".." "MinimalApiBuilder.Build.slnf"
+$solutionFile = Join-Path $PSScriptRoot ".." "MinimalApiBuilder.src.slnf"
 $outputPath = Join-Path $PSScriptRoot ".." "artifacts"
 
 dotnet pack $solutionFile --no-restore `
-  --output $outputPath -p:Version=$Version `
+  --output $outputPath -property:Version=$Version `
   --configuration $Configuration
 
 if (-not (Test-Path "$outputPath")) {

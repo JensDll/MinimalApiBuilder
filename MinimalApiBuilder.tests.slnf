@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "MinimalApiBuilder.sln",
+    "projects": [
+      "tests\\Fixture.TestApi\\Fixture.TestApi.csproj",
+      "tests\\MinimalApiBuilder.IntegrationTest\\MinimalApiBuilder.IntegrationTest.csproj"
+    ]
+  }
+}

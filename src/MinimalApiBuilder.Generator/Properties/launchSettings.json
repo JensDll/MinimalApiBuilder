@@ -3,7 +3,7 @@
   "profiles": {
     "Generator": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\..\\sample\\Sample.WebApi\\Sample.WebApi.csproj"
+      "targetProject": "..\\..\\tests\\Fixture.TestApi\\Fixture.TestApi.csproj"
     }
   }
 }

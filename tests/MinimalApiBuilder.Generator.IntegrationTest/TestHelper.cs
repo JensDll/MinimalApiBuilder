@@ -10,14 +10,12 @@ public static class TestHelper
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
 
         CSharpCompilation compilation = CSharpCompilation.Create(
-            assemblyName: "Tests",
+            assemblyName: "MinimalApiBuilderGeneratorTests",
             syntaxTrees: new[] { syntaxTree });
 
         MinimalApiBuilderGenerator generator = new();
 
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-
-        driver = driver.RunGenerators(compilation);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator).RunGenerators(compilation);
 
         return Verifier
             .Verify(driver)

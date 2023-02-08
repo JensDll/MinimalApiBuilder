@@ -22,11 +22,12 @@ jobs:
       - name: Setting up dotnet
         uses: actions/setup-dotnet@v3.0.3
 
-      - name: Installing dependencies
+      - name: Restoring the solution
         run: dotnet restore
 
-      - name: Packing NuGet package
-        run: pwsh ./script/pack.ps1 -Version '${{ github.event.release.tag_name }}' -Configuration Release
+      - name: Creating NuGet packages
+        shell: pwsh
+        run: ./script/pack.ps1 -Version '${{ github.event.release.tag_name }}' -Configuration Release
 
-      - name: Publishing NuGet package
+      - name: Publishing NuGet packages
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
