@@ -1,19 +1,19 @@
 ﻿using FluentValidation;
 using MinimalApiBuilder;
 
-namespace Sample.WebApi.Features.Validation.Async;
+namespace Fixture.TestApi.Features.Validation.Asynchronous;
 
-public class AsyncValidationRequest
+public class Request
 {
     public required string Foo { get; init; }
 }
 
-public record struct AsyncValidationParameters(int Bar);
+public record struct Parameters(int Bar);
 
 [RegisterValidator(ServiceLifetime.Transient)]
-public class AsyncValidationRequestValidator : AbstractValidator<AsyncValidationRequest>
+public class RequestValidator : AbstractValidator<Request>
 {
-    public AsyncValidationRequestValidator()
+    public RequestValidator()
     {
         RuleFor(static request => request.Foo)
             .MustAsync(static async (foo, cancellationToken) =>
@@ -24,9 +24,9 @@ public class AsyncValidationRequestValidator : AbstractValidator<AsyncValidation
     }
 }
 
-public class AsyncValidationParametersValidator : AbstractValidator<AsyncValidationParameters>
+public class ParametersValidator : AbstractValidator<Parameters>
 {
-    public AsyncValidationParametersValidator()
+    public ParametersValidator()
     {
         RuleFor(static request => request.Bar)
             .MustAsync(static async (bar, cancellationToken) =>

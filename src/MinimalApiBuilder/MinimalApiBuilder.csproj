@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <Target Name="PackGenerator" BeforeTargets="Build">
-    <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="true"
+    <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="false"
       Condition="'%(Name)'=='Generator'">
       <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies"/>
     </MSBuild>
@@ -47,5 +47,9 @@
       <None Include="$(CopiedFiles)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
     </ItemGroup>
   </Target>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="MinimalApiBuilder.Generator.IntegrationTest"/>
+  </ItemGroup>
 
 </Project>
