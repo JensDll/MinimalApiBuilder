@@ -12,6 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       MINIMALAPIBUILDER_TEST_TYPE: Local
+    name: Local version on ${{ matrix.os }} (${{ matrix.configuration }})
     steps:
       - name: Checking out the repository
         uses: actions/checkout@v3.3.0
@@ -22,7 +23,7 @@ jobs:
       - name: Restoring the solution
         run: dotnet restore
 
-      - name: Building the project
+      - name: Building the solution
         run: dotnet build --no-restore --configuration ${{ matrix.configuration }}
 
       - name: Running tests
@@ -37,6 +38,7 @@ jobs:
     env:
       MINIMALAPIBUILDER_TEST_TYPE: Published
       MINIMALAPIBUILDER_VERSION: 1.0.0-ci-published
+    name: Published version on ${{ matrix.os }} (${{ matrix.configuration }})
     steps:
       - name: Checking out the repository
         uses: actions/checkout@v3.3.0
