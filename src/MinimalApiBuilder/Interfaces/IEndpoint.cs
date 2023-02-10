@@ -1,14 +1,13 @@
-﻿// ReSharper disable InconsistentNaming
-
-using FluentValidation.Results;
+﻿using FluentValidation.Results;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MinimalApiBuilder;
 
 public interface IEndpoint
 {
 #pragma warning disable IDE1006 // Naming Styles
+    // ReSharper disable once InconsistentNaming
     public static abstract Delegate _auto_generated_Handler { get; }
 
     public static abstract void _auto_generated_Configure(RouteHandlerBuilder builder);
@@ -16,7 +15,7 @@ public interface IEndpoint
 
     public static abstract void Configure(RouteHandlerBuilder builder);
 
-    public static IResult GetErrorResult(MinimalApiBuilderEndpoint endpoint, ValidationResult result)
+    public static BadRequest<ErrorDto> GetErrorResult(MinimalApiBuilderEndpoint endpoint, ValidationResult result)
     {
         foreach (ValidationFailure failure in result.Errors)
         {
@@ -26,7 +25,8 @@ public interface IEndpoint
         return ErrorResult(endpoint);
     }
 
-    public static IResult GetErrorResult(MinimalApiBuilderEndpoint endpoint, params ValidationResult[] results)
+    public static BadRequest<ErrorDto> GetErrorResult(MinimalApiBuilderEndpoint endpoint,
+        params ValidationResult[] results)
     {
         foreach (ValidationResult result in results)
         {
@@ -39,6 +39,6 @@ public interface IEndpoint
         return ErrorResult(endpoint);
     }
 
-    public static IResult ErrorResult(MinimalApiBuilderEndpoint endpoint) =>
+    public static BadRequest<ErrorDto> ErrorResult(MinimalApiBuilderEndpoint endpoint) =>
         endpoint.ErrorResult("Validation failed");
 }

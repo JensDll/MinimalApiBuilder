@@ -2,7 +2,7 @@
 
 public abstract partial class MinimalApiBuilderEndpoint
 {
-    internal List<string> ValidationErrors { get; } = new();
+    protected internal List<string> ValidationErrors { get; } = new();
 
     protected bool HasValidationError => ValidationErrors.Count > 0;
 
