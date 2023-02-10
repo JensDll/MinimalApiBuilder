@@ -7,7 +7,6 @@
     <RepositoryUrl>https://github.com/JensDll/MinimalApiBuilder</RepositoryUrl>
     <RespositoryType>git</RespositoryType>
     <Copyright>Copyright (c) 2022 Jens Döllmann</Copyright>
-    <!-- <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression> -->
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>

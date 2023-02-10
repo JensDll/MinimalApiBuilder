@@ -17,14 +17,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
-    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+    <None Include="..\..\LICENSE.txt" Pack="true" PackagePath="\"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.4.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All" />
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="FluentValidation" Version="11.4.0"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All"/>
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
 
   <ItemGroup>
@@ -36,18 +36,14 @@
 
   <Target Name="PackGenerator" BeforeTargets="Build">
     <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="false" Condition="'%(Name)'=='Generator'">
-      <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies" />
+      <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies"/>
     </MSBuild>
     <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true">
-      <Output TaskParameter="CopiedFiles" PropertyName="CopiedFiles" />
+      <Output TaskParameter="CopiedFiles" PropertyName="CopiedFiles"/>
     </Copy>
     <ItemGroup>
-      <None Include="$(CopiedFiles)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+      <None Include="$(CopiedFiles)" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
     </ItemGroup>
   </Target>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="MinimalApiBuilder.Generator.IntegrationTest" />
-  </ItemGroup>
 
 </Project>

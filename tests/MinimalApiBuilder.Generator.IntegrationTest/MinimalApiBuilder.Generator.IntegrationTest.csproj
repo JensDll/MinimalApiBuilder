@@ -23,8 +23,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(MINIMALAPIBUILDER_TEST_TYPE)' == 'Local'">
-    <ProjectReference
-      Include="..\..\src\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj"/>
+    <ProjectReference Include="..\..\src\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj"/>
   </ItemGroup>
 
 </Project>

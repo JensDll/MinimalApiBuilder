@@ -27,7 +27,7 @@ jobs:
 
       - name: Creating NuGet packages
         shell: pwsh
-        run: ./script/pack.ps1 -Version '${{ github.event.release.tag_name }}' -Configuration Release
+        run: ./scripts/pack.ps1 -Version '${{ github.event.release.tag_name }}' -Configuration Release
 
       - name: Publishing NuGet packages
         run: dotnet nuget push ./artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
