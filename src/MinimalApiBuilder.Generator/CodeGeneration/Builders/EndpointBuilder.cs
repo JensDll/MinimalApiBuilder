@@ -8,7 +8,10 @@ internal class EndpointBuilder : SourceBuilder
     private readonly IReadOnlyDictionary<string, ValidatorToGenerate> _validators;
 
     public EndpointBuilder(IReadOnlyDictionary<string, ValidatorToGenerate> validators)
-        : base("MinimalApiBuilder", "FluentValidation", "FluentValidation.Results")
+        : base("Microsoft.AspNetCore.Builder",
+            "MinimalApiBuilder",
+            "FluentValidation",
+            "FluentValidation.Results")
     {
         _validators = validators;
     }

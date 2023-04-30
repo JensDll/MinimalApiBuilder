@@ -22,8 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.4.0"/>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.*" PrivateAssets="All"/>
+    <PackageReference Include="FluentValidation" Version="11.5.2"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All"/>
     <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
 
@@ -35,10 +35,15 @@
   </ItemGroup>
 
   <Target Name="PackGenerator" BeforeTargets="Build">
-    <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="false" Condition="'%(Name)'=='Generator'">
+    <MSBuild Projects="@(ProjectReference)"
+             Targets="Build"
+             BuildInParallel="false"
+             Condition="'%(Name)'=='Generator'">
       <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies"/>
     </MSBuild>
-    <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true">
+    <Copy SourceFiles="@(OutputAssemblies)"
+          DestinationFolder="$(OutputPath)"
+          SkipUnchangedFiles="true">
       <Output TaskParameter="CopiedFiles" PropertyName="CopiedFiles"/>
     </Copy>
     <ItemGroup>

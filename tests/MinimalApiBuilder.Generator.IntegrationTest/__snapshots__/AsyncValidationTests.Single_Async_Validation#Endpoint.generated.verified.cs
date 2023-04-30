@@ -5,6 +5,7 @@
 // This is a MinimalApiBuilder source generated generated file.
 // </auto-generated>
 
+using Microsoft.AspNetCore.Builder;
 using MinimalApiBuilder;
 using FluentValidation;
 using FluentValidation.Results;
