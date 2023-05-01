@@ -3,7 +3,10 @@
   "profiles": {
     "Generator": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\..\\tests\\Fixture.TestApi\\Fixture.TestApi.csproj"
+      "targetProject": "..\\..\\tests\\Fixture.TestApi\\Fixture.TestApi.csproj",
+      "environmentVariables": {
+        "MINIMALAPIBUILDER_TEST_TYPE": "Local"
+      }
     }
   }
 }

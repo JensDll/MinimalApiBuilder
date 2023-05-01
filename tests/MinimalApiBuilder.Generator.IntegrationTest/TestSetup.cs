@@ -6,6 +6,6 @@ internal class TestContext
     [OneTimeSetUp]
     public void RunBeforeAnyTests()
     {
-        VerifySourceGenerators.Enable();
+        VerifySourceGenerators.Initialize();
     }
 }
