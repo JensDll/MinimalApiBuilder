@@ -5,34 +5,47 @@ namespace MinimalApiBuilder;
 
 public static class MinimalApiBuilderExtensions
 {
-    public static RouteHandlerBuilder MapGet<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+    public static RouteHandlerBuilder Map<TEndpoint>(this IEndpointRouteBuilder endpoints, string pattern)
         where TEndpoint : IEndpoint
     {
-        return app.MapGet(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
+        return endpoints.Map(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
     }
 
-    public static RouteHandlerBuilder MapPost<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+    public static RouteHandlerBuilder MapMethods<TEndpoint>(this IEndpointRouteBuilder endpoints,
+        string pattern, IEnumerable<string> httpMethods)
         where TEndpoint : IEndpoint
     {
-        return app.MapPost(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
+        return endpoints.MapMethods(pattern, httpMethods, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
     }
 
-    public static RouteHandlerBuilder MapPut<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+    public static RouteHandlerBuilder MapGet<TEndpoint>(this IEndpointRouteBuilder endpoints, string pattern)
         where TEndpoint : IEndpoint
     {
-        return app.MapPut(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
+        return endpoints.MapGet(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
     }
 
-    public static RouteHandlerBuilder MapPatch<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+    public static RouteHandlerBuilder MapPost<TEndpoint>(this IEndpointRouteBuilder endpoints, string pattern)
         where TEndpoint : IEndpoint
     {
-        return app.MapPatch(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
+        return endpoints.MapPost(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
     }
 
-    public static RouteHandlerBuilder MapDelete<TEndpoint>(this IEndpointRouteBuilder app, string pattern)
+    public static RouteHandlerBuilder MapPut<TEndpoint>(this IEndpointRouteBuilder endpoints, string pattern)
         where TEndpoint : IEndpoint
     {
-        return app.MapDelete(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
+        return endpoints.MapPut(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
+    }
+
+    public static RouteHandlerBuilder MapPatch<TEndpoint>(this IEndpointRouteBuilder endpoints, string pattern)
+        where TEndpoint : IEndpoint
+    {
+        return endpoints.MapPatch(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
+    }
+
+    public static RouteHandlerBuilder MapDelete<TEndpoint>(this IEndpointRouteBuilder endpoints, string pattern)
+        where TEndpoint : IEndpoint
+    {
+        return endpoints.MapDelete(pattern, TEndpoint._auto_generated_Handler).Configure<TEndpoint>();
     }
 
     private static RouteHandlerBuilder Configure<TEndpoint>(this RouteHandlerBuilder builder)
