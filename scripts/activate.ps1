@@ -1,0 +1,1 @@
+﻿$env:MINIMALAPIBUILDER_TEST_TYPE = 'Local'

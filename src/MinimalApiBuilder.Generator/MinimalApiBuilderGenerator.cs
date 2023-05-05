@@ -20,19 +20,37 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
         IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedValidatorDeclarations =
             validatorDeclarations.Collect();
 
+        var options = context.AnalyzerConfigOptionsProvider.Select(static (provider, _) =>
+        {
+            provider.GlobalOptions.TryGetValue("build_property.MinimalApiBuilder_AssignNameToEndpoint",
+                out string? value);
+            return value;
+        });
+
         var source =
-            context.CompilationProvider.Combine(collectedEndpointDeclarations.Combine(collectedValidatorDeclarations));
+            context.CompilationProvider
+                .Combine(collectedEndpointDeclarations.Combine(collectedValidatorDeclarations))
+                .Combine(options);
 
         context.RegisterSourceOutput(source, static (sourceProductionContext, source) =>
-            Execute(source.Left, source.Right.Left,
-                source.Right.Right, sourceProductionContext));
+            {
+                Execute(source.Left.Left, source.Left.Right.Left,
+                    source.Left.Right.Right, source.Right, sourceProductionContext);
+            }
+        );
     }
 
     private static void Execute(Compilation compilation,
         ImmutableArray<ClassDeclarationSyntax> endpointDeclarations,
         ImmutableArray<ClassDeclarationSyntax> validatorDeclarations,
+        string? option,
         SourceProductionContext context)
     {
+        if (option is null)
+        {
+            throw new ArgumentNullException(nameof(option), "FAILED");
+        }
+
         IEnumerable<EndpointToGenerate> endpoints =
             EndpointToGenerate.Collect(compilation, endpointDeclarations, context.CancellationToken);
 
