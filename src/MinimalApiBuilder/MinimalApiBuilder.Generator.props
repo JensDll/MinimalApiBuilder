@@ -1,5 +1,0 @@
-<Project>
-  <ItemGroup>
-    <CompilerVisibleProperty Include="MinimalApiBuilder_AssignNameToEndpoint"/>
-  </ItemGroup>
-</Project>
