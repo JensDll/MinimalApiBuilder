@@ -2,8 +2,8 @@
 
 public class BasicTests
 {
-    [TestCase]
-    public Task Single_Endpoint_No_Parameters()
+    [TestCaseSource(typeof(TestAnalyzerConfigOptionsProvider), nameof(TestAnalyzerConfigOptionsProvider.TestCases))]
+    public Task Single_Endpoint_No_Parameters(TestAnalyzerConfigOptionsProvider provider)
     {
         const string source = @"
 using MinimalApiBuilder;
@@ -20,11 +20,11 @@ public partial class Endpoint1 : MinimalApiBuilderEndpoint
     public static void Configure(RouteHandlerBuilder builder) { }
 }";
 
-        return TestHelper.Verify(source);
+        return TestHelper.Verify(source, provider);
     }
 
-    [TestCase]
-    public Task Multiple_Endpoints_No_Parameters()
+    [TestCaseSource(typeof(TestAnalyzerConfigOptionsProvider), nameof(TestAnalyzerConfigOptionsProvider.TestCases))]
+    public Task Multiple_Endpoints_No_Parameters(TestAnalyzerConfigOptionsProvider provider)
     {
         const string source = @"
 using MinimalApiBuilder;
@@ -51,6 +51,6 @@ public partial class Endpoint2 : MinimalApiBuilderEndpoint
     public static void Configure(RouteHandlerBuilder builder) { }
 }";
 
-        return TestHelper.Verify(source);
+        return TestHelper.Verify(source, provider);
     }
 }

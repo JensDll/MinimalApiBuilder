@@ -1,5 +1,4 @@
 ﻿using MinimalApiBuilder;
-using Fixture.TestApi.Features.Validation;
 
 namespace Fixture.TestApi.Features.Validation.Combination;
 

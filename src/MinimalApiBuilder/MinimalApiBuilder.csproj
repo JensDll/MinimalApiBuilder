@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project=".\MinimalApiBuilder.props"/>
+
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -43,8 +45,6 @@
              Condition="'%(Name)' == 'Generator'">
       <Output TaskParameter="TargetOutputs" ItemName="OutputAssemblies"/>
     </MSBuild>
-
-    <Message Importance="High" Text="Output @(OutputAssemblies)"/>
 
     <Copy SourceFiles="@(OutputAssemblies)" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true">
       <Output TaskParameter="CopiedFiles" PropertyName="CopiedFiles"/>

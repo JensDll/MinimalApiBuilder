@@ -20,22 +20,23 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
         IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedValidatorDeclarations =
             validatorDeclarations.Collect();
 
-        var options = context.AnalyzerConfigOptionsProvider.Select(static (provider, _) =>
-        {
-            provider.GlobalOptions.TryGetValue("build_property.MinimalApiBuilder_AssignNameToEndpoint",
-                out string? value);
-            return value;
-        });
+        IncrementalValueProvider<GeneratorOptions> options = context.ForGeneratorOptions();
 
-        var source =
-            context.CompilationProvider
-                .Combine(collectedEndpointDeclarations.Combine(collectedValidatorDeclarations))
-                .Combine(options);
+        var declarations =
+            collectedEndpointDeclarations.Combine(collectedValidatorDeclarations);
+
+        var source = context.CompilationProvider
+            .Combine(declarations)
+            .Combine(options);
 
         context.RegisterSourceOutput(source, static (sourceProductionContext, source) =>
             {
-                Execute(source.Left.Left, source.Left.Right.Left,
-                    source.Left.Right.Right, source.Right, sourceProductionContext);
+                var compilation = source.Left.Left;
+                var (endpoints, validators) = source.Left.Right;
+                var options = source.Right;
+
+                Execute(compilation, endpoints,
+                    validators, options, sourceProductionContext);
             }
         );
     }
@@ -43,30 +44,26 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
     private static void Execute(Compilation compilation,
         ImmutableArray<ClassDeclarationSyntax> endpointDeclarations,
         ImmutableArray<ClassDeclarationSyntax> validatorDeclarations,
-        string? option,
+        GeneratorOptions options,
         SourceProductionContext context)
     {
-        if (option is null)
-        {
-            throw new ArgumentNullException(nameof(option), "FAILED");
-        }
-
         IEnumerable<EndpointToGenerate> endpoints =
             EndpointToGenerate.Collect(compilation, endpointDeclarations, context.CancellationToken);
 
         IReadOnlyDictionary<string, ValidatorToGenerate> validators =
             ValidatorToGenerate.Collect(compilation, validatorDeclarations, context.CancellationToken);
 
-        AddSource(endpoints, validators, context);
+        AddSource(endpoints, validators, options, context);
     }
 
     private static void AddSource(
         IEnumerable<EndpointToGenerate> endpoints,
         IReadOnlyDictionary<string, ValidatorToGenerate> validators,
+        GeneratorOptions options,
         SourceProductionContext context)
     {
-        EndpointBuilder endpointBuilder = new(validators);
-        DependencyInjectionBuilder dependencyInjectionBuilder = new();
+        EndpointBuilder endpointBuilder = new(options, validators);
+        DependencyInjectionBuilder dependencyInjectionBuilder = new(options);
 
         foreach (EndpointToGenerate endpoint in endpoints)
         {

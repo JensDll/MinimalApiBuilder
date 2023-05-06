@@ -1,5 +1,5 @@
 <Project>
   <ItemGroup>
-    <CompilerVisibleProperty Include="MinimalApiBuilder_AssignNameToEndpoint"/>
+    <CompilerVisibleProperty Include="minimalapibuilder_assign_name_to_endpoint"/>
   </ItemGroup>
 </Project>

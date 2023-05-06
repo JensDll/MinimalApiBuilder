@@ -9,7 +9,7 @@ internal class DependencyInjectionBuilder : SourceBuilder
     private readonly IDisposable _classDisposable;
     private readonly IDisposable _methodDisposable;
 
-    public DependencyInjectionBuilder() : base("FluentValidation",
+    public DependencyInjectionBuilder(GeneratorOptions options) : base(options, "FluentValidation",
         "Microsoft.Extensions.DependencyInjection")
     {
         _namespaceDisposable = OpenBlock("namespace MinimalApiBuilder");

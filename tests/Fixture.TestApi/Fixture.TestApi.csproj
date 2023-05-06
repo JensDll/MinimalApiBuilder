@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <MinimalApiBuilder_AssignNameToEndpoint>true</MinimalApiBuilder_AssignNameToEndpoint>
+    <minimalapibuilder_assign_name_to_endpoint>true</minimalapibuilder_assign_name_to_endpoint>
   </PropertyGroup>
 
   <ItemGroup>
