@@ -9,7 +9,8 @@ internal class GeneratorOptions
     public GeneratorOptions(AnalyzerConfigOptionsProvider optionsProvider)
     {
         if (optionsProvider.GlobalOptions.TryGetValue("build_property." + Keys.AssignNameToEndpoint,
-                out string? assignNameToEndpoint))
+                out string? assignNameToEndpoint) ||
+            optionsProvider.GlobalOptions.TryGetValue(Keys.AssignNameToEndpoint, out assignNameToEndpoint))
         {
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
