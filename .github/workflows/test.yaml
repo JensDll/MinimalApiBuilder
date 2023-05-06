@@ -6,7 +6,6 @@ on:
 jobs:
   local:
     strategy:
-      fail-fast: false
       matrix:
         configuration: [Debug, Release]
         os: [ubuntu-22.04, windows-2022, macos-12]

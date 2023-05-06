@@ -14,11 +14,6 @@ internal class GeneratorOptions
         {
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
-
-        if (AssignNameToEndpoint)
-        {
-            throw new InvalidOperationException("AssignNameToEndpoint is true");
-        }
     }
 
     internal class Keys
