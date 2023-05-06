@@ -14,9 +14,10 @@ internal class GeneratorOptions
         {
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
-        else
+
+        if (AssignNameToEndpoint)
         {
-            throw new InvalidOperationException("Failed to find global option");
+            throw new InvalidOperationException("AssignNameToEndpoint is true");
         }
     }
 
