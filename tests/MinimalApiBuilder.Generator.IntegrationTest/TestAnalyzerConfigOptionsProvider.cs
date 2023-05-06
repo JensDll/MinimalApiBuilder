@@ -9,7 +9,7 @@ public class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
     private TestAnalyzerConfigOptionsProvider(AnalyzerConfigOptions globalOptions, string snapshotFolder)
     {
         GlobalOptions = globalOptions;
-        SnapshotFolder = $"__snapshots__\\{snapshotFolder}";
+        SnapshotFolder = Path.Join("__snapshots__", snapshotFolder);
     }
 
     public string SnapshotFolder { get; }
