@@ -1,7 +1,6 @@
 <Project>
 
   <PropertyGroup>
-    <VersionSuffix></VersionSuffix>
     <Authors>Jens Döllmann</Authors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RepositoryUrl>https://github.com/JensDll/MinimalApiBuilder</RepositoryUrl>
@@ -15,7 +14,7 @@
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+  <PropertyGroup Condition="'$(CI)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 

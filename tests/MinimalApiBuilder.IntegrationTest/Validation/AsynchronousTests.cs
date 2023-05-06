@@ -26,8 +26,7 @@ public class AsyncValidationTests
     }
 
     [TestCaseSource(nameof(_invalidMultiple))]
-    public async Task Multiple_Parameters_Validation_With_Invalid_Request(Request request,
-        Parameters parameters)
+    public async Task Multiple_Parameters_Validation_With_Invalid_Request(Request request, Parameters parameters)
     {
         HttpResponseMessage response = await TestSetup.Client
             .PatchAsJsonAsync($"/validation/async/multiple?bar={parameters.Bar}", request);
@@ -36,8 +35,7 @@ public class AsyncValidationTests
     }
 
     [TestCaseSource(nameof(_validMultiple))]
-    public async Task Multiple_Parameters_Validation_With_Valid_Request(Request request,
-        Parameters parameters)
+    public async Task Multiple_Parameters_Validation_With_Valid_Request(Request request, Parameters parameters)
     {
         HttpResponseMessage response = await TestSetup.Client
             .PatchAsJsonAsync($"/validation/async/multiple?bar={parameters.Bar}", request);

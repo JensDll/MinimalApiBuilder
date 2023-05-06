@@ -1,9 +1,9 @@
-﻿namespace MinimalApiBuilder.Generator.IntegrationTest.Validation;
+﻿namespace MinimalApiBuilder.Generator.IntegrationTest;
 
 public class CombinedValidationTests
 {
-    [TestCase]
-    public Task Single_Combined_Validation()
+    [TestCaseSource(typeof(TestAnalyzerConfigOptionsProvider), nameof(TestAnalyzerConfigOptionsProvider.TestCases))]
+    public Task Single_Combined_Validation(TestAnalyzerConfigOptionsProvider provider)
     {
         const string source = @"
 using MinimalApiBuilder;
@@ -52,6 +52,6 @@ public class AsyncValidator : AbstractValidator<Parameters>
 }
 ";
 
-        return TestHelper.Verify(source);
+        return TestHelper.Verify(source, provider);
     }
 }

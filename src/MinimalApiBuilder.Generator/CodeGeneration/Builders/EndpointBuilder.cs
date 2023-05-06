@@ -7,8 +7,8 @@ internal class EndpointBuilder : SourceBuilder
 {
     private readonly IReadOnlyDictionary<string, ValidatorToGenerate> _validators;
 
-    public EndpointBuilder(IReadOnlyDictionary<string, ValidatorToGenerate> validators)
-        : base("Microsoft.AspNetCore.Builder",
+    public EndpointBuilder(GeneratorOptions options, IReadOnlyDictionary<string, ValidatorToGenerate> validators) :
+        base(options, "Microsoft.AspNetCore.Builder",
             "MinimalApiBuilder",
             "FluentValidation",
             "FluentValidation.Results")
@@ -28,6 +28,11 @@ internal class EndpointBuilder : SourceBuilder
         {
             AddProperties(endpoint);
             AddConfigure(endpoint);
+
+            if (Options.AssignNameToEndpoint)
+            {
+                AppendLine($"private const string Name = \"{endpoint}\";");
+            }
         }
     }
 
@@ -40,6 +45,11 @@ internal class EndpointBuilder : SourceBuilder
     {
         using (OpenBlock("public static void _auto_generated_Configure(RouteHandlerBuilder builder)"))
         {
+            if (Options.AssignNameToEndpoint)
+            {
+                AppendLine("builder.WithName(Name);");
+            }
+
             AddValidation(endpoint);
         }
     }

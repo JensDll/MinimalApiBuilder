@@ -5,23 +5,24 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <minimalapibuilder_assign_name_to_endpoint>true</minimalapibuilder_assign_name_to_endpoint>
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="MinimalApiBuilder.IntegrationTest"/>
+    <InternalsVisibleTo Include="MinimalApiBuilder.IntegrationTest" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5"/>
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0"/>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
-    <PackageReference Condition="'$(MINIMALAPIBUILDER_TEST_TYPE)' == 'Published'" Include="MinimalApiBuilder" Version="$(MINIMALAPIBUILDER_VERSION)"/>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Condition="'$(MINIMALAPIBUILDER_TEST_TYPE)' == 'Published'" Include="MinimalApiBuilder" Version="$(MINIMALAPIBUILDER_VERSION)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(MINIMALAPIBUILDER_TEST_TYPE)' == 'Local'">
-    <ProjectReference Include="..\..\src\MinimalApiBuilder\MinimalApiBuilder.csproj"/>
-    <ProjectReference Include="..\..\src\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    <ProjectReference Include="..\..\src\MinimalApiBuilder\MinimalApiBuilder.csproj" />
+    <ProjectReference Include="..\..\src\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

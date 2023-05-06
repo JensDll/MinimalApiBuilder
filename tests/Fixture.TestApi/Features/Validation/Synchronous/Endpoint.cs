@@ -2,9 +2,9 @@
 
 namespace Fixture.TestApi.Features.Validation.Synchronous;
 
-public partial class EndpointSingle : MinimalApiBuilderEndpoint
+public partial class SingleEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(Request request, EndpointSingle endpoint)
+    private static IResult Handle(Request request, SingleEndpoint endpoint)
     {
         return Results.Ok();
     }
@@ -12,12 +12,12 @@ public partial class EndpointSingle : MinimalApiBuilderEndpoint
     public static void Configure(RouteHandlerBuilder builder) { }
 }
 
-public partial class EndpointMultiple : MinimalApiBuilderEndpoint
+public partial class SynchronousMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private static IResult Handle(
         Request request,
         [AsParameters] Parameters parameters,
-        EndpointMultiple endpoint)
+        SynchronousMultipleValidationEndpoint endpoint)
     {
         return Results.Ok();
     }

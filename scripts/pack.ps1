@@ -3,12 +3,12 @@ param (
   [Parameter(Mandatory)]
   [string]$Version,
   [switch]$Unzip,
-  [ValidateSet("Debug", "Release")]
-  [string]$Configuration = "Release"
+  [ValidateSet('Debug', 'Release')]
+  [string]$Configuration = 'Release'
 )
 
-$solutionFile = Join-Path $PSScriptRoot ".." "MinimalApiBuilder.src.slnf"
-$outputPath = Join-Path $PSScriptRoot ".." "artifacts"
+$solutionFile = Join-Path $PSScriptRoot '..' 'MinimalApiBuilder.src.slnf'
+$outputPath = Join-Path $PSScriptRoot '..' 'artifacts'
 
 dotnet pack $solutionFile --no-restore `
   --output $outputPath -property:Version=$Version `
@@ -25,9 +25,9 @@ if (-not $Unzip) {
 Get-ChildItem $outputPath -Directory | Remove-Item -Recurse -Force
 
 foreach ($file in Get-ChildItem $outputPath) {
-  if ($file.Name -like "*.nupkg") {
+  if ($file.Name -like '*.nupkg') {
     $filePath = $file.FullName
-    $destinationPath = [regex]::Replace($filePath, "\.nupkg$", "")
+    $destinationPath = [regex]::Replace($filePath, '\.nupkg$', '')
     Expand-Archive -Path "$filePath" -DestinationPath "$destinationPath"
   }
 }

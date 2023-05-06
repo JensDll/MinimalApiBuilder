@@ -1,9 +1,9 @@
-﻿namespace MinimalApiBuilder.Generator.IntegrationTest.Validation;
+﻿namespace MinimalApiBuilder.Generator.IntegrationTest;
 
 public class SyncValidationTests
 {
-    [TestCase]
-    public Task Single_Sync_Validation()
+    [TestCaseSource(typeof(TestAnalyzerConfigOptionsProvider), nameof(TestAnalyzerConfigOptionsProvider.TestCases))]
+    public Task Single_Sync_Validation(TestAnalyzerConfigOptionsProvider provider)
     {
         const string source = @"
 using MinimalApiBuilder;
@@ -35,11 +35,11 @@ public class Validator : AbstractValidator<Request>
 }
 ";
 
-        return TestHelper.Verify(source);
+        return TestHelper.Verify(source, provider);
     }
 
-    [TestCase]
-    public Task Multiple_Sync_Validation()
+    [TestCaseSource(typeof(TestAnalyzerConfigOptionsProvider), nameof(TestAnalyzerConfigOptionsProvider.TestCases))]
+    public Task Multiple_Sync_Validation(TestAnalyzerConfigOptionsProvider provider)
     {
         const string source = @"
 using MinimalApiBuilder;
@@ -71,6 +71,6 @@ public class Validator : AbstractValidator<Request>
 }
 ";
 
-        return TestHelper.Verify(source);
+        return TestHelper.Verify(source, provider);
     }
 }

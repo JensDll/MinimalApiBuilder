@@ -1,7 +1,7 @@
 ﻿namespace MinimalApiBuilder.Generator.IntegrationTest;
 
 [SetUpFixture]
-internal class TestContext
+public class TestSetup
 {
     [OneTimeSetUp]
     public void RunBeforeAnyTests()
