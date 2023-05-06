@@ -19,6 +19,6 @@ namespace Features
         {
             builder.WithName(Name);
         }
-        private const string Name = nameof(Endpoint1);
+        private const string Name = "global::Features.Endpoint1";
     }
 }

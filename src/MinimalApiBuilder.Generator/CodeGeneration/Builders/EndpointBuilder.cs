@@ -31,7 +31,7 @@ internal class EndpointBuilder : SourceBuilder
 
             if (Options.AssignNameToEndpoint)
             {
-                AppendLine($"private const string Name = nameof({endpoint.ClassName});");
+                AppendLine($"private const string Name = \"{endpoint}\";");
             }
         }
     }

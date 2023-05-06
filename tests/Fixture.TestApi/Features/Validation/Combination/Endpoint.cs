@@ -2,11 +2,11 @@
 
 namespace Fixture.TestApi.Features.Validation.Combination;
 
-public partial class Endpoint : MinimalApiBuilderEndpoint
+public partial class CombinedValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private static IResult Handle(Asynchronous.Request request,
         [AsParameters] Synchronous.Parameters parameters,
-        Endpoint endpoint)
+        CombinedValidationEndpoint endpoint)
     {
         return Results.Ok();
     }

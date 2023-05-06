@@ -31,6 +31,6 @@ namespace Features
                 return result.IsValid ? await next(invocationContext) : IEndpoint.GetErrorResult(endpoint, result);
             });
         }
-        private const string Name = nameof(Endpoint1);
+        private const string Name = "global::Features.Endpoint1";
     }
 }

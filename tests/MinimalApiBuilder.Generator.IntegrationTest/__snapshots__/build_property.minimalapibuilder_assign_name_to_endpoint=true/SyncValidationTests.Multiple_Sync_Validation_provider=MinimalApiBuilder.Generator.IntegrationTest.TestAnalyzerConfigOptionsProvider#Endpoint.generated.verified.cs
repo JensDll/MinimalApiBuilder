@@ -25,6 +25,6 @@ namespace Features
                 return results.Any(static result => !result.IsValid) ? ValueTask.FromResult<object?>(IEndpoint.GetErrorResult(endpoint, results)) : next(invocationContext);
             });
         }
-        private const string Name = nameof(Endpoint1);
+        private const string Name = "global::Features.Endpoint1";
     }
 }
