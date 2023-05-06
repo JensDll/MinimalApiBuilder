@@ -4,7 +4,7 @@ namespace MinimalApiBuilder.Generator.Entities;
 
 internal class GeneratorOptions
 {
-    public bool AssignNameToEndpoint { get; } = true;
+    public bool AssignNameToEndpoint { get; }
 
     public GeneratorOptions(AnalyzerConfigOptionsProvider optionsProvider)
     {
