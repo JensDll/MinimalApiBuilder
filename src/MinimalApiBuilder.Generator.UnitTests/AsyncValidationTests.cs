@@ -9,6 +9,7 @@ public class AsyncValidationTests
     {
         const string source = @"
 using MinimalApiBuilder;
+using Microsoft.AspNetCore.Builder;
 using FluentValidation;
 
 namespace Features;
@@ -46,6 +47,7 @@ public class Validator : AbstractValidator<Request>
     {
         const string source = @"
 using MinimalApiBuilder;
+using Microsoft.AspNetCore.Builder;
 using FluentValidation;
 
 namespace Features;

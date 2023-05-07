@@ -52,6 +52,11 @@ internal class EndpointBuilder : SourceBuilder
 
             AddValidation(endpoint);
         }
+
+        if (endpoint.NeedsConfigure)
+        {
+            using IDisposable _ = OpenBlock("public static void Configure(RouteHandlerBuilder builder)");
+        }
     }
 
     private void AddValidation(EndpointToGenerate endpoint)

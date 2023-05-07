@@ -9,6 +9,7 @@ public class CombinedValidationTests
     {
         const string source = @"
 using MinimalApiBuilder;
+using Microsoft.AspNetCore.Builder;
 using FluentValidation;
 
 namespace Features;

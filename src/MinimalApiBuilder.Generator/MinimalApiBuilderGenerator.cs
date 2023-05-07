@@ -12,9 +12,7 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<ClassDeclarationSyntax> endpointDeclarations = context.ForEndpointDeclarations();
-        IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedEndpointDeclarations =
-            endpointDeclarations.Collect();
+        var endpoints = context.ForEndpointDeclarations().Collect();
 
         IncrementalValuesProvider<ClassDeclarationSyntax> validatorDeclarations = context.ForValidatorDeclarations();
         IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedValidatorDeclarations =
@@ -22,7 +20,7 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
 
         IncrementalValueProvider<GeneratorOptions> options = context.ForGeneratorOptions();
 
-        var declarations = collectedEndpointDeclarations.Combine(collectedValidatorDeclarations);
+        var declarations = endpoints.Combine(collectedValidatorDeclarations);
 
         var source = context.CompilationProvider
             .Combine(declarations)
@@ -41,13 +39,13 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
     }
 
     private static void Execute(Compilation compilation,
-        ImmutableArray<ClassDeclarationSyntax> endpointDeclarations,
+        ImmutableArray<EndpointToGenerate> endpoints,
         ImmutableArray<ClassDeclarationSyntax> validatorDeclarations,
         GeneratorOptions options,
         SourceProductionContext context)
     {
-        IEnumerable<EndpointToGenerate> endpoints =
-            EndpointToGenerate.Collect(compilation, endpointDeclarations, context.CancellationToken);
+        // IEnumerable<EndpointToGenerate> endpoints =
+        //     EndpointToGenerate.Collect(compilation, endpointDeclarations, context.CancellationToken);
 
         IReadOnlyDictionary<string, ValidatorToGenerate> validators =
             ValidatorToGenerate.Collect(compilation, validatorDeclarations, context.CancellationToken);
@@ -56,7 +54,7 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
     }
 
     private static void AddSource(
-        IEnumerable<EndpointToGenerate> endpoints,
+        ImmutableArray<EndpointToGenerate> endpoints,
         IReadOnlyDictionary<string, ValidatorToGenerate> validators,
         GeneratorOptions options,
         SourceProductionContext context)

@@ -9,6 +9,7 @@ public class BasicTests
     {
         const string source = @"
 using MinimalApiBuilder;
+using Microsoft.AspNetCore.Builder;
 
 namespace Features;
 
@@ -31,6 +32,7 @@ public partial class Endpoint1 : MinimalApiBuilderEndpoint
     {
         const string source = @"
 using MinimalApiBuilder;
+using Microsoft.AspNetCore.Builder;
 
 namespace Features;
 
@@ -52,6 +54,27 @@ public partial class Endpoint2 : MinimalApiBuilderEndpoint
     }
 
     public static void Configure(RouteHandlerBuilder builder) { }
+}";
+
+        return TestHelper.Verify(source, provider);
+    }
+
+    [Theory]
+    [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
+    public Task Without_Configure(TestAnalyzerConfigOptionsProvider provider)
+    {
+        const string source = @"
+using MinimalApiBuilder;
+using Microsoft.AspNetCore.Builder;
+
+namespace Features;
+
+public partial class Endpoint1 : MinimalApiBuilderEndpoint
+{
+    private static IResult Handle(Endpoint1 endpoint)
+    {
+        return Results.Ok();
+    }
 }";
 
         return TestHelper.Verify(source, provider);

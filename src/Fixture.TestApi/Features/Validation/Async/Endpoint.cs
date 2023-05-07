@@ -53,6 +53,4 @@ public partial class AsyncMultipleEndpoint : MinimalApiBuilderEndpoint
             nameof(AsyncMultipleEndpoint));
         return Task.FromResult(Results.Ok());
     }
-
-    public static void Configure(RouteHandlerBuilder builder) { }
 }

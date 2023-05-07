@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace MinimalApiBuilder.Generator.UnitTests;
@@ -8,11 +9,15 @@ public static class TestHelper
     public static async Task Verify(string source, TestAnalyzerConfigOptionsProvider provider)
     {
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
+
+        MetadataReference metadata = MetadataReference.CreateFromFile(typeof(RouteHandlerBuilder).Assembly.Location);
+
         CSharpCompilationOptions options = new(OutputKind.DynamicallyLinkedLibrary);
 
         CSharpCompilation compilation = CSharpCompilation.Create(
             assemblyName: "MinimalApiBuilderGeneratorTests",
             syntaxTrees: new[] { syntaxTree },
+            references: new[] { metadata },
             options: options);
 
         IIncrementalGenerator generator = new MinimalApiBuilderGenerator();
