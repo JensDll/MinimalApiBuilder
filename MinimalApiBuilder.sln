@@ -3,19 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{7AB7309B-531E-46F5-B032-B790CD5AC128}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2FBB266C-C825-4F2A-B34E-81251E6125F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder", "src\MinimalApiBuilder\MinimalApiBuilder.csproj", "{663475C7-B9DC-4A99-819A-D5C42438C87F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fixture.TestApi", "src\Fixture.TestApi\Fixture.TestApi.csproj", "{0F750D68-70DA-47B0-81C9-EB4190241E6D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.Generator", "src\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj", "{66DA2616-72C2-41B4-AE8C-481429CDC58A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder", "src\MinimalApiBuilder\MinimalApiBuilder.csproj", "{AEA928E5-EE79-46F7-BCF3-36621DF0CED4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{033DBBF1-2FAD-4D45-B5B3-1EB2DB81997B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.Generator", "src\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj", "{11A35F9E-E1D8-4AF4-A357-F56086B49CF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fixture.TestApi", "tests\Fixture.TestApi\Fixture.TestApi.csproj", "{2FF03BA4-1A49-476E-A1B7-D065E6D96D12}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.Generator.UnitTests", "src\MinimalApiBuilder.Generator.UnitTests\MinimalApiBuilder.Generator.UnitTests.csproj", "{3C68D9AB-7948-43AB-8B53-43ECB79BB776}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.Generator.IntegrationTest", "tests\MinimalApiBuilder.Generator.IntegrationTest\MinimalApiBuilder.Generator.IntegrationTest.csproj", "{C3D2B70E-C88D-4951-BB7F-622D38320018}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.IntegrationTest", "tests\MinimalApiBuilder.IntegrationTest\MinimalApiBuilder.IntegrationTest.csproj", "{25CADF9D-F1D3-4B79-8927-E785A4BDAAC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.IntegrationTests", "src\MinimalApiBuilder.IntegrationTests\MinimalApiBuilder.IntegrationTests.csproj", "{57FCAE29-8DD1-4FE3-B327-D84691D236E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,32 +24,32 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{663475C7-B9DC-4A99-819A-D5C42438C87F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{663475C7-B9DC-4A99-819A-D5C42438C87F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{663475C7-B9DC-4A99-819A-D5C42438C87F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{663475C7-B9DC-4A99-819A-D5C42438C87F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{66DA2616-72C2-41B4-AE8C-481429CDC58A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{66DA2616-72C2-41B4-AE8C-481429CDC58A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{66DA2616-72C2-41B4-AE8C-481429CDC58A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{66DA2616-72C2-41B4-AE8C-481429CDC58A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2FF03BA4-1A49-476E-A1B7-D065E6D96D12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2FF03BA4-1A49-476E-A1B7-D065E6D96D12}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2FF03BA4-1A49-476E-A1B7-D065E6D96D12}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2FF03BA4-1A49-476E-A1B7-D065E6D96D12}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C3D2B70E-C88D-4951-BB7F-622D38320018}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C3D2B70E-C88D-4951-BB7F-622D38320018}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C3D2B70E-C88D-4951-BB7F-622D38320018}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C3D2B70E-C88D-4951-BB7F-622D38320018}.Release|Any CPU.Build.0 = Release|Any CPU
-		{25CADF9D-F1D3-4B79-8927-E785A4BDAAC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{25CADF9D-F1D3-4B79-8927-E785A4BDAAC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{25CADF9D-F1D3-4B79-8927-E785A4BDAAC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{25CADF9D-F1D3-4B79-8927-E785A4BDAAC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F750D68-70DA-47B0-81C9-EB4190241E6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F750D68-70DA-47B0-81C9-EB4190241E6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F750D68-70DA-47B0-81C9-EB4190241E6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F750D68-70DA-47B0-81C9-EB4190241E6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEA928E5-EE79-46F7-BCF3-36621DF0CED4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEA928E5-EE79-46F7-BCF3-36621DF0CED4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEA928E5-EE79-46F7-BCF3-36621DF0CED4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEA928E5-EE79-46F7-BCF3-36621DF0CED4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A35F9E-E1D8-4AF4-A357-F56086B49CF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A35F9E-E1D8-4AF4-A357-F56086B49CF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A35F9E-E1D8-4AF4-A357-F56086B49CF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A35F9E-E1D8-4AF4-A357-F56086B49CF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C68D9AB-7948-43AB-8B53-43ECB79BB776}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C68D9AB-7948-43AB-8B53-43ECB79BB776}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C68D9AB-7948-43AB-8B53-43ECB79BB776}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C68D9AB-7948-43AB-8B53-43ECB79BB776}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57FCAE29-8DD1-4FE3-B327-D84691D236E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57FCAE29-8DD1-4FE3-B327-D84691D236E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57FCAE29-8DD1-4FE3-B327-D84691D236E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57FCAE29-8DD1-4FE3-B327-D84691D236E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{663475C7-B9DC-4A99-819A-D5C42438C87F} = {7AB7309B-531E-46F5-B032-B790CD5AC128}
-		{66DA2616-72C2-41B4-AE8C-481429CDC58A} = {7AB7309B-531E-46F5-B032-B790CD5AC128}
-		{2FF03BA4-1A49-476E-A1B7-D065E6D96D12} = {033DBBF1-2FAD-4D45-B5B3-1EB2DB81997B}
-		{C3D2B70E-C88D-4951-BB7F-622D38320018} = {033DBBF1-2FAD-4D45-B5B3-1EB2DB81997B}
-		{25CADF9D-F1D3-4B79-8927-E785A4BDAAC9} = {033DBBF1-2FAD-4D45-B5B3-1EB2DB81997B}
+		{0F750D68-70DA-47B0-81C9-EB4190241E6D} = {2FBB266C-C825-4F2A-B34E-81251E6125F2}
+		{AEA928E5-EE79-46F7-BCF3-36621DF0CED4} = {2FBB266C-C825-4F2A-B34E-81251E6125F2}
+		{11A35F9E-E1D8-4AF4-A357-F56086B49CF0} = {2FBB266C-C825-4F2A-B34E-81251E6125F2}
+		{3C68D9AB-7948-43AB-8B53-43ECB79BB776} = {2FBB266C-C825-4F2A-B34E-81251E6125F2}
+		{57FCAE29-8DD1-4FE3-B327-D84691D236E5} = {2FBB266C-C825-4F2A-B34E-81251E6125F2}
 	EndGlobalSection
 EndGlobal

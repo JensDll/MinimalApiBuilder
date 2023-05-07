@@ -22,8 +22,7 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
 
         IncrementalValueProvider<GeneratorOptions> options = context.ForGeneratorOptions();
 
-        var declarations =
-            collectedEndpointDeclarations.Combine(collectedValidatorDeclarations);
+        var declarations = collectedEndpointDeclarations.Combine(collectedValidatorDeclarations);
 
         var source = context.CompilationProvider
             .Combine(declarations)
