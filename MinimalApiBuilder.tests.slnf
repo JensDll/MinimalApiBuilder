@@ -3,7 +3,7 @@
     "path": "MinimalApiBuilder.sln",
     "projects": [
       "src\\Fixture.TestApi\\Fixture.TestApi.csproj",
-      "src\\MinimalApiBuilder.IntegrationTest\\MinimalApiBuilder.IntegrationTest.csproj"
+      "src\\MinimalApiBuilder.IntegrationTests\\MinimalApiBuilder.IntegrationTests.csproj"
     ]
   }
 }
