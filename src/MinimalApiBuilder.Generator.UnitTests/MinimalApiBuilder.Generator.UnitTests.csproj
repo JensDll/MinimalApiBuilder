@@ -33,5 +33,5 @@
     <ProjectReference Include="..\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj"/>
     <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
-  
+
 </Project>
