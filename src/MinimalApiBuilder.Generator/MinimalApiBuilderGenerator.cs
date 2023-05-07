@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MinimalApiBuilder.Generator.CodeGeneration.Builders;
 using MinimalApiBuilder.Generator.Entities;
 using MinimalApiBuilder.Generator.Providers;
@@ -8,49 +7,31 @@ using MinimalApiBuilder.Generator.Providers;
 namespace MinimalApiBuilder.Generator;
 
 [Generator(LanguageNames.CSharp)]
-internal class MinimalApiBuilderGenerator : IIncrementalGenerator
+internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var endpoints = context.ForEndpointDeclarations().Collect();
+        var endpoints = context.ForEndpoints().Collect();
+        var validators = context.ForValidators().Collect();
+        var options = context.ForGeneratorOptions();
 
-        IncrementalValuesProvider<ClassDeclarationSyntax> validatorDeclarations = context.ForValidatorDeclarations();
-        IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedValidatorDeclarations =
-            validatorDeclarations.Collect();
-
-        IncrementalValueProvider<GeneratorOptions> options = context.ForGeneratorOptions();
-
-        var declarations = endpoints.Combine(collectedValidatorDeclarations);
-
-        var source = context.CompilationProvider
-            .Combine(declarations)
+        var source = endpoints
+            .Combine(validators)
             .Combine(options);
 
         context.RegisterSourceOutput(source, static (sourceProductionContext, source) =>
-            {
-                var compilation = source.Left.Left;
-                var (endpoints, validators) = source.Left.Right;
-                var options = source.Right;
-
-                Execute(compilation, endpoints,
-                    validators, options, sourceProductionContext);
-            }
-        );
+            Execute(source.Left.Left, source.Left.Right, source.Right, sourceProductionContext));
     }
 
-    private static void Execute(Compilation compilation,
-        ImmutableArray<EndpointToGenerate> endpoints,
-        ImmutableArray<ClassDeclarationSyntax> validatorDeclarations,
+    private static void Execute(ImmutableArray<EndpointToGenerate> endpoints,
+        ImmutableArray<ValidatorToGenerate> validators,
         GeneratorOptions options,
         SourceProductionContext context)
     {
-        // IEnumerable<EndpointToGenerate> endpoints =
-        //     EndpointToGenerate.Collect(compilation, endpointDeclarations, context.CancellationToken);
+        IReadOnlyDictionary<string, ValidatorToGenerate> validatorsByValidatedType =
+            validators.ToDictionary(validator => validator.ValidatedType);
 
-        IReadOnlyDictionary<string, ValidatorToGenerate> validators =
-            ValidatorToGenerate.Collect(compilation, validatorDeclarations, context.CancellationToken);
-
-        AddSource(endpoints, validators, options, context);
+        AddSource(endpoints, validatorsByValidatedType, options, context);
     }
 
     private static void AddSource(
@@ -75,5 +56,40 @@ internal class MinimalApiBuilderGenerator : IIncrementalGenerator
 
         dependencyInjectionBuilder.AddSource(context);
         endpointBuilder.AddSource(context);
+    }
+}
+
+internal class Foo : IEqualityComparer<((ImmutableArray<EndpointToGenerate> Left, ImmutableArray<ValidatorToGenerate>
+    Right) Left, GeneratorOptions Right)>
+{
+    public static readonly Foo Instance = new();
+
+    public bool Equals(
+        ((ImmutableArray<EndpointToGenerate> Left, ImmutableArray<ValidatorToGenerate> Right) Left, GeneratorOptions
+            Right) x,
+        ((ImmutableArray<EndpointToGenerate> Left, ImmutableArray<ValidatorToGenerate> Right) Left, GeneratorOptions
+            Right) y)
+    {
+        var (xEndpoints, xValidators) = x.Left;
+        var (yEndpoints, yValidators) = y.Left;
+
+        var endpointComparer = EndpointToGenerateEqualityComparer.Instance;
+
+        for (int i = 0; i < xEndpoints.Length; i++)
+        {
+            if (!endpointComparer.Equals(xEndpoints[0], yEndpoints[0]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public int GetHashCode(
+        ((ImmutableArray<EndpointToGenerate> Left, ImmutableArray<ValidatorToGenerate> Right) Left, GeneratorOptions
+            Right) obj)
+    {
+        throw new NotImplementedException();
     }
 }

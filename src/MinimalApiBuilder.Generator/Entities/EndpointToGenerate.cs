@@ -9,7 +9,7 @@ internal class EndpointToGenerate
 
     private EndpointToGenerate(string identifier,
         string className,
-        string namespaceName,
+        string? namespaceName,
         EndpointToGenerateHandler handler,
         bool needsConfigure)
     {
@@ -22,7 +22,7 @@ internal class EndpointToGenerate
 
     public string ClassName { get; }
 
-    public string NamespaceName { get; }
+    public string? NamespaceName { get; }
 
     public EndpointToGenerateHandler Handler { get; }
 
@@ -68,7 +68,9 @@ internal class EndpointToGenerate
 
         EndpointToGenerate endpoint = new(
             identifier: endpointSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            namespaceName: endpointSymbol.ContainingNamespace.ToDisplayString(),
+            namespaceName: endpointSymbol.ContainingNamespace.IsGlobalNamespace
+                ? null
+                : endpointSymbol.ContainingNamespace.ToDisplayString(),
             className: endpointSymbol.Name,
             handler: handler,
             needsConfigure: needsConfigure);
@@ -124,34 +126,37 @@ internal class EndpointToGenerate
     }
 }
 
-internal class EndpointToGenerateHandler
+internal class EndpointToGenerateEqualityComparer : IEqualityComparer<EndpointToGenerate>
 {
-    public EndpointToGenerateHandler(string name, EndpointToGenerateHandlerParameter endpointParameter,
-        EndpointToGenerateHandlerParameter[] parameters)
+    public static readonly EndpointToGenerateEqualityComparer Instance = new();
+
+    public bool Equals(EndpointToGenerate? x, EndpointToGenerate? y)
     {
-        Name = name;
-        EndpointParameter = endpointParameter;
-        Parameters = parameters;
+        if (ReferenceEquals(x, y))
+        {
+            return true;
+        }
+
+        if (x is null)
+        {
+            return false;
+        }
+
+        if (y is null)
+        {
+            return false;
+        }
+
+        var handlerComparer = EndpointToGenerateHandlerEqualityComparer.Instance;
+
+        return x.ClassName == y.ClassName &&
+               x.NamespaceName == y.NamespaceName &&
+               handlerComparer.Equals(x.Handler, y.Handler) &&
+               x.NeedsConfigure == y.NeedsConfigure;
     }
 
-    public string Name { get; }
-
-    public EndpointToGenerateHandlerParameter EndpointParameter { get; }
-
-    public EndpointToGenerateHandlerParameter[] Parameters { get; }
-}
-
-internal class EndpointToGenerateHandlerParameter
-{
-    private readonly string _identifier;
-
-    public EndpointToGenerateHandlerParameter(string identifier, int position)
+    public int GetHashCode(EndpointToGenerate obj)
     {
-        _identifier = identifier;
-        Position = position;
+        throw new NotImplementedException();
     }
-
-    public int Position { get; }
-
-    public override string ToString() => _identifier;
 }

@@ -25,7 +25,7 @@ internal class DependencyInjectionBuilder : SourceBuilder
         _methodDisposable.Dispose();
         _classDisposable.Dispose();
         _namespaceDisposable.Dispose();
-        context.AddSource("DependencyInjection.generated.cs", ToString());
+        context.AddSource("DependencyInjection.g.cs", ToString());
     }
 
     public void AddService(EndpointToGenerate endpoint)

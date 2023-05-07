@@ -1,20 +1,22 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.Providers;
 
 internal static class ValidatorProvider
 {
-    public static IncrementalValuesProvider<ClassDeclarationSyntax> ForValidatorDeclarations(
+    public static IncrementalValuesProvider<ValidatorToGenerate> ForValidators(
         this IncrementalGeneratorInitializationContext context)
     {
         return context.SyntaxProvider
-            .CreateSyntaxProvider(
-                predicate: static (s, _) => IsValidator(s),
-                transform: static (ctx, _) => (ClassDeclarationSyntax)ctx.Node);
+            .CreateSyntaxProvider(IsValidator, Transform)
+            .Where(static validator => validator is not null)!
+            .WithComparer(ValidatorToGenerateEqualityComparer.Instance);
     }
 
-    private static bool IsValidator(SyntaxNode node)
+    private static bool IsValidator(SyntaxNode node, CancellationToken cancellationToken)
     {
         return node is ClassDeclarationSyntax { BaseList.Types.Count: > 0 } classDeclaration &&
                classDeclaration.BaseList.Types[0].Type is GenericNameSyntax
@@ -22,5 +24,11 @@ internal static class ValidatorProvider
                    Identifier.Text: "AbstractValidator",
                    TypeArgumentList.Arguments.Count: 1
                };
+    }
+
+    private static ValidatorToGenerate? Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
+    {
+        return ValidatorToGenerate.Create(Unsafe.As<ClassDeclarationSyntax>(context.Node),
+            context.SemanticModel, cancellationToken);
     }
 }

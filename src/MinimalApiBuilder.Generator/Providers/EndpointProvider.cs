@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MinimalApiBuilder.Generator.Entities;
 
@@ -6,12 +7,13 @@ namespace MinimalApiBuilder.Generator.Providers;
 
 internal static class EndpointProvider
 {
-    public static IncrementalValuesProvider<EndpointToGenerate> ForEndpointDeclarations(
+    public static IncrementalValuesProvider<EndpointToGenerate> ForEndpoints(
         this IncrementalGeneratorInitializationContext context)
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsEndpointDeclaration, Transform)
-            .Where(static endpointDeclaration => endpointDeclaration is not null)!;
+            .Where(static endpoint => endpoint is not null)!
+            .WithComparer(EndpointToGenerateEqualityComparer.Instance);
     }
 
     private static bool IsEndpointDeclaration(SyntaxNode node, CancellationToken cancellationToken)
@@ -25,7 +27,7 @@ internal static class EndpointProvider
 
     private static EndpointToGenerate? Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
-        return EndpointToGenerate.Create((ClassDeclarationSyntax)context.Node, context.SemanticModel,
-            cancellationToken);
+        return EndpointToGenerate.Create(Unsafe.As<ClassDeclarationSyntax>(context.Node),
+            context.SemanticModel, cancellationToken);
     }
 }

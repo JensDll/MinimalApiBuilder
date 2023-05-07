@@ -43,7 +43,7 @@ public partial class AsyncMultipleEndpoint : MinimalApiBuilderEndpoint
         _logger = logger;
     }
 
-    private static Task<IResult> HandleAsync(
+    private static Task<IResult> Handle(
         AsyncMultipleEndpoint endpoint,
         Request request,
         [AsParameters] Parameters parameters,
