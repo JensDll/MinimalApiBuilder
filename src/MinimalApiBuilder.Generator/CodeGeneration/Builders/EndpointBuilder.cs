@@ -8,7 +8,13 @@ internal class EndpointBuilder : SourceBuilder
     private readonly IReadOnlyDictionary<string, ValidatorToGenerate> _validators;
 
     public EndpointBuilder(GeneratorOptions options, IReadOnlyDictionary<string, ValidatorToGenerate> validators) :
-        base(options, "Microsoft.AspNetCore.Builder",
+        base(options, "System",
+            "System.Linq",
+            "System.Threading",
+            "System.Threading.Tasks",
+            "Microsoft.AspNetCore.Builder",
+            "Microsoft.AspNetCore.Http",
+            "Microsoft.Extensions.DependencyInjection",
             "MinimalApiBuilder",
             "FluentValidation",
             "FluentValidation.Results")

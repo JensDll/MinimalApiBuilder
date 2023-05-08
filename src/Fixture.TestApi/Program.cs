@@ -1,5 +1,8 @@
 using Fixture.TestApi.Extensions;
 using Fixture.TestApi.Features.Validation;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MinimalApiBuilder;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);

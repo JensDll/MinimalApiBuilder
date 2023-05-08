@@ -1,4 +1,6 @@
-﻿using MinimalApiBuilder;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation.Combination;
 
