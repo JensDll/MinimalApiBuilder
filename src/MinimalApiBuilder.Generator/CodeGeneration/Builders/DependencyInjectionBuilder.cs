@@ -9,14 +9,14 @@ internal class DependencyInjectionBuilder : SourceBuilder
     private readonly IDisposable _classDisposable;
     private readonly IDisposable _methodDisposable;
 
-    public DependencyInjectionBuilder(GeneratorOptions options) : base(options, "FluentValidation",
-        "Microsoft.Extensions.DependencyInjection")
+    public DependencyInjectionBuilder(GeneratorOptions options) : base(options)
     {
         _namespaceDisposable = OpenBlock("namespace MinimalApiBuilder");
         _classDisposable = OpenBlock("public static class DependencyInjection");
+        MarkAsGenerated();
         _methodDisposable =
             OpenBlock(
-                "public static IServiceCollection AddMinimalApiBuilderEndpoints(this IServiceCollection services)");
+                $"public static {FullyQualifiedNames.IServiceCollection} AddMinimalApiBuilderEndpoints(this {FullyQualifiedNames.IServiceCollection} services)");
     }
 
     public override void AddSource(SourceProductionContext context)
@@ -30,14 +30,17 @@ internal class DependencyInjectionBuilder : SourceBuilder
 
     public void AddService(EndpointToGenerate endpoint)
     {
-        AppendLine($"services.AddScoped<{endpoint}>();");
+        AddService("Scoped", endpoint.ToString());
     }
 
     public void AddService(KeyValuePair<string, ValidatorToGenerate> entry)
     {
         string validatedType = entry.Key;
         ValidatorToGenerate validator = entry.Value;
-
-        AppendLine($"services.Add{validator.ServiceLifetime}<IValidator<{validatedType}>, {validator}>();");
+        AddService(validator.ServiceLifetime, $"{FullyQualifiedNames.IValidator}<{validatedType}>, {validator}");
     }
+
+    private void AddService(string lifetime, string generic) =>
+        AppendLine(
+            $"global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.Add{lifetime}<{generic}>(services);");
 }

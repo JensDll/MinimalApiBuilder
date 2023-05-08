@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="MinimalApiBuilder.Generator.UnitTests"/>
-    <InternalsVisibleTo Include="MinimalApiBuilder.Generator.IntegrationTest"/>
   </ItemGroup>
 
 </Project>
