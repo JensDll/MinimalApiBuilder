@@ -55,7 +55,7 @@ internal class EndpointBuilder : SourceBuilder
 
         if (endpoint.NeedsConfigure)
         {
-            using IDisposable _ = OpenBlock("public static void Configure(RouteHandlerBuilder builder)");
+            OpenBlock("public static void Configure(RouteHandlerBuilder builder)").Dispose();
         }
     }
 

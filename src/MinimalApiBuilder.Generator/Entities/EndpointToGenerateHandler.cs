@@ -50,6 +50,11 @@ internal class EndpointToGenerateHandlerEqualityComparer : IEqualityComparer<End
             return false;
         }
 
+        if (x.Parameters.Length != y.Parameters.Length)
+        {
+            return false;
+        }
+
         for (int i = 0; i < x.Parameters.Length; ++i)
         {
             if (!parameterComparer.Equals(x.Parameters[i], y.Parameters[i]))

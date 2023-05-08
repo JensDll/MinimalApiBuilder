@@ -15,9 +15,7 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         var validators = context.ForValidators().Collect();
         var options = context.ForGeneratorOptions();
 
-        var source = endpoints
-            .Combine(validators)
-            .Combine(options);
+        var source = endpoints.Combine(validators).Combine(options);
 
         context.RegisterSourceOutput(source, static (sourceProductionContext, source) =>
             Execute(source.Left.Left, source.Left.Right, source.Right, sourceProductionContext));
@@ -28,10 +26,7 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         GeneratorOptions options,
         SourceProductionContext context)
     {
-        IReadOnlyDictionary<string, ValidatorToGenerate> validatorsByValidatedType =
-            validators.ToDictionary(validator => validator.ValidatedType);
-
-        AddSource(endpoints, validatorsByValidatedType, options, context);
+        AddSource(endpoints, validators.ToDictionary(static validator => validator.ValidatedType), options, context);
     }
 
     private static void AddSource(
@@ -56,40 +51,5 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 
         dependencyInjectionBuilder.AddSource(context);
         endpointBuilder.AddSource(context);
-    }
-}
-
-internal class Foo : IEqualityComparer<((ImmutableArray<EndpointToGenerate> Left, ImmutableArray<ValidatorToGenerate>
-    Right) Left, GeneratorOptions Right)>
-{
-    public static readonly Foo Instance = new();
-
-    public bool Equals(
-        ((ImmutableArray<EndpointToGenerate> Left, ImmutableArray<ValidatorToGenerate> Right) Left, GeneratorOptions
-            Right) x,
-        ((ImmutableArray<EndpointToGenerate> Left, ImmutableArray<ValidatorToGenerate> Right) Left, GeneratorOptions
-            Right) y)
-    {
-        var (xEndpoints, xValidators) = x.Left;
-        var (yEndpoints, yValidators) = y.Left;
-
-        var endpointComparer = EndpointToGenerateEqualityComparer.Instance;
-
-        for (int i = 0; i < xEndpoints.Length; i++)
-        {
-            if (!endpointComparer.Equals(xEndpoints[0], yEndpoints[0]))
-            {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public int GetHashCode(
-        ((ImmutableArray<EndpointToGenerate> Left, ImmutableArray<ValidatorToGenerate> Right) Left, GeneratorOptions
-            Right) obj)
-    {
-        throw new NotImplementedException();
     }
 }
