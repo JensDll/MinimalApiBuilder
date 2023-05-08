@@ -7,6 +7,8 @@ param (
   [string]$Configuration = 'Release'
 )
 
+$Version = $Version.TrimStart('v')
+
 $solutionFile = Join-Path $PSScriptRoot '..' 'MinimalApiBuilder.src.slnf'
 $outputPath = Join-Path $PSScriptRoot '..' 'artifacts'
 
