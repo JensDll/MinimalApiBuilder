@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using System.Threading.Tasks;
+using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation.Async;
