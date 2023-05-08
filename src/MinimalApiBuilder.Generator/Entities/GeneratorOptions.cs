@@ -16,7 +16,7 @@ internal struct GeneratorOptions
         }
     }
 
-    internal class Keys
+    internal static class Keys
     {
         private const string Prefix = "minimalapibuilder_";
 

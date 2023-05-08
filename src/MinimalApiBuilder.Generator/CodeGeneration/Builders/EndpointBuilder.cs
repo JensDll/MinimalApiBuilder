@@ -44,8 +44,7 @@ internal class EndpointBuilder : SourceBuilder
     private void AddConfigure(EndpointToGenerate endpoint)
     {
         MarkAsGenerated();
-        using (OpenBlock(
-                   $"public static void _auto_generated_Configure({Fqn.RouteHandlerBuilder} builder)"))
+        using (OpenBlock($"public static void _auto_generated_Configure({Fqn.RouteHandlerBuilder} builder)"))
         {
             if (Options.AssignNameToEndpoint)
             {
