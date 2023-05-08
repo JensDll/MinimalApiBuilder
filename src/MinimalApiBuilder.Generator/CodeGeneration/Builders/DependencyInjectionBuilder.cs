@@ -16,7 +16,7 @@ internal class DependencyInjectionBuilder : SourceBuilder
         MarkAsGenerated();
         _methodDisposable =
             OpenBlock(
-                $"public static {FullyQualifiedNames.IServiceCollection} AddMinimalApiBuilderEndpoints(this {FullyQualifiedNames.IServiceCollection} services)");
+                $"public static {Fqn.IServiceCollection} AddMinimalApiBuilderEndpoints(this {Fqn.IServiceCollection} services)");
     }
 
     public override void AddSource(SourceProductionContext context)
@@ -30,17 +30,17 @@ internal class DependencyInjectionBuilder : SourceBuilder
 
     public void AddService(EndpointToGenerate endpoint)
     {
-        AddService("Scoped", endpoint.ToString());
+        AppendAddService("Scoped", endpoint.ToString());
     }
 
     public void AddService(KeyValuePair<string, ValidatorToGenerate> entry)
     {
         string validatedType = entry.Key;
         ValidatorToGenerate validator = entry.Value;
-        AddService(validator.ServiceLifetime, $"{FullyQualifiedNames.IValidator}<{validatedType}>, {validator}");
+        AppendAddService(validator.ServiceLifetime, $"{Fqn.IValidator}<{validatedType}>, {validator}");
     }
 
-    private void AddService(string lifetime, string generic) =>
+    private void AppendAddService(string lifetime, string generic) =>
         AppendLine(
             $"global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.Add{lifetime}<{generic}>(services);");
 }

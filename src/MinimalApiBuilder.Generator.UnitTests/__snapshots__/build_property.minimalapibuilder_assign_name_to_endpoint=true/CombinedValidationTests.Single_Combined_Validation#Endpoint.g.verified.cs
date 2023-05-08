@@ -29,6 +29,6 @@ namespace Features
             });
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
-        private const string Name = "global::Features.Endpoint1";
+        public const string Name = "global::Features.Endpoint1";
     }
 }

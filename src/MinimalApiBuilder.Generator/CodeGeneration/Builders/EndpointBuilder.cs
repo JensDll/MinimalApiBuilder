@@ -7,8 +7,8 @@ internal class EndpointBuilder : SourceBuilder
 {
     private readonly IReadOnlyDictionary<string, ValidatorToGenerate> _validators;
 
-    public EndpointBuilder(GeneratorOptions options, IReadOnlyDictionary<string, ValidatorToGenerate> validators)
-        : base(options)
+    public EndpointBuilder(GeneratorOptions options,
+        IReadOnlyDictionary<string, ValidatorToGenerate> validators) : base(options)
     {
         _validators = validators;
     }
@@ -21,7 +21,7 @@ internal class EndpointBuilder : SourceBuilder
     public void AddEndpoint(EndpointToGenerate endpoint)
     {
         using (endpoint.NamespaceName is null ? Disposable.Empty : OpenBlock($"namespace {endpoint.NamespaceName}"))
-        using (OpenBlock($"public partial class {endpoint.ClassName} : {FullyQualifiedNames.IEndpoint}"))
+        using (OpenBlock($"public partial class {endpoint.ClassName} : {Fqn.IEndpoint}"))
         {
             AddProperties(endpoint);
             AddConfigure(endpoint);
@@ -29,7 +29,7 @@ internal class EndpointBuilder : SourceBuilder
             if (Options.AssignNameToEndpoint)
             {
                 MarkAsGenerated();
-                AppendLine($"private const string Name = \"{endpoint}\";");
+                AppendLine($"public const string Name = \"{endpoint}\";");
             }
         }
     }
@@ -38,19 +38,18 @@ internal class EndpointBuilder : SourceBuilder
     {
         MarkAsGenerated();
         AppendLine(
-            $"public static {FullyQualifiedNames.Delegate} _auto_generated_Handler {{ get; }} = {endpoint.Handler.Name};");
+            $"public static {Fqn.Delegate} _auto_generated_Handler {{ get; }} = {endpoint.Handler.Name};");
     }
 
     private void AddConfigure(EndpointToGenerate endpoint)
     {
         MarkAsGenerated();
         using (OpenBlock(
-                   $"public static void _auto_generated_Configure({FullyQualifiedNames.RouteHandlerBuilder} builder)"))
+                   $"public static void _auto_generated_Configure({Fqn.RouteHandlerBuilder} builder)"))
         {
             if (Options.AssignNameToEndpoint)
             {
-                AppendLine(
-                    "global::Microsoft.AspNetCore.Builder.RoutingEndpointConventionBuilderExtensions.WithName(builder, Name);");
+                AppendLine($"{Fqn.WithName}(builder, Name);");
             }
 
             AddValidation(endpoint);
@@ -59,7 +58,7 @@ internal class EndpointBuilder : SourceBuilder
         if (endpoint.NeedsConfigure)
         {
             MarkAsGenerated();
-            OpenBlock($"public static void Configure({FullyQualifiedNames.RouteHandlerBuilder} builder)").Dispose();
+            OpenBlock($"public static void Configure({Fqn.RouteHandlerBuilder} builder)").Dispose();
         }
     }
 
@@ -113,9 +112,9 @@ internal class EndpointBuilder : SourceBuilder
         using (OpenAddEndpointFilter())
         {
             AppendLine(GetEndpoint(endpointParameter));
-            AppendLine($"{FullyQualifiedNames.ValidationResult} result = {GetValidationResult(parameter)};");
+            AppendLine($"{Fqn.ValidationResult} result = {GetValidationResult(parameter)};");
             AppendLine(
-                $"return result.IsValid ? next(invocationContext) : {FullyQualifiedNames.ValueTask}.FromResult<object?>({FullyQualifiedNames.IEndpoint}.GetErrorResult(endpoint, result));");
+                $"return result.IsValid ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetErrorResult(endpoint, result));");
         }
     }
 
@@ -127,9 +126,9 @@ internal class EndpointBuilder : SourceBuilder
         {
             AppendLine(GetEndpoint(endpointParameter));
             AppendLine(
-                $"{FullyQualifiedNames.ValidationResult}[] results = {{ {string.Join(", ", parameters.Select(GetValidationResult))} }};");
+                $"{Fqn.ValidationResult}[] results = {{ {string.Join(", ", parameters.Select(GetValidationResult))} }};");
             AppendLine(
-                $"return {FullyQualifiedNames.LinqAny("results", "static result => !result.IsValid")} ? {FullyQualifiedNames.ValueTask}.FromResult<object?>({FullyQualifiedNames.IEndpoint}.GetErrorResult(endpoint, results)) : next(invocationContext);");
+                $"return {Fqn.Linq}.Any(results, static result => !result.IsValid) ? {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetErrorResult(endpoint, results)) : next(invocationContext);");
         }
     }
 
@@ -140,9 +139,9 @@ internal class EndpointBuilder : SourceBuilder
         using (OpenAddEndpointFilterAsync())
         {
             AppendLine(GetEndpoint(endpointParameter));
-            AppendLine($"{FullyQualifiedNames.ValidationResult} result = await {GetValidationResultAsync(parameter)};");
+            AppendLine($"{Fqn.ValidationResult} result = await {GetValidationResultAsync(parameter)};");
             AppendLine(
-                $"return result.IsValid ? await next(invocationContext) : {FullyQualifiedNames.IEndpoint}.GetErrorResult(endpoint, result);");
+                $"return result.IsValid ? await next(invocationContext) : {Fqn.IEndpoint}.GetErrorResult(endpoint, result);");
         }
     }
 
@@ -154,9 +153,9 @@ internal class EndpointBuilder : SourceBuilder
         {
             AppendLine(GetEndpoint(endpointParameter));
             AppendLine(
-                $"{FullyQualifiedNames.ValidationResult}[] results = await {FullyQualifiedNames.Task}.WhenAll({string.Join(", ", parameters.Select(GetValidationResultAsync))});");
+                $"{Fqn.ValidationResult}[] results = await {Fqn.Task}.WhenAll({string.Join(", ", parameters.Select(GetValidationResultAsync))});");
             AppendLine(
-                $"return {FullyQualifiedNames.LinqAny("results", "static result => !result.IsValid")} ? {FullyQualifiedNames.IEndpoint}.GetErrorResult(endpoint, results) : await next(invocationContext);");
+                $"return {Fqn.Linq}.Any(results, static result => !result.IsValid) ? {Fqn.IEndpoint}.GetErrorResult(endpoint, results) : await next(invocationContext);");
         }
     }
 
@@ -164,19 +163,19 @@ internal class EndpointBuilder : SourceBuilder
         $"{endpointParameter} endpoint = invocationContext.GetArgument<{endpointParameter}>({endpointParameter.Position.ToString()});";
 
     private static string GetValidationResult(EndpointToGenerateHandlerParameter parameter) =>
-        $"{GetRequiredService($"{FullyQualifiedNames.IValidator}<{parameter}>")}.Validate(invocationContext.GetArgument<{parameter}>({parameter.Position.ToString()}))";
+        $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}.Validate(invocationContext.GetArgument<{parameter}>({parameter.Position.ToString()}))";
 
     private static string GetValidationResultAsync(EndpointToGenerateHandlerParameter parameter) =>
-        $"{GetRequiredService($"{FullyQualifiedNames.IValidator}<{parameter}>")}.ValidateAsync(invocationContext.GetArgument<{parameter}>({parameter.Position.ToString()}))";
+        $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}.ValidateAsync(invocationContext.GetArgument<{parameter}>({parameter.Position.ToString()}))";
 
     private static string GetRequiredService(string type) =>
-        $"global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<{type}>(invocationContext.HttpContext.RequestServices)";
+        $"{Fqn.GetRequiredService}<{type}>(invocationContext.HttpContext.RequestServices)";
 
     private IDisposable OpenAddEndpointFilter() => OpenBlock(
-        "global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static (invocationContext, next) =>",
+        $"{Fqn.AddEndpointFilter}(builder, static (invocationContext, next) =>",
         ");");
 
     private IDisposable OpenAddEndpointFilterAsync() => OpenBlock(
-        "global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>",
+        $"{Fqn.AddEndpointFilter}(builder, static async (invocationContext, next) =>",
         ");");
 }
