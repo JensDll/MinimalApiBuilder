@@ -19,16 +19,6 @@ internal abstract class SourceBuilder
     protected static readonly string GeneratedCodeAttribute =
         $@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{typeof(SourceBuilder).Assembly.GetName().Name}"", ""{typeof(SourceBuilder).Assembly.GetName().Version}"")]";
 
-    protected SourceBuilder(GeneratorOptions options, params string[] usingStatements) : this(options)
-    {
-        foreach (string usingStatement in usingStatements)
-        {
-            _builder.AppendLine($"using {usingStatement};");
-        }
-
-        _builder.AppendLine();
-    }
-
     protected SourceBuilder(GeneratorOptions options)
     {
         Options = options;
@@ -41,6 +31,11 @@ internal abstract class SourceBuilder
     public abstract void AddSource(SourceProductionContext context);
 
     public sealed override string ToString() => _builder.ToString();
+
+    protected void MarkAsGenerated()
+    {
+        AppendLine(GeneratedCodeAttribute);
+    }
 
     protected IDisposable OpenBlock(string value)
     {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MinimalApiBuilder;
+using Foo = global::FluentValidation.Results.ValidationResult;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -23,5 +24,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapValidationFeatures();
+
+
 
 app.Run();

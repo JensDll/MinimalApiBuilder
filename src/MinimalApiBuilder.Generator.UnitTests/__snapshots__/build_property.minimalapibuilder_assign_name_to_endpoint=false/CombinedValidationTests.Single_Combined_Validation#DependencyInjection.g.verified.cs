@@ -5,18 +5,16 @@
 
 #nullable enable
 
-using FluentValidation;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace MinimalApiBuilder
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddMinimalApiBuilderEndpoints(this IServiceCollection services)
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
+        public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddMinimalApiBuilderEndpoints(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)
         {
-            services.AddScoped<global::Features.Endpoint1>();
-            services.AddTransient<IValidator<global::Features.Request>, global::Features.SyncValidator>();
-            services.AddScoped<IValidator<global::Features.Parameters>, global::Features.AsyncValidator>();
+            global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddScoped<global::Features.Endpoint1>(services);
+            global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddTransient<global::FluentValidation.IValidator<global::Features.Request>, global::Features.SyncValidator>(services);
+            global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddScoped<global::FluentValidation.IValidator<global::Features.Parameters>, global::Features.AsyncValidator>(services);
             return services;
         }
     }

@@ -5,32 +5,24 @@
 
 #nullable enable
 
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using MinimalApiBuilder;
-using FluentValidation;
-using FluentValidation.Results;
-
 namespace Features
 {
-    public partial class Endpoint1 : IEndpoint
+    public partial class Endpoint1 : global::MinimalApiBuilder.IEndpoint
     {
-        public static Delegate _auto_generated_Handler { get; } = Handle;
-        public static void _auto_generated_Configure(RouteHandlerBuilder builder)
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
+        public static global::System.Delegate _auto_generated_Handler { get; } = Handle;
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
+        public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
         {
             builder.WithName(Name);
-            builder.AddEndpointFilter(static async (invocationContext, next) =>
+            global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
             {
                 global::Features.Endpoint1 endpoint = invocationContext.GetArgument<global::Features.Endpoint1>(0);
-                ValidationResult[] results = await Task.WhenAll(invocationContext.HttpContext.RequestServices.GetRequiredService<IValidator<global::Features.Request>>().ValidateAsync(invocationContext.GetArgument<global::Features.Request>(1)), invocationContext.HttpContext.RequestServices.GetRequiredService<IValidator<global::Features.Request>>().ValidateAsync(invocationContext.GetArgument<global::Features.Request>(2)));
-                return results.Any(static result => !result.IsValid) ? IEndpoint.GetErrorResult(endpoint, results) : await next(invocationContext);
+                global::FluentValidation.Results.ValidationResult[] results = await global::System.Threading.Tasks.Task.WhenAll(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).ValidateAsync(invocationContext.GetArgument<global::Features.Request>(1)), global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).ValidateAsync(invocationContext.GetArgument<global::Features.Request>(2)));
+                return global::System.Linq.Enumerable.Any(results, static result => !result.IsValid) ? global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, results) : await next(invocationContext);
             });
         }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         private const string Name = "global::Features.Endpoint1";
     }
 }

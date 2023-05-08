@@ -5,26 +5,18 @@
 
 #nullable enable
 
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using MinimalApiBuilder;
-using FluentValidation;
-using FluentValidation.Results;
-
 namespace Features
 {
-    public partial class Endpoint1 : IEndpoint
+    public partial class Endpoint1 : global::MinimalApiBuilder.IEndpoint
     {
-        public static Delegate _auto_generated_Handler { get; } = Handle;
-        public static void _auto_generated_Configure(RouteHandlerBuilder builder)
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
+        public static global::System.Delegate _auto_generated_Handler { get; } = Handle;
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
+        public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
         {
             builder.WithName(Name);
         }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         private const string Name = "global::Features.Endpoint1";
     }
 }
