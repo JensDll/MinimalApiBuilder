@@ -14,7 +14,7 @@ namespace Features
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
         {
-            builder.WithName(Name);
+            global::Microsoft.AspNetCore.Builder.RoutingEndpointConventionBuilderExtensions.WithName(builder, Name);
             global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
             {
                 global::Features.Endpoint1 endpoint = invocationContext.GetArgument<global::Features.Endpoint1>(0);

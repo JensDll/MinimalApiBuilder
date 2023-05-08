@@ -49,7 +49,8 @@ internal class EndpointBuilder : SourceBuilder
         {
             if (Options.AssignNameToEndpoint)
             {
-                AppendLine("builder.WithName(Name);");
+                AppendLine(
+                    "global::Microsoft.AspNetCore.Builder.RoutingEndpointConventionBuilderExtensions.WithName(builder, Name);");
             }
 
             AddValidation(endpoint);
