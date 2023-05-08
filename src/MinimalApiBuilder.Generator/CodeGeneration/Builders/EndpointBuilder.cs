@@ -18,12 +18,12 @@ internal class EndpointBuilder : SourceBuilder
 
     public override void AddSource(SourceProductionContext context)
     {
-        context.AddSource("Endpoint.generated.cs", ToString());
+        context.AddSource("Endpoint.g.cs", ToString());
     }
 
     public void AddEndpoint(EndpointToGenerate endpoint)
     {
-        using (OpenBlock($"namespace {endpoint.NamespaceName}"))
+        using (endpoint.NamespaceName is null ? Disposable.Empty : OpenBlock($"namespace {endpoint.NamespaceName}"))
         using (OpenBlock($"public partial class {endpoint.ClassName} : IEndpoint"))
         {
             AddProperties(endpoint);
@@ -51,6 +51,11 @@ internal class EndpointBuilder : SourceBuilder
             }
 
             AddValidation(endpoint);
+        }
+
+        if (endpoint.NeedsConfigure)
+        {
+            OpenBlock("public static void Configure(RouteHandlerBuilder builder)").Dispose();
         }
     }
 

@@ -9,6 +9,10 @@ internal class Disposable : IDisposable
         _onDispose = onDispose;
     }
 
+    private Disposable() { }
+
+    public static readonly Disposable Empty = new();
+
     public void Dispose()
     {
         _onDispose?.Invoke();

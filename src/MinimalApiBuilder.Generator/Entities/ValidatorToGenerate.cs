@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -9,71 +8,68 @@ internal class ValidatorToGenerate
 {
     private readonly string _identifier;
 
-    private ValidatorToGenerate(string identifier, bool isAsync, string serviceLifetime)
+    private ValidatorToGenerate(string identifier,
+        string validatedType,
+        bool isAsync,
+        string serviceLifetime)
     {
         _identifier = identifier;
+        ValidatedType = validatedType;
         IsAsync = isAsync;
         ServiceLifetime = serviceLifetime;
     }
 
+    public string ValidatedType { get; }
+
     public bool IsAsync { get; }
+
     public string ServiceLifetime { get; }
 
     public override string ToString() => _identifier;
 
-    public static IReadOnlyDictionary<string, ValidatorToGenerate> Collect(Compilation compilation,
-        ImmutableArray<ClassDeclarationSyntax> validatorDeclarations,
-        CancellationToken cancellationToken)
+    public static ValidatorToGenerate? Create(ClassDeclarationSyntax validatorDeclaration,
+        SemanticModel semanticModel, CancellationToken cancellationToken)
     {
-        Dictionary<string, ValidatorToGenerate> validators = new();
+        cancellationToken.ThrowIfCancellationRequested();
 
-        foreach (ClassDeclarationSyntax validatorDeclaration in validatorDeclarations)
+        if (semanticModel.GetDeclaredSymbol(validatorDeclaration) is not INamedTypeSymbol validatorSymbol)
         {
-            cancellationToken.ThrowIfCancellationRequested();
+            return null;
+        }
 
-            SemanticModel semanticModel = compilation.GetSemanticModel(validatorDeclaration.SyntaxTree);
+        bool isAsync = false;
 
-            if (semanticModel.GetDeclaredSymbol(validatorDeclaration) is not INamedTypeSymbol validatorSymbol)
+        foreach (MemberDeclarationSyntax member in validatorDeclaration.Members)
+        {
+            if (member is not ConstructorDeclarationSyntax constructorDeclaration)
             {
                 continue;
             }
 
-            bool isAsync = false;
-
-            foreach (MemberDeclarationSyntax member in validatorDeclaration.Members)
+            foreach (SyntaxNode node in constructorDeclaration.DescendantNodes())
             {
-                if (member is not ConstructorDeclarationSyntax constructorDeclaration)
+                if (node is IdentifierNameSyntax validatorNode &&
+                    node.Parent is MemberAccessExpressionSyntax &&
+                    node.Parent.Parent is InvocationExpressionSyntax &&
+                    validatorNode.Identifier.Text is "MustAsync" or "WhenAsync" or "UnlessAsync"
+                        or "CustomAsync" or "SetAsyncValidator")
                 {
-                    continue;
-                }
-
-                foreach (SyntaxNode node in constructorDeclaration.DescendantNodes())
-                {
-                    if (node is IdentifierNameSyntax validatorNode &&
-                        node.Parent is MemberAccessExpressionSyntax &&
-                        node.Parent.Parent is InvocationExpressionSyntax &&
-                        validatorNode.Identifier.Text is "MustAsync" or "WhenAsync" or "UnlessAsync"
-                            or "CustomAsync" or "SetAsyncValidator")
-                    {
-                        isAsync = true;
-                        break;
-                    }
+                    isAsync = true;
+                    break;
                 }
             }
-
-            string serviceLifetime = GetValidatorServiceLifetime(validatorDeclaration);
-
-            ValidatorToGenerate validator = new(
-                identifier: validatorSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                isAsync: isAsync,
-                serviceLifetime: serviceLifetime);
-
-            validators.Add(
-                validatorSymbol.BaseType!.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                validator);
         }
 
-        return validators;
+        string serviceLifetime = GetValidatorServiceLifetime(validatorDeclaration);
+
+        ValidatorToGenerate validator = new(
+            identifier: validatorSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            validatedType: validatorSymbol.BaseType!.TypeArguments[0]
+                .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            isAsync: isAsync,
+            serviceLifetime: serviceLifetime);
+
+        return validator;
     }
 
     private static string GetValidatorServiceLifetime(ClassDeclarationSyntax validatorDeclaration)
@@ -92,5 +88,37 @@ internal class ValidatorToGenerate
         }
 
         return "Singleton";
+    }
+}
+
+internal class ValidatorToGenerateEqualityComparer : IEqualityComparer<ValidatorToGenerate>
+{
+    public static readonly ValidatorToGenerateEqualityComparer Instance = new();
+
+    public bool Equals(ValidatorToGenerate? x, ValidatorToGenerate? y)
+    {
+        if (ReferenceEquals(x, y))
+        {
+            return true;
+        }
+
+        if (x is null)
+        {
+            return false;
+        }
+
+        if (y is null)
+        {
+            return false;
+        }
+
+        return x.ValidatedType == y.ValidatedType &&
+               x.IsAsync == y.IsAsync &&
+               x.ServiceLifetime == y.ServiceLifetime;
+    }
+
+    public int GetHashCode(ValidatorToGenerate obj)
+    {
+        throw new NotImplementedException();
     }
 }

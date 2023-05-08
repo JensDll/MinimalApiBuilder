@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MinimalApiBuilder.Generator.Entities;
@@ -8,126 +7,156 @@ internal class EndpointToGenerate
 {
     private readonly string _identifier;
 
-    private EndpointToGenerate(string identifier, string className, string namespaceName,
-        EndpointToGenerateHandler handler)
+    private EndpointToGenerate(string identifier,
+        string className,
+        string? namespaceName,
+        EndpointToGenerateHandler handler,
+        bool needsConfigure)
     {
         _identifier = identifier;
         ClassName = className;
         NamespaceName = namespaceName;
         Handler = handler;
+        NeedsConfigure = needsConfigure;
     }
 
     public string ClassName { get; }
 
-    public string NamespaceName { get; }
+    public string? NamespaceName { get; }
 
     public EndpointToGenerateHandler Handler { get; }
 
+    public bool NeedsConfigure { get; }
+
     public override string ToString() => _identifier;
 
-    public static IEnumerable<EndpointToGenerate> Collect(Compilation compilation,
-        ImmutableArray<ClassDeclarationSyntax> endpointDeclarations,
-        CancellationToken cancellationToken)
+    public static EndpointToGenerate? Create(ClassDeclarationSyntax endpointDeclaration,
+        SemanticModel semanticModel, CancellationToken cancellationToken)
     {
-        foreach (ClassDeclarationSyntax endpointDeclaration in endpointDeclarations)
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (semanticModel.GetDeclaredSymbol(endpointDeclaration) is not INamespaceOrTypeSymbol endpointSymbol)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            SemanticModel semanticModel = compilation.GetSemanticModel(endpointDeclaration.SyntaxTree);
-
-            if (semanticModel.GetDeclaredSymbol(endpointDeclaration) is not INamespaceOrTypeSymbol endpointSymbol)
-            {
-                continue;
-            }
-
-            if (!TryGetHandler(endpointSymbol, out EndpointToGenerateHandler? handler))
-            {
-                continue;
-            }
-
-            EndpointToGenerate endpoint = new(
-                identifier: endpointSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                namespaceName: endpointSymbol.ContainingNamespace.ToDisplayString(),
-                className: endpointSymbol.Name,
-                handler: handler!);
-
-            yield return endpoint;
+            return null;
         }
-    }
 
-    private static bool TryGetHandler(INamespaceOrTypeSymbol endpointSymbol, out EndpointToGenerateHandler? handler)
-    {
-        handler = null;
+        bool needsConfigure = true;
+        EndpointToGenerateHandler? handler = null;
 
         foreach (ISymbol member in endpointSymbol.GetMembers())
         {
-            if (member is not IMethodSymbol { Name: ("Handle" or "HandleAsync") } methodSymbol)
+            switch (member)
             {
-                continue;
+                case IMethodSymbol methodSymbol:
+                    if (TryGetHandler(endpointSymbol, methodSymbol, out var endpointHandler))
+                    {
+                        handler = endpointHandler;
+                    }
+                    else if (IsConfigure(methodSymbol))
+                    {
+                        needsConfigure = false;
+                    }
+
+                    break;
             }
+        }
 
-            var parameters = new EndpointToGenerateHandlerParameter[methodSymbol.Parameters.Length];
-            EndpointToGenerateHandlerParameter? endpointParameter = null;
+        if (handler is null)
+        {
+            return null;
+        }
 
-            for (int i = 0; i < methodSymbol.Parameters.Length; ++i)
+        EndpointToGenerate endpoint = new(
+            identifier: endpointSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            namespaceName: endpointSymbol.ContainingNamespace.IsGlobalNamespace
+                ? null
+                : endpointSymbol.ContainingNamespace.ToDisplayString(),
+            className: endpointSymbol.Name,
+            handler: handler,
+            needsConfigure: needsConfigure);
+
+        return endpoint;
+    }
+
+    private static bool TryGetHandler(ISymbol endpointSymbol, IMethodSymbol methodSymbol,
+        out EndpointToGenerateHandler? handler)
+    {
+        handler = null;
+
+        if (methodSymbol.Name is not ("Handle" or "HandleAsync"))
+        {
+            return false;
+        }
+
+        var parameters = new EndpointToGenerateHandlerParameter[methodSymbol.Parameters.Length];
+        EndpointToGenerateHandlerParameter? endpointParameter = null;
+
+        for (int i = 0; i < methodSymbol.Parameters.Length; ++i)
+        {
+            IParameterSymbol parameterSymbol = methodSymbol.Parameters[i];
+
+            parameters[i] = new EndpointToGenerateHandlerParameter(
+                identifier: parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+                position: i);
+
+            if (SymbolEqualityComparer.Default.Equals(parameterSymbol.Type, endpointSymbol))
             {
-                IParameterSymbol parameterSymbol = methodSymbol.Parameters[i];
-
-                parameters[i] = new EndpointToGenerateHandlerParameter(
-                    identifier: parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                    position: i);
-
-                if (SymbolEqualityComparer.Default.Equals(parameterSymbol.Type, endpointSymbol))
-                {
-                    endpointParameter = parameters[i];
-                }
+                endpointParameter = parameters[i];
             }
+        }
 
-            if (endpointParameter is null)
-            {
-                return false;
-            }
+        if (endpointParameter is null)
+        {
+            return false;
+        }
 
-            handler = new EndpointToGenerateHandler(
-                name: methodSymbol.Name,
-                endpointParameter: endpointParameter,
-                parameters: parameters);
+        handler = new EndpointToGenerateHandler(
+            name: methodSymbol.Name,
+            endpointParameter: endpointParameter,
+            parameters: parameters);
 
+        return true;
+    }
+
+    private static bool IsConfigure(IMethodSymbol methodSymbol)
+    {
+        return methodSymbol is { Name: "Configure", Parameters.Length: 1, ReturnsVoid: true, IsStatic: true } &&
+               methodSymbol.Parameters[0].Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ==
+               "global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder";
+    }
+}
+
+internal class EndpointToGenerateEqualityComparer : IEqualityComparer<EndpointToGenerate>
+{
+    public static readonly EndpointToGenerateEqualityComparer Instance = new();
+
+    public bool Equals(EndpointToGenerate? x, EndpointToGenerate? y)
+    {
+        if (ReferenceEquals(x, y))
+        {
             return true;
         }
 
-        return false;
-    }
-}
+        if (x is null)
+        {
+            return false;
+        }
 
-internal class EndpointToGenerateHandler
-{
-    public EndpointToGenerateHandler(string name, EndpointToGenerateHandlerParameter endpointParameter,
-        EndpointToGenerateHandlerParameter[] parameters)
+        if (y is null)
+        {
+            return false;
+        }
+
+        var handlerComparer = EndpointToGenerateHandlerEqualityComparer.Instance;
+
+        return x.ClassName == y.ClassName &&
+               x.NamespaceName == y.NamespaceName &&
+               handlerComparer.Equals(x.Handler, y.Handler) &&
+               x.NeedsConfigure == y.NeedsConfigure;
+    }
+
+    public int GetHashCode(EndpointToGenerate obj)
     {
-        Name = name;
-        EndpointParameter = endpointParameter;
-        Parameters = parameters;
+        throw new NotImplementedException();
     }
-
-    public string Name { get; }
-
-    public EndpointToGenerateHandlerParameter EndpointParameter { get; }
-
-    public EndpointToGenerateHandlerParameter[] Parameters { get; }
-}
-
-internal class EndpointToGenerateHandlerParameter
-{
-    private readonly string _identifier;
-
-    public EndpointToGenerateHandlerParameter(string identifier, int position)
-    {
-        _identifier = identifier;
-        Position = position;
-    }
-
-    public int Position { get; }
-
-    public override string ToString() => _identifier;
 }

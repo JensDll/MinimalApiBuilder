@@ -2,7 +2,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class GeneratorOptions
+internal struct GeneratorOptions
 {
     public bool AssignNameToEndpoint { get; }
 

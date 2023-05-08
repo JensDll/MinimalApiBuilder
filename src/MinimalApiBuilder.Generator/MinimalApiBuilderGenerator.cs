@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using MinimalApiBuilder.Generator.CodeGeneration.Builders;
 using MinimalApiBuilder.Generator.Entities;
 using MinimalApiBuilder.Generator.Providers;
@@ -8,56 +7,30 @@ using MinimalApiBuilder.Generator.Providers;
 namespace MinimalApiBuilder.Generator;
 
 [Generator(LanguageNames.CSharp)]
-internal class MinimalApiBuilderGenerator : IIncrementalGenerator
+internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValuesProvider<ClassDeclarationSyntax> endpointDeclarations = context.ForEndpointDeclarations();
-        IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedEndpointDeclarations =
-            endpointDeclarations.Collect();
+        var endpoints = context.ForEndpoints().Collect();
+        var validators = context.ForValidators().Collect();
+        var options = context.ForGeneratorOptions();
 
-        IncrementalValuesProvider<ClassDeclarationSyntax> validatorDeclarations = context.ForValidatorDeclarations();
-        IncrementalValueProvider<ImmutableArray<ClassDeclarationSyntax>> collectedValidatorDeclarations =
-            validatorDeclarations.Collect();
-
-        IncrementalValueProvider<GeneratorOptions> options = context.ForGeneratorOptions();
-
-        var declarations =
-            collectedEndpointDeclarations.Combine(collectedValidatorDeclarations);
-
-        var source = context.CompilationProvider
-            .Combine(declarations)
-            .Combine(options);
+        var source = endpoints.Combine(validators).Combine(options);
 
         context.RegisterSourceOutput(source, static (sourceProductionContext, source) =>
-            {
-                var compilation = source.Left.Left;
-                var (endpoints, validators) = source.Left.Right;
-                var options = source.Right;
-
-                Execute(compilation, endpoints,
-                    validators, options, sourceProductionContext);
-            }
-        );
+            Execute(source.Left.Left, source.Left.Right, source.Right, sourceProductionContext));
     }
 
-    private static void Execute(Compilation compilation,
-        ImmutableArray<ClassDeclarationSyntax> endpointDeclarations,
-        ImmutableArray<ClassDeclarationSyntax> validatorDeclarations,
+    private static void Execute(ImmutableArray<EndpointToGenerate> endpoints,
+        ImmutableArray<ValidatorToGenerate> validators,
         GeneratorOptions options,
         SourceProductionContext context)
     {
-        IEnumerable<EndpointToGenerate> endpoints =
-            EndpointToGenerate.Collect(compilation, endpointDeclarations, context.CancellationToken);
-
-        IReadOnlyDictionary<string, ValidatorToGenerate> validators =
-            ValidatorToGenerate.Collect(compilation, validatorDeclarations, context.CancellationToken);
-
-        AddSource(endpoints, validators, options, context);
+        AddSource(endpoints, validators.ToDictionary(static validator => validator.ValidatedType), options, context);
     }
 
     private static void AddSource(
-        IEnumerable<EndpointToGenerate> endpoints,
+        ImmutableArray<EndpointToGenerate> endpoints,
         IReadOnlyDictionary<string, ValidatorToGenerate> validators,
         GeneratorOptions options,
         SourceProductionContext context)
