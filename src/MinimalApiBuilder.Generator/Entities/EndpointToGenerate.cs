@@ -40,15 +40,19 @@ internal class EndpointToGenerate
             return null;
         }
 
-        INamedTypeSymbol? minimalApiBuilderEndpoint =
-            semanticModel.Compilation.GetTypeByMetadataName("MinimalApiBuilder.MinimalApiBuilderEndpoint");
-
-        if (minimalApiBuilderEndpoint is null)
+        if (semanticModel.Compilation.GetTypeByMetadataName("MinimalApiBuilder.MinimalApiBuilderEndpoint")
+            is not { } minimalApiBuilderEndpointSymbol)
         {
             return null;
         }
 
-        if (!minimalApiBuilderEndpoint.Equals(endpointSymbol.BaseType, SymbolEqualityComparer.Default))
+        if (!minimalApiBuilderEndpointSymbol.Equals(endpointSymbol.BaseType, SymbolEqualityComparer.Default))
+        {
+            return null;
+        }
+
+        if (semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Builder.RouteHandlerBuilder")
+            is not { } routeHandlerBuilderSymbol)
         {
             return null;
         }
@@ -67,7 +71,7 @@ internal class EndpointToGenerate
                     {
                         handler = endpointHandler;
                     }
-                    else if (IsConfigure(methodSymbol))
+                    else if (IsConfigure(methodSymbol, routeHandlerBuilderSymbol))
                     {
                         needsConfigure = false;
                     }
@@ -133,11 +137,10 @@ internal class EndpointToGenerate
         return true;
     }
 
-    private static bool IsConfigure(IMethodSymbol methodSymbol)
+    private static bool IsConfigure(IMethodSymbol methodSymbol, ISymbol routeHandlerBuilderSymbol)
     {
         return methodSymbol is { Name: "Configure", Parameters.Length: 1, ReturnsVoid: true, IsStatic: true } &&
-               methodSymbol.Parameters[0].Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat) ==
-               "global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder";
+               methodSymbol.Parameters[0].Type.Equals(routeHandlerBuilderSymbol, SymbolEqualityComparer.Default);
     }
 }
 

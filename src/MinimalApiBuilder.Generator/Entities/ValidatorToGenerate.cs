@@ -8,7 +8,8 @@ internal class ValidatorToGenerate
 {
     private readonly string _identifier;
 
-    private ValidatorToGenerate(string identifier,
+    private ValidatorToGenerate(
+        string identifier,
         string validatedType,
         bool isAsync,
         string serviceLifetime)
@@ -36,15 +37,14 @@ internal class ValidatorToGenerate
             return null;
         }
 
-        INamedTypeSymbol? abstractValidator =
-            semanticModel.Compilation.GetTypeByMetadataName("FluentValidation.AbstractValidator`1");
-
-        if (abstractValidator is null)
+        if (semanticModel.Compilation.GetTypeByMetadataName("FluentValidation.AbstractValidator`1")
+            is not { } abstractValidatorSymbol)
         {
             return null;
         }
 
-        if (!abstractValidator.Equals(validatorSymbol.BaseType!.OriginalDefinition, SymbolEqualityComparer.Default))
+        if (!abstractValidatorSymbol.Equals(validatorSymbol.BaseType!.OriginalDefinition,
+                SymbolEqualityComparer.Default))
         {
             return null;
         }

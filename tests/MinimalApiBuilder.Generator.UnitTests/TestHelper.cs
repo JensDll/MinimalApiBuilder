@@ -7,7 +7,7 @@ namespace MinimalApiBuilder.Generator.UnitTests;
 
 public static class TestHelper
 {
-    public static async Task Verify(string source, TestAnalyzerConfigOptionsProvider provider)
+    public static async Task Verify(string source, TestAnalyzerConfigOptionsProvider optionsProvider)
     {
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
 
@@ -30,10 +30,10 @@ public static class TestHelper
         IEnumerable<ISourceGenerator> generators = GetSourceGenerators(generator);
 
         GeneratorDriver driver = CSharpGeneratorDriver
-            .Create(generators, optionsProvider: provider)
+            .Create(generators, optionsProvider: optionsProvider)
             .RunGenerators(compilation);
 
-        await Verifier.Verify(driver).UseDirectory(provider.SnapshotFolder).DisableDiff();
+        await Verifier.Verify(driver).UseDirectory(optionsProvider.SnapshotFolder).DisableDiff();
     }
 
     private static IEnumerable<ISourceGenerator> GetSourceGenerators(params IIncrementalGenerator[] generators)
