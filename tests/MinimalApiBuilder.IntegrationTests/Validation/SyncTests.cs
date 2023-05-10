@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation.Sync;
+using Xunit;
 
 namespace MinimalApiBuilder.IntegrationTests;
 
@@ -16,7 +17,7 @@ public class SyncValidationTests
 
     [Theory]
     [MemberData(nameof(InvalidSingle))]
-    public async Task Single_Parameter_Validation_With_Invalid_Request(Request request)
+    public async Task Single_Parameter_Validation_With_Invalid_Request(SyncValidationRequest request)
     {
         HttpResponseMessage response = await _client.PostAsJsonAsync("/validation/sync/single", request);
 
@@ -25,7 +26,7 @@ public class SyncValidationTests
 
     [Theory]
     [MemberData(nameof(ValidSingle))]
-    public async Task Single_Parameter_Validation_With_Valid_Request(Request request)
+    public async Task Single_Parameter_Validation_With_Valid_Request(SyncValidationRequest request)
     {
         HttpResponseMessage response = await _client.PostAsJsonAsync("/validation/sync/single", request);
 
@@ -34,8 +35,9 @@ public class SyncValidationTests
 
     [Theory]
     [MemberData(nameof(InvalidMultiple))]
-    public async Task Multiple_Parameters_Validation_With_Invalid_Request(Request request,
-        Parameters parameters)
+    public async Task Multiple_Parameters_Validation_With_Invalid_Request(
+        SyncValidationRequest request,
+        SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
             await _client.PatchAsJsonAsync($"/validation/sync/multiple?bar={parameters.Bar}", request);
@@ -45,8 +47,9 @@ public class SyncValidationTests
 
     [Theory]
     [MemberData(nameof(ValidMultiple))]
-    public async Task Multiple_Parameters_Validation_With_Valid_Request(Request request,
-        Parameters parameters)
+    public async Task Multiple_Parameters_Validation_With_Valid_Request(
+        SyncValidationRequest request,
+        SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
             await _client.PatchAsJsonAsync($"/validation/sync/multiple?bar={parameters.Bar}", request);
@@ -56,28 +59,28 @@ public class SyncValidationTests
 
     public static readonly IEnumerable<object[]> InvalidSingle = new[]
     {
-        new object[] { new Request { Foo = "invalid" } },
-        new object[] { new Request { Foo = "false" } },
-        new object[] { new Request { Foo = "no" } }
+        new object[] { new SyncValidationRequest() { Foo = "invalid" } },
+        new object[] { new SyncValidationRequest { Foo = "false" } },
+        new object[] { new SyncValidationRequest { Foo = "no" } }
     };
 
     public static readonly IEnumerable<object[]> ValidSingle = new[]
     {
-        new object[] { new Request { Foo = "valid" } },
-        new object[] { new Request { Foo = "also valid" } }
+        new object[] { new SyncValidationRequest { Foo = "valid" } },
+        new object[] { new SyncValidationRequest { Foo = "also valid" } }
     };
 
     public static readonly IEnumerable<object[]> InvalidMultiple = new[]
     {
-        new object[] { new Request { Foo = "invalid" }, new Parameters(2) },
-        new object[] { new Request { Foo = "valid" }, new Parameters(3) },
-        new object[] { new Request { Foo = "false" }, new Parameters(3) },
-        new object[] { new Request { Foo = "no" }, new Parameters(2) }
+        new object[] { new SyncValidationRequest { Foo = "invalid" }, new SyncValidationParameters(2) },
+        new object[] { new SyncValidationRequest { Foo = "valid" }, new SyncValidationParameters(3) },
+        new object[] { new SyncValidationRequest { Foo = "false" }, new SyncValidationParameters(3) },
+        new object[] { new SyncValidationRequest { Foo = "no" }, new SyncValidationParameters(2) }
     };
 
     public static readonly IEnumerable<object[]> ValidMultiple = new[]
     {
-        new object[] { new Request { Foo = "valid" }, new Parameters(2) },
-        new object[] { new Request { Foo = "also valid" }, new Parameters(4) }
+        new object[] { new SyncValidationRequest { Foo = "valid" }, new SyncValidationParameters(2) },
+        new object[] { new SyncValidationRequest { Foo = "also valid" }, new SyncValidationParameters(4) }
     };
 }

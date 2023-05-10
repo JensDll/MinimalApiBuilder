@@ -1,28 +1,25 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation.Sync;
 
-public partial class SyncSingleEndpoint : MinimalApiBuilderEndpoint
-{
-    private static IResult Handle(Request request, SyncSingleEndpoint endpoint)
-    {
-        return Results.Ok();
-    }
-
-    public static void Configure(RouteHandlerBuilder builder) { }
-}
-
-public partial class SyncMultipleEndpoint : MinimalApiBuilderEndpoint
+public partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private static IResult Handle(
-        Request request,
-        [AsParameters] Parameters parameters,
-        SyncMultipleEndpoint endpoint)
+        SyncValidationRequest request,
+        SyncSingleValidationEndpoint endpoint)
     {
         return Results.Ok();
     }
+}
 
-    public static void Configure(RouteHandlerBuilder builder) { }
+public partial class SyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
+{
+    private static IResult Handle(
+        SyncValidationRequest request,
+        [AsParameters] SyncValidationParameters parameters,
+        SyncMultipleValidationEndpoint endpoint)
+    {
+        return Results.Ok();
+    }
 }

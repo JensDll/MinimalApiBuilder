@@ -13,10 +13,10 @@ public static class Extensions
     public static void MapValidationFeatures(this IEndpointRouteBuilder endpoints)
     {
         RouteGroupBuilder validation = endpoints.MapGroup("/validation").WithTags("Validation");
-        validation.MapPost<SyncSingleEndpoint>("/sync/single");
-        validation.MapPatch<SyncMultipleEndpoint>("/sync/multiple");
-        validation.MapPost<AsyncSingleEndpoint>("/async/single");
-        validation.MapPatch<AsyncMultipleEndpoint>("/async/multiple");
-        validation.MapPut<CombinedEndpoint>("/combination");
+        validation.MapPost<SyncSingleValidationEndpoint>("/sync/single");
+        validation.MapPatch<SyncMultipleValidationEndpoint>("/sync/multiple");
+        validation.MapPost<AsyncSingleValidationEndpoint>("/async/single");
+        validation.MapPatch<AsyncMultipleValidationEndpoint>("/async/multiple");
+        validation.MapPut<CombinedValidationEndpoint>("/combination");
     }
 }

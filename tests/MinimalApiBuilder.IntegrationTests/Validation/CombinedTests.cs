@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation.Async;
-using Parameters = Fixture.TestApi.Features.Validation.Sync.Parameters;
+using Fixture.TestApi.Features.Validation.Sync;
+using Xunit;
 
 namespace MinimalApiBuilder.IntegrationTests;
 
@@ -17,7 +18,9 @@ public class CombinedValidationTests
 
     [Theory]
     [MemberData(nameof(Invalid))]
-    public async Task Combined_Validation_With_Invalid_Request(Request request, Parameters parameters)
+    public async Task Combined_Validation_With_Invalid_Request(
+        AsyncValidationRequest request,
+        SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
             await _client.PutAsJsonAsync($"/validation/combination?bar={parameters.Bar}", request);
@@ -27,7 +30,9 @@ public class CombinedValidationTests
 
     [Theory]
     [MemberData(nameof(Valid))]
-    public async Task Combined_Validation_With_Valid_Request(Request request, Parameters parameters)
+    public async Task Combined_Validation_With_Valid_Request(
+        AsyncValidationRequest request,
+        SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
             await _client.PutAsJsonAsync($"/validation/combination?bar={parameters.Bar}", request);
@@ -39,19 +44,23 @@ public class CombinedValidationTests
     {
         new object[]
         {
-            new Request { Foo = "invalid" }, new Parameters(2)
+            new AsyncValidationRequest() { Foo = "invalid" },
+            new SyncValidationParameters(2)
         },
         new object[]
         {
-            new Request { Foo = "false" }, new Parameters(4)
+            new AsyncValidationRequest { Foo = "false" },
+            new SyncValidationParameters(4)
         },
         new object[]
         {
-            new Request { Foo = "no" }, new Parameters(3)
+            new AsyncValidationRequest { Foo = "no" },
+            new SyncValidationParameters(3)
         },
         new object[]
         {
-            new Request { Foo = "valid" }, new Parameters(3)
+            new AsyncValidationRequest { Foo = "valid" },
+            new SyncValidationParameters(3)
         }
     };
 
@@ -59,11 +68,13 @@ public class CombinedValidationTests
     {
         new object[]
         {
-            new Request { Foo = "valid" }, new Parameters(2)
+            new AsyncValidationRequest { Foo = "valid" },
+            new SyncValidationParameters(2)
         },
         new object[]
         {
-            new Request { Foo = "also valid" }, new Parameters(4)
+            new AsyncValidationRequest { Foo = "also valid" },
+            new SyncValidationParameters(4)
         }
     };
 }

@@ -1,4 +1,6 @@
-﻿namespace MinimalApiBuilder.IntegrationTests;
+﻿using Xunit;
+
+namespace MinimalApiBuilder.IntegrationTests;
 
 [CollectionDefinition(Name)]
 public class HttpClientCollectionFixture : ICollectionFixture<HttpClientFixture>

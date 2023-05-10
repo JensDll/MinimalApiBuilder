@@ -8,7 +8,7 @@ public class TestWebApplicationFactory<TProgram>
 {
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        builder.ConfigureServices(services => { });
+        builder.ConfigureServices(static services => { });
         return base.CreateHost(builder);
     }
 }

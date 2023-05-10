@@ -7,18 +7,18 @@ using Serilog;
 
 namespace Fixture.TestApi.Features.Validation.Async;
 
-public partial class AsyncSingleEndpoint : MinimalApiBuilderEndpoint
+public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private readonly ILogger _logger;
 
-    public AsyncSingleEndpoint(ILogger logger)
+    public AsyncSingleValidationEndpoint(ILogger logger)
     {
         _logger = logger;
     }
 
     private static async Task<IResult> HandleAsync(
-        AsyncSingleEndpoint endpoint,
-        Request request,
+        AsyncSingleValidationEndpoint endpoint,
+        AsyncValidationRequest request,
         HttpContext context,
         CancellationToken cancellationToken)
     {
@@ -31,30 +31,30 @@ public partial class AsyncSingleEndpoint : MinimalApiBuilderEndpoint
     {
         builder.AddEndpointFilter(static (invocationContext, next) =>
         {
-            var endpoint = invocationContext.GetArgument<AsyncSingleEndpoint>(0);
+            var endpoint = invocationContext.GetArgument<AsyncSingleValidationEndpoint>(0);
             endpoint._logger.Information("Executing handler for {Endpoint}", nameof(Endpoint));
             return next(invocationContext);
         });
     }
 }
 
-public partial class AsyncMultipleEndpoint : MinimalApiBuilderEndpoint
+public partial class AsyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private readonly ILogger _logger;
 
-    public AsyncMultipleEndpoint(ILogger logger)
+    public AsyncMultipleValidationEndpoint(ILogger logger)
     {
         _logger = logger;
     }
 
     private static Task<IResult> Handle(
-        AsyncMultipleEndpoint endpoint,
-        Request request,
-        [AsParameters] Parameters parameters,
+        AsyncMultipleValidationEndpoint endpoint,
+        AsyncValidationRequest request,
+        [AsParameters] AsyncValidationParameters parameters,
         CancellationToken cancellationToken)
     {
         endpoint._logger.Information("Executing handler for {Endpoint}",
-            nameof(AsyncMultipleEndpoint));
+            nameof(AsyncMultipleValidationEndpoint));
         return Task.FromResult(Results.Ok());
     }
 }

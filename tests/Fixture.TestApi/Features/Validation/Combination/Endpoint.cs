@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Fixture.TestApi.Features.Validation.Async;
+using Fixture.TestApi.Features.Validation.Sync;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation.Combination;
 
-public partial class CombinedEndpoint : MinimalApiBuilderEndpoint
+public partial class CombinedValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(Async.Request request,
-        [AsParameters] Sync.Parameters parameters,
-        CombinedEndpoint endpoint)
+    private static IResult Handle(AsyncValidationRequest request,
+        [AsParameters] SyncValidationParameters parameters,
+        CombinedValidationEndpoint endpoint)
     {
         return Results.Ok();
     }
