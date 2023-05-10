@@ -159,13 +159,13 @@ internal class EndpointBuilder : SourceBuilder
     }
 
     private static string GetEndpoint(EndpointToGenerateHandlerParameter endpointParameter) =>
-        $"{endpointParameter} endpoint = invocationContext.GetArgument<{endpointParameter}>({endpointParameter.Position.ToString()});";
+        $"{endpointParameter} endpoint = invocationContext.GetArgument<{endpointParameter}>({endpointParameter.Position});";
 
     private static string GetValidationResult(EndpointToGenerateHandlerParameter parameter) =>
-        $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}.Validate(invocationContext.GetArgument<{parameter}>({parameter.Position.ToString()}))";
+        $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}.Validate(invocationContext.GetArgument<{parameter}>({parameter.Position}))";
 
     private static string GetValidationResultAsync(EndpointToGenerateHandlerParameter parameter) =>
-        $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}.ValidateAsync(invocationContext.GetArgument<{parameter}>({parameter.Position.ToString()}))";
+        $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}.ValidateAsync(invocationContext.GetArgument<{parameter}>({parameter.Position}))";
 
     private static string GetRequiredService(string type) =>
         $"{Fqn.GetRequiredService}<{type}>(invocationContext.HttpContext.RequestServices)";

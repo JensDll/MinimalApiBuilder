@@ -5,7 +5,7 @@ using Parameters = Fixture.TestApi.Features.Validation.Sync.Parameters;
 
 namespace MinimalApiBuilder.IntegrationTests;
 
-[Collection(HttpClientCollection.Name)]
+[Collection(HttpClientCollectionFixture.Name)]
 public class CombinedValidationTests
 {
     private readonly HttpClient _client;
@@ -35,7 +35,7 @@ public class CombinedValidationTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    public static IEnumerable<object[]> Invalid = new[]
+    public static readonly IEnumerable<object[]> Invalid = new[]
     {
         new object[]
         {
@@ -55,7 +55,7 @@ public class CombinedValidationTests
         }
     };
 
-    public static IEnumerable<object[]> Valid = new[]
+    public static readonly IEnumerable<object[]> Valid = new[]
     {
         new object[]
         {

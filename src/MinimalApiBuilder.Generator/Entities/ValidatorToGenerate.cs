@@ -32,7 +32,8 @@ internal class ValidatorToGenerate
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (semanticModel.GetDeclaredSymbol(validatorDeclaration) is not INamedTypeSymbol validatorSymbol)
+        if (semanticModel.GetDeclaredSymbol(validatorDeclaration, cancellationToken) is not INamedTypeSymbol
+            validatorSymbol)
         {
             return null;
         }

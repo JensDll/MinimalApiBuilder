@@ -1,7 +1,7 @@
 ﻿namespace MinimalApiBuilder.IntegrationTests;
 
 [CollectionDefinition(Name)]
-public class HttpClientCollection : ICollectionFixture<HttpClientFixture>
+public class HttpClientCollectionFixture : ICollectionFixture<HttpClientFixture>
 {
     public const string Name = "HttpClient Collcetion";
 }

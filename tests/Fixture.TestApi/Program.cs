@@ -7,7 +7,7 @@ using MinimalApiBuilder;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.AddSerilogLogger();
+builder.Logging.AddSerilogLogger();
 
 builder.Services
     .AddEndpointsApiExplorer()
@@ -21,6 +21,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseDeveloperExceptionPage();
 
 app.MapValidationFeatures();
 

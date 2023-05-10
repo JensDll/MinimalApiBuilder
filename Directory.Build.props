@@ -12,10 +12,11 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(CI)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>7.0-recommended</AnalysisLevel>
+    <TreatWarningsAsErrors Condition="$(Configuration) == 'Release'">true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors Condition="$(Configuration) != 'Release'">false</TreatWarningsAsErrors>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
 </Project>

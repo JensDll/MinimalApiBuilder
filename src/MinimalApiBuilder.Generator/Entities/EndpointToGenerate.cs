@@ -35,7 +35,8 @@ internal class EndpointToGenerate
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (semanticModel.GetDeclaredSymbol(endpointDeclaration) is not INamespaceOrTypeSymbol endpointSymbol)
+        if (semanticModel.GetDeclaredSymbol(endpointDeclaration, cancellationToken) is not INamespaceOrTypeSymbol
+            endpointSymbol)
         {
             return null;
         }

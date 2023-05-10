@@ -1,11 +1,11 @@
 ﻿namespace MinimalApiBuilder.Generator.UnitTests;
 
 [UsesVerify]
-public class SyncValidationTests
+public class AsyncTests
 {
     [Theory]
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
-    public Task Single_Sync_Validation(TestAnalyzerConfigOptionsProvider provider)
+    public Task Single_Async_Validation(TestAnalyzerConfigOptionsProvider provider)
     {
         const string source = @"
 using MinimalApiBuilder;
@@ -33,7 +33,7 @@ public class Validator : AbstractValidator<Request>
 {
     public Validator()
     {
-        RuleFor(x => x.Value).NotEmpty();
+        RuleFor(x => x.Value).MustAsync(async (value, _) => true);
     }
 }
 ";
@@ -43,7 +43,7 @@ public class Validator : AbstractValidator<Request>
 
     [Theory]
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
-    public Task Multiple_Sync_Validation(TestAnalyzerConfigOptionsProvider provider)
+    public Task Multiple_Async_Validation(TestAnalyzerConfigOptionsProvider provider)
     {
         const string source = @"
 using MinimalApiBuilder;
@@ -71,7 +71,7 @@ public class Validator : AbstractValidator<Request>
 {
     public Validator()
     {
-        RuleFor(x => x.Value).NotEmpty();
+        RuleFor(x => x.Value).MustAsync(async (value, _) => true);
     }
 }
 ";

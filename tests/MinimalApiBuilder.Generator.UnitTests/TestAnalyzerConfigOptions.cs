@@ -5,7 +5,7 @@ namespace MinimalApiBuilder.Generator.UnitTests;
 
 public class TestAnalyzerConfigOptions : AnalyzerConfigOptions
 {
-    public readonly Dictionary<string, string> Options = new();
+    public Dictionary<string, string> Options { get; } = new();
 
     public override bool TryGetValue(string key, [NotNullWhen(true)] out string? value)
     {

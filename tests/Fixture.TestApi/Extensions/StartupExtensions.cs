@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Globalization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -8,17 +8,17 @@ namespace Fixture.TestApi.Extensions;
 
 public static class StartupExtensions
 {
-    public static ILogger AddSerilogLogger(this WebApplicationBuilder builder)
+    public static ILogger AddSerilogLogger(this ILoggingBuilder builder)
     {
-        builder.Logging.ClearProviders();
+        builder.ClearProviders();
 
         LoggerConfiguration loggerConfiguration = new();
 
-        loggerConfiguration.WriteTo.Console();
+        loggerConfiguration.WriteTo.Console(formatProvider: CultureInfo.InvariantCulture);
 
         ILogger logger = loggerConfiguration.CreateLogger();
 
-        builder.Logging.AddSerilog(logger);
+        builder.AddSerilog(logger);
         builder.Services.AddSingleton(logger);
 
         return logger;

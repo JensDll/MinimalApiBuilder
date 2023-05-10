@@ -4,7 +4,7 @@ using Fixture.TestApi.Features.Validation.Sync;
 
 namespace MinimalApiBuilder.IntegrationTests;
 
-[Collection(HttpClientCollection.Name)]
+[Collection(HttpClientCollectionFixture.Name)]
 public class SyncValidationTests
 {
     private readonly HttpClient _client;
@@ -54,20 +54,20 @@ public class SyncValidationTests
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
-    public static IEnumerable<object[]> InvalidSingle = new[]
+    public static readonly IEnumerable<object[]> InvalidSingle = new[]
     {
         new object[] { new Request { Foo = "invalid" } },
         new object[] { new Request { Foo = "false" } },
         new object[] { new Request { Foo = "no" } }
     };
 
-    public static IEnumerable<object[]> ValidSingle = new[]
+    public static readonly IEnumerable<object[]> ValidSingle = new[]
     {
         new object[] { new Request { Foo = "valid" } },
         new object[] { new Request { Foo = "also valid" } }
     };
 
-    public static IEnumerable<object[]> InvalidMultiple = new[]
+    public static readonly IEnumerable<object[]> InvalidMultiple = new[]
     {
         new object[] { new Request { Foo = "invalid" }, new Parameters(2) },
         new object[] { new Request { Foo = "valid" }, new Parameters(3) },
@@ -75,7 +75,7 @@ public class SyncValidationTests
         new object[] { new Request { Foo = "no" }, new Parameters(2) }
     };
 
-    public static IEnumerable<object[]> ValidMultiple = new[]
+    public static readonly IEnumerable<object[]> ValidMultiple = new[]
     {
         new object[] { new Request { Foo = "valid" }, new Parameters(2) },
         new object[] { new Request { Foo = "also valid" }, new Parameters(4) }
