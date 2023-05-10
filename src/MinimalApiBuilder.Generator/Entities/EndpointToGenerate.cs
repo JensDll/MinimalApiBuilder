@@ -7,7 +7,8 @@ internal class EndpointToGenerate
 {
     private readonly string _identifier;
 
-    private EndpointToGenerate(string identifier,
+    private EndpointToGenerate(
+        string identifier,
         string className,
         string? namespaceName,
         EndpointToGenerateHandler handler,
@@ -33,10 +34,21 @@ internal class EndpointToGenerate
     public static EndpointToGenerate? Create(ClassDeclarationSyntax endpointDeclaration,
         SemanticModel semanticModel, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        if (semanticModel.GetDeclaredSymbol(endpointDeclaration, cancellationToken)
+            is not INamedTypeSymbol endpointSymbol)
+        {
+            return null;
+        }
 
-        if (semanticModel.GetDeclaredSymbol(endpointDeclaration, cancellationToken) is not INamespaceOrTypeSymbol
-            endpointSymbol)
+        INamedTypeSymbol? minimalApiBuilderEndpoint =
+            semanticModel.Compilation.GetTypeByMetadataName("MinimalApiBuilder.MinimalApiBuilderEndpoint");
+
+        if (minimalApiBuilderEndpoint is null)
+        {
+            return null;
+        }
+
+        if (!minimalApiBuilderEndpoint.Equals(endpointSymbol.BaseType, SymbolEqualityComparer.Default))
         {
             return null;
         }
@@ -46,6 +58,8 @@ internal class EndpointToGenerate
 
         foreach (ISymbol member in endpointSymbol.GetMembers())
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             switch (member)
             {
                 case IMethodSymbol methodSymbol:
@@ -100,7 +114,7 @@ internal class EndpointToGenerate
                 identifier: parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
                 position: i);
 
-            if (SymbolEqualityComparer.Default.Equals(parameterSymbol.Type, endpointSymbol))
+            if (parameterSymbol.Type.Equals(endpointSymbol, SymbolEqualityComparer.Default))
             {
                 endpointParameter = parameters[i];
             }

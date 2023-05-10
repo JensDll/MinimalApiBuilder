@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 
@@ -10,14 +11,19 @@ public static class TestHelper
     {
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
 
-        MetadataReference metadata = MetadataReference.CreateFromFile(typeof(RouteHandlerBuilder).Assembly.Location);
+        MetadataReference[] references =
+        {
+            MetadataReference.CreateFromFile(typeof(RouteHandlerBuilder).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(MinimalApiBuilderEndpoint).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(AbstractValidator<>).Assembly.Location)
+        };
 
         CSharpCompilationOptions options = new(OutputKind.DynamicallyLinkedLibrary);
 
         CSharpCompilation compilation = CSharpCompilation.Create(
-            assemblyName: "MinimalApiBuilderGeneratorTests",
+            assemblyName: "MinimalApiBuilderGeneratorUnitTests",
             syntaxTrees: new[] { syntaxTree },
-            references: new[] { metadata },
+            references: references,
             options: options);
 
         IIncrementalGenerator generator = new MinimalApiBuilderGenerator();

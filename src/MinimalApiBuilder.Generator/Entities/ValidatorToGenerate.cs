@@ -30,10 +30,21 @@ internal class ValidatorToGenerate
     public static ValidatorToGenerate? Create(ClassDeclarationSyntax validatorDeclaration,
         SemanticModel semanticModel, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
+        if (semanticModel.GetDeclaredSymbol(validatorDeclaration, cancellationToken)
+            is not INamedTypeSymbol validatorSymbol)
+        {
+            return null;
+        }
 
-        if (semanticModel.GetDeclaredSymbol(validatorDeclaration, cancellationToken) is not INamedTypeSymbol
-            validatorSymbol)
+        INamedTypeSymbol? abstractValidator =
+            semanticModel.Compilation.GetTypeByMetadataName("FluentValidation.AbstractValidator`1");
+
+        if (abstractValidator is null)
+        {
+            return null;
+        }
+
+        if (!abstractValidator.Equals(validatorSymbol.BaseType!.OriginalDefinition, SymbolEqualityComparer.Default))
         {
             return null;
         }
@@ -42,6 +53,8 @@ internal class ValidatorToGenerate
 
         foreach (MemberDeclarationSyntax member in validatorDeclaration.Members)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             if (member is not ConstructorDeclarationSyntax constructorDeclaration)
             {
                 continue;
@@ -56,10 +69,12 @@ internal class ValidatorToGenerate
                         or "CustomAsync" or "SetAsyncValidator")
                 {
                     isAsync = true;
-                    break;
+                    goto MembersParsed;
                 }
             }
         }
+
+    MembersParsed:
 
         string serviceLifetime = GetValidatorServiceLifetime(validatorDeclaration);
 
@@ -73,7 +88,7 @@ internal class ValidatorToGenerate
         return validator;
     }
 
-    private static string GetValidatorServiceLifetime(ClassDeclarationSyntax validatorDeclaration)
+    private static string GetValidatorServiceLifetime(MemberDeclarationSyntax validatorDeclaration)
     {
         foreach (AttributeListSyntax attribute in validatorDeclaration.AttributeLists)
         {
