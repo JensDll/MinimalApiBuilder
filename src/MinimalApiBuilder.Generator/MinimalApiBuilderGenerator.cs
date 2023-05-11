@@ -11,13 +11,13 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var endpoints = context.ForEndpoints().Collect();
-        var validators = context.ForValidators().Collect();
-        var options = context.ForGeneratorOptions();
+        IncrementalValueProvider<ImmutableArray<EndpointToGenerate>> endpoints = context.ForEndpoints().Collect();
+        IncrementalValueProvider<ImmutableArray<ValidatorToGenerate>> validators = context.ForValidators().Collect();
+        IncrementalValueProvider<GeneratorOptions> options = context.ForGeneratorOptions();
 
-        var source = endpoints.Combine(validators).Combine(options);
+        var sourceProvider = endpoints.Combine(validators).Combine(options);
 
-        context.RegisterSourceOutput(source, static (sourceProductionContext, source) =>
+        context.RegisterSourceOutput(sourceProvider, static (sourceProductionContext, source) =>
             Execute(source.Left.Left, source.Left.Right, source.Right, sourceProductionContext));
     }
 
@@ -40,12 +40,14 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 
         foreach (EndpointToGenerate endpoint in endpoints)
         {
+            context.CancellationToken.ThrowIfCancellationRequested();
             dependencyInjectionBuilder.AddService(endpoint);
             endpointBuilder.AddEndpoint(endpoint);
         }
 
         foreach (KeyValuePair<string, ValidatorToGenerate> entry in validators)
         {
+            context.CancellationToken.ThrowIfCancellationRequested();
             dependencyInjectionBuilder.AddService(entry);
         }
 
