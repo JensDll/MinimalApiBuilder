@@ -36,7 +36,7 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
         {
             ILoggerFactory loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
             ILogger logger = loggerFactory.CreateLogger<MultipartReader>();
-            logger.LogWarning("Failed to create MultipartReader '{Message}'", e.Message);
+            logger.FailedToCreateMultipartReader(e.Message);
             return null;
         }
     }
