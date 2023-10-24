@@ -132,7 +132,6 @@ csharp_using_directive_placement = outside_namespace
 dotnet_diagnostic.IDE0001.severity = warning
 dotnet_diagnostic.IDE0002.severity = warning
 dotnet_diagnostic.IDE0004.severity = warning
-# dotnet_diagnostic.IDE0005.severity = warning
 dotnet_diagnostic.IDE0035.severity = warning
 dotnet_diagnostic.IDE0051.severity = warning
 dotnet_diagnostic.IDE0052.severity = warning
@@ -305,6 +304,7 @@ dotnet_naming_rule.private_fields.severity = warning
 resharper_place_simple_anonymousmethod_on_single_line = false
 resharper_inconsistent_naming_highlighting = none
 csharp_outdent_statement_labels = true
+csharp_blank_lines_around_field = 0
 ######## RESHARPER ########
 
 [*.{received,verified}.cs]
