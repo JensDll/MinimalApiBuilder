@@ -7,6 +7,7 @@ public class BasicTests
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
     public Task Single_Endpoint_No_Parameters(TestAnalyzerConfigOptionsProvider provider)
     {
+        // lang=cs
         const string source = @"
 using MinimalApiBuilder;
 using Microsoft.AspNetCore.Builder;
@@ -30,6 +31,7 @@ public partial class Endpoint1 : MinimalApiBuilderEndpoint
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
     public Task Multiple_Endpoints_No_Parameters(TestAnalyzerConfigOptionsProvider provider)
     {
+        // lang=cs
         const string source = @"
 using MinimalApiBuilder;
 using Microsoft.AspNetCore.Builder;
@@ -63,17 +65,17 @@ public partial class Endpoint2 : MinimalApiBuilderEndpoint
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
     public Task Without_Configure(TestAnalyzerConfigOptionsProvider provider)
     {
+        // lang=cs
         const string source = @"
 using MinimalApiBuilder;
-using Microsoft.AspNetCore.Builder;
 
 namespace Features;
 
-public partial class Endpoint1 : MinimalApiBuilderEndpoint
+public partial class WithoutConfigureEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(Endpoint1 endpoint)
+    private static int Handle(WithoutConfigureEndpoint endpoint)
     {
-        return Results.Ok();
+        return 42;
     }
 }";
 
@@ -84,15 +86,15 @@ public partial class Endpoint1 : MinimalApiBuilderEndpoint
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
     public Task Global_Namespace(TestAnalyzerConfigOptionsProvider provider)
     {
+        // lang=cs
         const string source = @"
 using MinimalApiBuilder;
-using Microsoft.AspNetCore.Builder;
 
 public partial class GlobalNamespaceEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(GlobalNamespaceEndpoint endpoint)
+    private static int Handle(GlobalNamespaceEndpoint endpoint)
     {
-        return Results.Ok();
+        return 42;
     }
 }";
 

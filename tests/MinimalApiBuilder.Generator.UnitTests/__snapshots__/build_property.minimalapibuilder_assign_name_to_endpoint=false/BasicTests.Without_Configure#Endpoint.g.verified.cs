@@ -7,7 +7,7 @@
 
 namespace Features
 {
-    public partial class Endpoint1 : global::MinimalApiBuilder.IEndpoint
+    public partial class WithoutConfigureEndpoint : global::MinimalApiBuilder.IEndpoint
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         public static global::System.Delegate _auto_generated_Handler { get; } = Handle;

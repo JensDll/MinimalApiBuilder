@@ -7,6 +7,7 @@ public class CombinedValidationTests
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
     public Task Single_Combined_Validation(TestAnalyzerConfigOptionsProvider provider)
     {
+        // lang=cs
         const string source = @"
 using MinimalApiBuilder;
 using Microsoft.AspNetCore.Builder;
@@ -29,8 +30,6 @@ public class Request
     public string Value { get; set; }
 }
 
-[Something]
-[RegisterValidator(ServiceLifetime.Transient)]
 public class SyncValidator : AbstractValidator<Request>
 {
     public SyncValidator()
@@ -44,8 +43,6 @@ public struct Parameters
     public string Value { get; set; }
 }
 
-[Something]
-[RegisterValidator(ServiceLifetime.Scoped)]
 public class AsyncValidator : AbstractValidator<Parameters>
 {
     public AsyncValidator()

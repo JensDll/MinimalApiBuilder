@@ -1,12 +1,13 @@
 ﻿namespace MinimalApiBuilder.Generator.UnitTests;
 
 [UsesVerify]
-public class AsyncTests
+public class AsyncValidationTests
 {
     [Theory]
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
     public Task Single_Async_Validation(TestAnalyzerConfigOptionsProvider provider)
     {
+        // lang=cs
         const string source = @"
 using MinimalApiBuilder;
 using Microsoft.AspNetCore.Builder;
@@ -45,6 +46,7 @@ public class Validator : AbstractValidator<Request>
     [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
     public Task Multiple_Async_Validation(TestAnalyzerConfigOptionsProvider provider)
     {
+        // lang=cs
         const string source = @"
 using MinimalApiBuilder;
 using Microsoft.AspNetCore.Builder;

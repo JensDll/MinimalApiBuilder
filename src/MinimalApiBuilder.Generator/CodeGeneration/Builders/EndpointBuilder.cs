@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using MinimalApiBuilder.Generator.Common;
 using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
