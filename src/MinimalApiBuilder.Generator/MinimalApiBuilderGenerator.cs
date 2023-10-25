@@ -40,14 +40,12 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 
         foreach (EndpointToGenerate endpoint in endpoints)
         {
-            context.CancellationToken.ThrowIfCancellationRequested();
             dependencyInjectionBuilder.AddService(endpoint);
             endpointBuilder.AddEndpoint(endpoint);
         }
 
         foreach (KeyValuePair<string, ValidatorToGenerate> entry in validators)
         {
-            context.CancellationToken.ThrowIfCancellationRequested();
             dependencyInjectionBuilder.AddService(entry);
         }
 
