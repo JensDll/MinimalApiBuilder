@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Setting up dotnet
-        uses: actions/setup-dotnet@v3.0.3
+        uses: actions/setup-dotnet@v3.2.0
 
       - name: Restoring the solution
         run: dotnet restore
