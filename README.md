@@ -36,7 +36,7 @@ app.MapGet<BasicEndpoint>("/hello");
 The above is functionally equivalent to:
 
 ```csharp
-app.MapGet("/hello", static () => "Hello World!");
+app.MapGet("/hello", static () => "Hello, World!");
 ```
 
 This library depends on [`FluentValidation >= 11`](https://github.com/FluentValidation/FluentValidation). An endpoint can have a validated request object:
