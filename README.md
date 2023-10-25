@@ -70,3 +70,10 @@ app.MapGet<BasicRequestEndpoint>("/hello/{name}");
 ```
 
 The incremental generator will generate code to validate the request object before the handler is called and return a `400 Bad Request` response if the validation fails.
+In `Program.cs` the below
+
+```csharp
+builder.Services.AddMinimalApiBuilderEndpoints();
+```
+
+needs to be added to register the necessary types with dependency injection.
