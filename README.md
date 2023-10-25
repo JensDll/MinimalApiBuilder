@@ -49,7 +49,8 @@ public struct BasicRequest
 
 public partial class BasicRequestEndpoint : MinimalApiBuilderEndpoint
 {
-    private static string Handle([FromServices] BasicRequestEndpoint endpoint, [AsParameters] BasicRequest request)
+    private static string Handle([FromServices] BasicRequestEndpoint endpoint,
+        [AsParameters] BasicRequest request)
     {
         return $"Hello, {request.Name}!";
     }
