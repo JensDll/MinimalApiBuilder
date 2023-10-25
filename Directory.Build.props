@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <Authors>Jens Döllmann</Authors>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <RepositoryUrl>https://github.com/JensDll/MinimalApiBuilder</RepositoryUrl>
     <RespositoryType>git</RespositoryType>
     <Copyright>Copyright (c) 2022 Jens Döllmann</Copyright>
