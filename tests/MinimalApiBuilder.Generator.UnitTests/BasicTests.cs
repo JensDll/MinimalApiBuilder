@@ -79,4 +79,23 @@ public partial class Endpoint1 : MinimalApiBuilderEndpoint
 
         return TestHelper.Verify(source, provider);
     }
+
+    [Theory]
+    [ClassData(typeof(TestAnalyzerConfigOptionsProviderClassData))]
+    public Task Global_Namespace(TestAnalyzerConfigOptionsProvider provider)
+    {
+        const string source = @"
+using MinimalApiBuilder;
+using Microsoft.AspNetCore.Builder;
+
+public partial class GlobalNamespaceEndpoint : MinimalApiBuilderEndpoint
+{
+    private static IResult Handle(GlobalNamespaceEndpoint endpoint)
+    {
+        return Results.Ok();
+    }
+}";
+
+        return TestHelper.Verify(source, provider);
+    }
 }

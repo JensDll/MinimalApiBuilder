@@ -15,8 +15,7 @@ internal abstract class SourceBuilder
 
 ");
     private int _indent;
-
-    protected static readonly string s_generatedCodeAttribute =
+    private static readonly string s_generatedCodeAttribute =
         $@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{typeof(SourceBuilder).Assembly.GetName().Name}"", ""{typeof(SourceBuilder).Assembly.GetName().Version}"")]";
 
     protected SourceBuilder(GeneratorOptions options)
