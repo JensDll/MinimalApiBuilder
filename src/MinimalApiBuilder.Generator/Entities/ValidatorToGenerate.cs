@@ -49,8 +49,42 @@ internal class ValidatorToGenerate
             return null;
         }
 
-        bool isAsync = false;
+        bool isAsync = GetIsAsync(validatorDeclaration, cancellationToken);
+        string serviceLifetime = GetValidatorServiceLifetime(validatorDeclaration, cancellationToken);
 
+        ValidatorToGenerate validator = new(
+            identifier: validatorSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            validatedType: validatorSymbol.BaseType!.TypeArguments[0]
+                .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            isAsync: isAsync,
+            serviceLifetime: serviceLifetime);
+
+        return validator;
+    }
+
+    private static string GetValidatorServiceLifetime(MemberDeclarationSyntax validatorDeclaration,
+        CancellationToken cancellationToken)
+    {
+        foreach (AttributeListSyntax attribute in validatorDeclaration.AttributeLists)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            string name = attribute.ToString();
+
+            const string pattern = @"RegisterValidator\(ServiceLifetime\.(?<lifetime>\w+)";
+            Match match = Regex.Match(name, pattern);
+
+            if (match.Success)
+            {
+                return match.Groups["lifetime"].Value;
+            }
+        }
+
+        return "Singleton";
+    }
+
+    private static bool GetIsAsync(TypeDeclarationSyntax validatorDeclaration, CancellationToken cancellationToken)
+    {
         foreach (MemberDeclarationSyntax member in validatorDeclaration.Members)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -68,42 +102,12 @@ internal class ValidatorToGenerate
                     validatorNode.Identifier.Text is "MustAsync" or "WhenAsync" or "UnlessAsync"
                         or "CustomAsync" or "SetAsyncValidator")
                 {
-                    isAsync = true;
-                    goto MembersParsed;
+                    return true;
                 }
             }
         }
 
-    MembersParsed:
-
-        string serviceLifetime = GetValidatorServiceLifetime(validatorDeclaration);
-
-        ValidatorToGenerate validator = new(
-            identifier: validatorSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            validatedType: validatorSymbol.BaseType!.TypeArguments[0]
-                .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            isAsync: isAsync,
-            serviceLifetime: serviceLifetime);
-
-        return validator;
-    }
-
-    private static string GetValidatorServiceLifetime(MemberDeclarationSyntax validatorDeclaration)
-    {
-        foreach (AttributeListSyntax attribute in validatorDeclaration.AttributeLists)
-        {
-            string name = attribute.ToString();
-
-            const string pattern = @"RegisterValidator\(ServiceLifetime\.(?<lifetime>\w+)";
-            Match match = Regex.Match(name, pattern);
-
-            if (match.Success)
-            {
-                return match.Groups["lifetime"].Value;
-            }
-        }
-
-        return "Singleton";
+        return false;
     }
 }
 
