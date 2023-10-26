@@ -17,8 +17,8 @@ namespace Features
             global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static (invocationContext, next) =>
             {
                 global::Features.Endpoint endpoint = invocationContext.GetArgument<global::Features.Endpoint>(0);
-                global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).Validate(invocationContext.GetArgument<global::Features.Request>(1));
-                return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, result));
+                global::FluentValidation.Results.ValidationResult[] results = { global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).Validate(invocationContext.GetArgument<global::Features.Request>(1)), global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).Validate(invocationContext.GetArgument<global::Features.Request>(2)) };
+                return global::System.Linq.Enumerable.Any(results, static result => !result.IsValid) ? global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, results)) : next(invocationContext);
             });
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]

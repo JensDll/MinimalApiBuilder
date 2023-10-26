@@ -15,11 +15,11 @@ namespace Features
         public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
         {
             global::Microsoft.AspNetCore.Builder.RoutingEndpointConventionBuilderExtensions.WithName(builder, Name);
-            global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static (invocationContext, next) =>
+            global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
             {
                 global::Features.Endpoint endpoint = invocationContext.GetArgument<global::Features.Endpoint>(0);
-                global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).Validate(invocationContext.GetArgument<global::Features.Request>(1));
-                return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, result));
+                global::FluentValidation.Results.ValidationResult[] results = await global::System.Threading.Tasks.Task.WhenAll(global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).ValidateAsync(invocationContext.GetArgument<global::Features.Request>(1)), global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).ValidateAsync(invocationContext.GetArgument<global::Features.Request>(2)));
+                return global::System.Linq.Enumerable.Any(results, static result => !result.IsValid) ? global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, results) : await next(invocationContext);
             });
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]

@@ -13,7 +13,6 @@ namespace MinimalApiBuilder
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddMinimalApiBuilderEndpoints(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)
         {
             global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddScoped<global::Features.Endpoint>(services);
-            global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.AddTransient<global::FluentValidation.IValidator<global::Features.Request>, global::Features.Validator>(services);
             return services;
         }
     }

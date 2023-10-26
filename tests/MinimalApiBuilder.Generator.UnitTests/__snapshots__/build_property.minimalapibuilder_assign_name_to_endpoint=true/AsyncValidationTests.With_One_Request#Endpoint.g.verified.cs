@@ -14,16 +14,19 @@ namespace Features
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
         {
-            global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static (invocationContext, next) =>
+            global::Microsoft.AspNetCore.Builder.RoutingEndpointConventionBuilderExtensions.WithName(builder, Name);
+            global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
             {
                 global::Features.Endpoint endpoint = invocationContext.GetArgument<global::Features.Endpoint>(0);
-                global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).Validate(invocationContext.GetArgument<global::Features.Request>(1));
-                return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, result));
+                global::FluentValidation.Results.ValidationResult result = await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).ValidateAsync(invocationContext.GetArgument<global::Features.Request>(1));
+                return result.IsValid ? await next(invocationContext) : global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, result);
             });
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         public static void Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
         {
         }
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
+        public const string Name = "global::Features.Endpoint";
     }
 }

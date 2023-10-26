@@ -303,8 +303,9 @@ dotnet_naming_rule.private_fields.severity = warning
 ######## RESHARPER ########
 resharper_place_simple_anonymousmethod_on_single_line = false
 resharper_inconsistent_naming_highlighting = none
-csharp_outdent_statement_labels = true
-csharp_blank_lines_around_field = 0
+resharper_csharp_outdent_statement_labels = true
+resharper_csharp_blank_lines_around_field = 0
+resharper_csharp_indent_raw_literal_string = do_not_change
 ######## RESHARPER ########
 
 [*.{received,verified}.cs]

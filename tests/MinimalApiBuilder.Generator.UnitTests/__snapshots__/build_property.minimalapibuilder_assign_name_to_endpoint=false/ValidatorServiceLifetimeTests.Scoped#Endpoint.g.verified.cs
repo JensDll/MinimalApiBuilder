@@ -7,7 +7,7 @@
 
 namespace Features
 {
-    public partial class Endpoint1 : global::MinimalApiBuilder.IEndpoint
+    public partial class Endpoint : global::MinimalApiBuilder.IEndpoint
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         public static global::System.Delegate _auto_generated_Handler { get; } = Handle;
@@ -16,7 +16,7 @@ namespace Features
         {
             global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static (invocationContext, next) =>
             {
-                global::Features.Endpoint1 endpoint = invocationContext.GetArgument<global::Features.Endpoint1>(0);
+                global::Features.Endpoint endpoint = invocationContext.GetArgument<global::Features.Endpoint>(0);
                 global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.Request>>(invocationContext.HttpContext.RequestServices).Validate(invocationContext.GetArgument<global::Features.Request>(1));
                 return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, result));
             });
