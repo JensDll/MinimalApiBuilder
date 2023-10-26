@@ -6,6 +6,9 @@ namespace MinimalApiBuilder.Generator.Entities;
 
 internal class EndpointToGenerate : IWithSyntaxTree
 {
+    private const string MinimalApiBuilderEndpointName = "MinimalApiBuilder.MinimalApiBuilderEndpoint";
+    private const string RouteHandlerBuilderName = "Microsoft.AspNetCore.Builder.RouteHandlerBuilder";
+
     private readonly string _identifier;
 
     private EndpointToGenerate(
@@ -45,7 +48,7 @@ internal class EndpointToGenerate : IWithSyntaxTree
             return null;
         }
 
-        if (semanticModel.Compilation.GetTypeByMetadataName("MinimalApiBuilder.MinimalApiBuilderEndpoint")
+        if (semanticModel.Compilation.GetTypeByMetadataName(MinimalApiBuilderEndpointName)
             is not { } minimalApiBuilderEndpointSymbol)
         {
             return null;
@@ -56,7 +59,7 @@ internal class EndpointToGenerate : IWithSyntaxTree
             return null;
         }
 
-        if (semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Builder.RouteHandlerBuilder")
+        if (semanticModel.Compilation.GetTypeByMetadataName(RouteHandlerBuilderName)
             is not { } routeHandlerBuilderSymbol)
         {
             return null;

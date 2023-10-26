@@ -9,7 +9,8 @@ public class TestAnalyzerConfigOptionsProviderClassData : IEnumerable<object[]>
     {
         yield return new object[]
         {
-            new TestAnalyzerConfigOptionsProvider(globalOptions: new TestAnalyzerConfigOptions
+            new TestAnalyzerConfigOptionsProvider(
+                globalOptions: new TestAnalyzerConfigOptions
                 {
                     Options =
                     {
@@ -22,7 +23,8 @@ public class TestAnalyzerConfigOptionsProviderClassData : IEnumerable<object[]>
 
         yield return new object[]
         {
-            new TestAnalyzerConfigOptionsProvider(globalOptions: new TestAnalyzerConfigOptions(),
+            new TestAnalyzerConfigOptionsProvider(
+                globalOptions: new TestAnalyzerConfigOptions(),
                 localOptions: new TestAnalyzerConfigOptions
                 {
                     Options =
@@ -35,7 +37,8 @@ public class TestAnalyzerConfigOptionsProviderClassData : IEnumerable<object[]>
 
         yield return new object[]
         {
-            new TestAnalyzerConfigOptionsProvider(globalOptions: new TestAnalyzerConfigOptions()
+            new TestAnalyzerConfigOptionsProvider(
+                globalOptions: new TestAnalyzerConfigOptions
                 {
                     Options =
                     {
