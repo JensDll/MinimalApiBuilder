@@ -17,7 +17,7 @@ public class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
 
     public override AnalyzerConfigOptions GetOptions(SyntaxTree tree)
     {
-        throw new NotImplementedException();
+        return GlobalOptions;
     }
 
     public override AnalyzerConfigOptions GetOptions(AdditionalText textFile)

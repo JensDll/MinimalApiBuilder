@@ -25,7 +25,7 @@ internal abstract class SourceBuilder
 
     public bool IsAdded { get; protected set; }
 
-    protected GeneratorOptions Options { get; }
+    protected GeneratorOptions Options { get; set; }
 
     public abstract void AddSource(SourceProductionContext context);
 

@@ -13,9 +13,9 @@ public class TestAnalyzerConfigOptionsProviderClassData : IEnumerable<object[]>
                 {
                     Options =
                     {
-                        [$"build_property.{GeneratorOptions.Keys.AssignNameToEndpoint}"] = "true"
+                        [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "true"
                     }
-                }, $"build_property.{GeneratorOptions.Keys.AssignNameToEndpoint}=true")
+                }, $"{GeneratorOptions.Keys.AssignNameToEndpointBuildProperty}=true")
         };
 
         yield return new object[]
@@ -24,9 +24,9 @@ public class TestAnalyzerConfigOptionsProviderClassData : IEnumerable<object[]>
                 {
                     Options =
                     {
-                        [$"build_property.{GeneratorOptions.Keys.AssignNameToEndpoint}"] = "false"
+                        [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "false"
                     }
-                }, $"build_property.{GeneratorOptions.Keys.AssignNameToEndpoint}=false")
+                }, $"{GeneratorOptions.Keys.AssignNameToEndpointBuildProperty}=false")
         };
     }
 

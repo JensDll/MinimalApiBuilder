@@ -1,14 +1,16 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerate
+internal class EndpointToGenerate : IWithSyntaxTree
 {
     private readonly string _identifier;
 
     private EndpointToGenerate(
         string identifier,
+        SyntaxTree syntaxTree,
         string className,
         string? namespaceName,
         EndpointToGenerateHandler handler,
@@ -19,6 +21,7 @@ internal class EndpointToGenerate
         NamespaceName = namespaceName;
         Handler = handler;
         NeedsConfigure = needsConfigure;
+        SyntaxTree = syntaxTree;
     }
 
     public string ClassName { get; }
@@ -28,6 +31,8 @@ internal class EndpointToGenerate
     public EndpointToGenerateHandler Handler { get; }
 
     public bool NeedsConfigure { get; }
+
+    public SyntaxTree SyntaxTree { get; }
 
     public override string ToString() => _identifier;
 
@@ -87,6 +92,7 @@ internal class EndpointToGenerate
 
         EndpointToGenerate endpoint = new(
             identifier: endpointSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            syntaxTree: endpointDeclaration.SyntaxTree,
             namespaceName: endpointSymbol.ContainingNamespace.IsGlobalNamespace
                 ? null
                 : endpointSymbol.ContainingNamespace.ToDisplayString(),
