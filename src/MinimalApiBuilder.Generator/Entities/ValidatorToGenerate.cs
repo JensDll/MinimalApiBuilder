@@ -1,11 +1,14 @@
-﻿using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
 internal class ValidatorToGenerate
 {
+    private const string AbstractValidatorName = "FluentValidation.AbstractValidator`1";
+    private const string RegisterValidatorAttributeName = "MinimalApiBuilder.RegisterValidatorAttribute";
+
     private readonly string _identifier;
 
     private ValidatorToGenerate(
@@ -37,8 +40,14 @@ internal class ValidatorToGenerate
             return null;
         }
 
-        if (semanticModel.Compilation.GetTypeByMetadataName("FluentValidation.AbstractValidator`1")
+        if (semanticModel.Compilation.GetTypeByMetadataName(AbstractValidatorName)
             is not { } abstractValidatorSymbol)
+        {
+            return null;
+        }
+
+        if (semanticModel.Compilation.GetTypeByMetadataName(RegisterValidatorAttributeName)
+            is not { } registerValidatorAttributeSymbol)
         {
             return null;
         }
@@ -50,7 +59,7 @@ internal class ValidatorToGenerate
         }
 
         bool isAsync = GetIsAsync(validatorDeclaration, cancellationToken);
-        string serviceLifetime = GetValidatorServiceLifetime(validatorDeclaration, cancellationToken);
+        string serviceLifetime = GetValidatorServiceLifetime(validatorSymbol, registerValidatorAttributeSymbol);
 
         ValidatorToGenerate validator = new(
             identifier: validatorSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
@@ -62,22 +71,19 @@ internal class ValidatorToGenerate
         return validator;
     }
 
-    private static string GetValidatorServiceLifetime(MemberDeclarationSyntax validatorDeclaration,
-        CancellationToken cancellationToken)
+    private static string GetValidatorServiceLifetime(ISymbol validatorSymbol,
+        ISymbol registerValidatorAttributeSymbol)
     {
-        foreach (AttributeListSyntax attribute in validatorDeclaration.AttributeLists)
+        foreach (AttributeData attribute in validatorSymbol.GetAttributes())
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            string name = attribute.ToString();
-
-            const string pattern = @"RegisterValidator\(ServiceLifetime\.(?<lifetime>\w+)";
-            Match match = Regex.Match(name, pattern);
-
-            if (match.Success)
+            if (!registerValidatorAttributeSymbol.Equals(attribute.AttributeClass, SymbolEqualityComparer.Default) ||
+                attribute.ConstructorArguments.Length != 1 ||
+                attribute.ConstructorArguments[0].Value is not int lifetime)
             {
-                return match.Groups["lifetime"].Value;
+                continue;
             }
+
+            return lifetime.ServiceLifetimeToString();
         }
 
         return "Singleton";
@@ -108,37 +114,5 @@ internal class ValidatorToGenerate
         }
 
         return false;
-    }
-}
-
-internal class ValidatorToGenerateEqualityComparer : IEqualityComparer<ValidatorToGenerate>
-{
-    public static readonly ValidatorToGenerateEqualityComparer Instance = new();
-
-    public bool Equals(ValidatorToGenerate? x, ValidatorToGenerate? y)
-    {
-        if (ReferenceEquals(x, y))
-        {
-            return true;
-        }
-
-        if (x is null)
-        {
-            return false;
-        }
-
-        if (y is null)
-        {
-            return false;
-        }
-
-        return x.ValidatedType == y.ValidatedType &&
-               x.IsAsync == y.IsAsync &&
-               x.ServiceLifetime == y.ServiceLifetime;
-    }
-
-    public int GetHashCode(ValidatorToGenerate obj)
-    {
-        throw new NotImplementedException();
     }
 }
