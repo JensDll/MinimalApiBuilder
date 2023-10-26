@@ -9,24 +9,47 @@ public class TestAnalyzerConfigOptionsProviderClassData : IEnumerable<object[]>
     {
         yield return new object[]
         {
-            new TestAnalyzerConfigOptionsProvider(new TestAnalyzerConfigOptions
+            new TestAnalyzerConfigOptionsProvider(globalOptions: new TestAnalyzerConfigOptions
                 {
                     Options =
                     {
                         [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "true"
                     }
-                }, $"{GeneratorOptions.Keys.AssignNameToEndpointBuildProperty}=true")
+                },
+                localOptions: new TestAnalyzerConfigOptions(),
+                snapshotFolder: "assign_name_global_true")
         };
 
         yield return new object[]
         {
-            new TestAnalyzerConfigOptionsProvider(new TestAnalyzerConfigOptions
+            new TestAnalyzerConfigOptionsProvider(globalOptions: new TestAnalyzerConfigOptions(),
+                localOptions: new TestAnalyzerConfigOptions
                 {
                     Options =
                     {
-                        [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "false"
+                        [GeneratorOptions.Keys.AssignNameToEndpoint] = "true"
                     }
-                }, $"{GeneratorOptions.Keys.AssignNameToEndpointBuildProperty}=false")
+                },
+                snapshotFolder: "assign_name_local_true")
+        };
+
+        yield return new object[]
+        {
+            new TestAnalyzerConfigOptionsProvider(globalOptions: new TestAnalyzerConfigOptions()
+                {
+                    Options =
+                    {
+                        [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "true"
+                    }
+                },
+                localOptions: new TestAnalyzerConfigOptions
+                {
+                    Options =
+                    {
+                        [GeneratorOptions.Keys.AssignNameToEndpoint] = "false"
+                    }
+                },
+                snapshotFolder: "assign_name_global_true_local_false")
         };
     }
 
