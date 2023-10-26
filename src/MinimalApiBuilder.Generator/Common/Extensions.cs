@@ -1,6 +1,6 @@
 ﻿namespace MinimalApiBuilder.Generator.Common;
 
-public static class Extensions
+internal static class Extensions
 {
     public static string ServiceLifetimeToString(this int value)
     {
