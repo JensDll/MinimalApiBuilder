@@ -9,7 +9,8 @@ internal class Disposable : IDisposable
         _onDispose = onDispose;
     }
 
-    private Disposable() { }
+    private Disposable()
+    { }
 
     public static readonly Disposable Empty = new();
 
