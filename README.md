@@ -25,7 +25,7 @@ public partial class BasicEndpoint : MinimalApiBuilderEndpoint
 ```
 
 The endpoint class must be `partial`, inherit from `MinimalApiBuilderEndpoint`,
-and have a `Handle` or `HandleAsync` method with the containing type passed
+and have a `static` `Handle` or `HandleAsync` method with the containing type passed
 from dependency injection.
 The endpoint is mapped through the typical `IEndpointRouteBuilder` `Map<Verb>` extension methods:
 
