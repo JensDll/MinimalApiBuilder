@@ -58,7 +58,7 @@ internal class ValidatorToGenerate
             return null;
         }
 
-        bool isAsync = GetIsAsync(validatorDeclaration, cancellationToken);
+        bool isAsync = GetIsAsync(validatorDeclaration);
         string serviceLifetime = GetValidatorServiceLifetime(validatorSymbol, registerValidatorAttributeSymbol);
 
         ValidatorToGenerate validator = new(
@@ -71,8 +71,7 @@ internal class ValidatorToGenerate
         return validator;
     }
 
-    private static string GetValidatorServiceLifetime(ISymbol validatorSymbol,
-        ISymbol registerValidatorAttributeSymbol)
+    private static string GetValidatorServiceLifetime(ISymbol validatorSymbol, ISymbol registerValidatorAttributeSymbol)
     {
         foreach (AttributeData attribute in validatorSymbol.GetAttributes())
         {
@@ -89,12 +88,10 @@ internal class ValidatorToGenerate
         return "Singleton";
     }
 
-    private static bool GetIsAsync(TypeDeclarationSyntax validatorDeclaration, CancellationToken cancellationToken)
+    private static bool GetIsAsync(TypeDeclarationSyntax validatorDeclaration)
     {
         foreach (MemberDeclarationSyntax member in validatorDeclaration.Members)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             if (member is not ConstructorDeclarationSyntax constructorDeclaration)
             {
                 continue;

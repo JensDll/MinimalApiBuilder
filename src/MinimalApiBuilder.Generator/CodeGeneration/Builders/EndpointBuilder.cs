@@ -21,6 +21,8 @@ internal class EndpointBuilder : SourceBuilder
 
     public void AddEndpoint(EndpointToGenerate endpoint)
     {
+        Options = Options.GetForTarget(endpoint);
+
         using (endpoint.NamespaceName is null ? Disposable.Empty : OpenBlock($"namespace {endpoint.NamespaceName}"))
         using (OpenBlock($"public partial class {endpoint.ClassName} : {Fqn.IEndpoint}"))
         {

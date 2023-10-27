@@ -15,5 +15,6 @@ public partial class CombinedValidationEndpoint : MinimalApiBuilderEndpoint
         return Results.Ok();
     }
 
-    public static void Configure(RouteHandlerBuilder builder) { }
+    public static void Configure(RouteHandlerBuilder builder)
+    { }
 }

@@ -1,14 +1,19 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerate
+internal class EndpointToGenerate : IWithSyntaxTree
 {
+    private const string MinimalApiBuilderEndpointName = "MinimalApiBuilder.MinimalApiBuilderEndpoint";
+    private const string RouteHandlerBuilderName = "Microsoft.AspNetCore.Builder.RouteHandlerBuilder";
+
     private readonly string _identifier;
 
     private EndpointToGenerate(
         string identifier,
+        SyntaxTree syntaxTree,
         string className,
         string? namespaceName,
         EndpointToGenerateHandler handler,
@@ -19,6 +24,7 @@ internal class EndpointToGenerate
         NamespaceName = namespaceName;
         Handler = handler;
         NeedsConfigure = needsConfigure;
+        SyntaxTree = syntaxTree;
     }
 
     public string ClassName { get; }
@@ -28,6 +34,8 @@ internal class EndpointToGenerate
     public EndpointToGenerateHandler Handler { get; }
 
     public bool NeedsConfigure { get; }
+
+    public SyntaxTree SyntaxTree { get; }
 
     public override string ToString() => _identifier;
 
@@ -40,7 +48,7 @@ internal class EndpointToGenerate
             return null;
         }
 
-        if (semanticModel.Compilation.GetTypeByMetadataName("MinimalApiBuilder.MinimalApiBuilderEndpoint")
+        if (semanticModel.Compilation.GetTypeByMetadataName(MinimalApiBuilderEndpointName)
             is not { } minimalApiBuilderEndpointSymbol)
         {
             return null;
@@ -51,7 +59,7 @@ internal class EndpointToGenerate
             return null;
         }
 
-        if (semanticModel.Compilation.GetTypeByMetadataName("Microsoft.AspNetCore.Builder.RouteHandlerBuilder")
+        if (semanticModel.Compilation.GetTypeByMetadataName(RouteHandlerBuilderName)
             is not { } routeHandlerBuilderSymbol)
         {
             return null;
@@ -87,6 +95,7 @@ internal class EndpointToGenerate
 
         EndpointToGenerate endpoint = new(
             identifier: endpointSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            syntaxTree: endpointDeclaration.SyntaxTree,
             namespaceName: endpointSymbol.ContainingNamespace.IsGlobalNamespace
                 ? null
                 : endpointSymbol.ContainingNamespace.ToDisplayString(),

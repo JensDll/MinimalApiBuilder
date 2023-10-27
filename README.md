@@ -39,7 +39,8 @@ The above is functionally equivalent to:
 app.MapGet("/hello", static () => "Hello, World!");
 ```
 
-This library depends on [`FluentValidation >= 11`](https://github.com/FluentValidation/FluentValidation). An endpoint can have a validated request object:
+This library depends on [`FluentValidation >= 11`](https://github.com/FluentValidation/FluentValidation). An endpoint
+can have a validated request object:
 
 ```csharp
 public struct BasicRequest
@@ -69,8 +70,8 @@ public class BasicRequestValidator : AbstractValidator<BasicRequest>
 app.MapGet<BasicRequestEndpoint>("/hello/{name}");
 ```
 
-The incremental generator will generate code to validate the request object before the handler is called and return a `400 Bad Request` response if the validation fails.
-In `Program.cs` the below
+The incremental generator will generate code to validate the request object before the handler is called and return
+a `400 Bad Request` response if the validation fails. In `Program.cs` the below
 
 ```csharp
 builder.Services.AddMinimalApiBuilderEndpoints();
