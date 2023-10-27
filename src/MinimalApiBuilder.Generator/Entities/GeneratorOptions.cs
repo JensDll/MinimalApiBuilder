@@ -8,7 +8,7 @@ internal readonly struct GeneratorOptions
 {
     private readonly AnalyzerConfigOptionsProvider _provider;
 
-    public bool AssignNameToEndpoint { get; }
+    public bool AssignNameToEndpoint { get; } = false;
 
     public GeneratorOptions(AnalyzerConfigOptionsProvider optionsProvider)
     {
