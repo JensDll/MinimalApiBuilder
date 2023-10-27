@@ -78,3 +78,23 @@ builder.Services.AddMinimalApiBuilderEndpoints();
 ```
 
 needs to be added to register the necessary types with dependency injection.
+
+## Configuration
+
+Users can add configuration through entries in `.editorconfig` or with MSBuild properties.
+The following options are available:
+
+### `minimalapibuilder_assign_name_to_endpoint` (`true` | `false`)
+
+If `true`, the generator will add a unique `public const string Name` field
+to the endpoint classes and call the [`WithName`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routingendpointconventionbuilderextensions.withname) extension method when mapping them.
+
+```.editorconfig
+minimalapibuilder_assign_name_to_endpoint = true
+```
+
+```xml
+<PropertyGroup>
+  <minimalapibuilder_assign_name_to_endpoint>true</minimalapibuilder_assign_name_to_endpoint>
+</PropertyGroup>
+```
