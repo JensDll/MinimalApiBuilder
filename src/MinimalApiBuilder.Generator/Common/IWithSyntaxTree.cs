@@ -2,7 +2,7 @@
 
 namespace MinimalApiBuilder.Generator.Common;
 
-public interface IWithSyntaxTree
+internal interface IWithSyntaxTree
 {
     SyntaxTree SyntaxTree { get; }
 }
