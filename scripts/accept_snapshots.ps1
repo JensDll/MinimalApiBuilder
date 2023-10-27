@@ -1,6 +1,4 @@
 ﻿Get-ChildItem -Path $PSScriptRoot\..\tests\*\__snapshots__ -Recurse -Filter *.received.cs `
-| ForEach-Object {
-  $newName = $_.Name -replace '.received.cs$', '.verified.cs'
-  $destination = Join-Path $_.Directory $newName
-  Move-Item -Path $_.FullName -Destination $destination -Force
-}
+| Select-Object @{ Name = "Path"; Expression = { $_.FullName } },
+@{ Name = "Destination"; Expression = { Join-Path $_.Directory ($_.Name -replace '.received.cs$', '.verified.cs') } } `
+| Move-Item -Force
