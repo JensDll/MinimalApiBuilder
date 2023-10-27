@@ -32,7 +32,8 @@ public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
         builder.AddEndpointFilter(static (invocationContext, next) =>
         {
             var endpoint = invocationContext.GetArgument<AsyncSingleValidationEndpoint>(0);
-            endpoint._logger.Information("Executing handler for {Endpoint}", nameof(Endpoint));
+            endpoint._logger.Information("Executing handler for {Endpoint}",
+                nameof(AsyncSingleValidationEndpoint));
             return next(invocationContext);
         });
     }
