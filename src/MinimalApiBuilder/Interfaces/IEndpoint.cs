@@ -1,5 +1,7 @@
-﻿using FluentValidation.Results;
+﻿using System.Net;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace MinimalApiBuilder;
@@ -16,17 +18,17 @@ public interface IEndpoint
 
     static abstract void Configure(RouteHandlerBuilder builder);
 
-    static BadRequest<ErrorDto> GetErrorResult(MinimalApiBuilderEndpoint endpoint, ValidationResult result)
+    static BadRequest<ErrorDto> GetValidationErrorResult(MinimalApiBuilderEndpoint endpoint, ValidationResult result)
     {
         foreach (ValidationFailure failure in result.Errors)
         {
             endpoint.ValidationErrors.Add(failure.ErrorMessage);
         }
 
-        return ErrorResult(endpoint);
+        return ValidationErrorResult(endpoint);
     }
 
-    static BadRequest<ErrorDto> GetErrorResult(MinimalApiBuilderEndpoint endpoint,
+    static BadRequest<ErrorDto> GetValidationErrorResult(MinimalApiBuilderEndpoint endpoint,
         params ValidationResult[] results)
     {
         foreach (ValidationResult result in results)
@@ -37,9 +39,14 @@ public interface IEndpoint
             }
         }
 
-        return ErrorResult(endpoint);
+        return ValidationErrorResult(endpoint);
     }
 
-    static BadRequest<ErrorDto> ErrorResult(MinimalApiBuilderEndpoint endpoint) =>
-        endpoint.ErrorResult("Validation failed");
+    static BadRequest<ErrorDto> ValidationErrorResult(MinimalApiBuilderEndpoint endpoint) =>
+        TypedResults.BadRequest(new ErrorDto
+        {
+            StatusCode = HttpStatusCode.BadRequest,
+            Message = "Validation failed",
+            Errors = endpoint.ValidationErrors
+        });
 }

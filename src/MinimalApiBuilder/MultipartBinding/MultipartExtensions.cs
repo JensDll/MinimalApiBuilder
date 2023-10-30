@@ -45,7 +45,7 @@ internal static class MultipartExtensions
 
         return hasContentDispositionHeader &&
                contentDisposition is not null &&
-               contentDisposition.DispositionType.Equals("form-data") &&
+               contentDisposition.DispositionType.Equals("form-data", StringComparison.OrdinalIgnoreCase) &&
                string.IsNullOrEmpty(contentDisposition.FileName.Value) &&
                string.IsNullOrEmpty(contentDisposition.FileNameStar.Value);
     }
@@ -58,7 +58,7 @@ internal static class MultipartExtensions
 
         return hasContentDispositionHeader &&
                contentDisposition is not null &&
-               contentDisposition.DispositionType.Equals("form-data") &&
+               contentDisposition.DispositionType.Equals("form-data", StringComparison.OrdinalIgnoreCase) &&
                (!string.IsNullOrEmpty(contentDisposition.FileName.Value) ||
                 !string.IsNullOrEmpty(contentDisposition.FileNameStar.Value));
     }

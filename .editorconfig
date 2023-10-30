@@ -16,6 +16,16 @@ tab_width = 4
 # IDE0001 IDE0002 IDE0003 IDE0009 IDE0049 IDE0050 IDE0035 IDE0079
 # https://github.com/dotnet/roslyn/tree/252def9efa028af3f0562929b4b0e8a74dcd3124/src/Analyzers/Core/Analyzers/EnforceOnBuildValues.cs#L120
 
+######## DESIGN RULES ########
+# Don't require argument null checks
+dotnet_diagnostic.CA1062.severity = none
+######## DESIGN RULES ########
+
+######## RELIABILITY RULES ########
+# Ignore `ConfigureAwait` on awaited `Task`s
+dotnet_diagnostic.CA2007.severity = none
+######## RELIABILITY RULES ########
+
 ######## LANGUAGE RULES ########
 # Avoid `this` qualifier
 dotnet_diagnostic.IDE0003.severity = warning

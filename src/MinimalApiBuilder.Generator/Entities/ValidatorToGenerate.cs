@@ -8,7 +8,6 @@ internal class ValidatorToGenerate
 {
     private const string AbstractValidatorName = "FluentValidation.AbstractValidator`1";
     private const string RegisterValidatorAttributeName = "MinimalApiBuilder.RegisterValidatorAttribute";
-
     private readonly string _identifier;
 
     private ValidatorToGenerate(

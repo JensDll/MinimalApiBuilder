@@ -13,7 +13,7 @@ public abstract partial class MinimalApiBuilderEndpoint
     {
         httpContext.Response.StatusCode = (int)statusCode;
         return httpContext.Response.WriteAsJsonAsync(
-            value: new ErrorDto()
+            value: new ErrorDto
             {
                 StatusCode = statusCode,
                 Message = message,

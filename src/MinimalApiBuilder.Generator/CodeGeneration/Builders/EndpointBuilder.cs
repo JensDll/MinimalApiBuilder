@@ -116,7 +116,7 @@ internal class EndpointBuilder : SourceBuilder
             AppendLine(GetEndpoint(endpointParameter));
             AppendLine($"{Fqn.ValidationResult} result = {GetValidationResult(parameter)};");
             AppendLine(
-                $"return result.IsValid ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetErrorResult(endpoint, result));");
+                $"return result.IsValid ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetValidationErrorResult(endpoint, result));");
         }
     }
 
@@ -130,7 +130,7 @@ internal class EndpointBuilder : SourceBuilder
             AppendLine(
                 $"{Fqn.ValidationResult}[] results = {{ {string.Join(", ", parameters.Select(GetValidationResult))} }};");
             AppendLine(
-                $"return {Fqn.Linq}.Any(results, static result => !result.IsValid) ? {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetErrorResult(endpoint, results)) : next(invocationContext);");
+                $"return {Fqn.Linq}.Any(results, static result => !result.IsValid) ? {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetValidationErrorResult(endpoint, results)) : next(invocationContext);");
         }
     }
 
@@ -143,7 +143,7 @@ internal class EndpointBuilder : SourceBuilder
             AppendLine(GetEndpoint(endpointParameter));
             AppendLine($"{Fqn.ValidationResult} result = await {GetValidationResultAsync(parameter)};");
             AppendLine(
-                $"return result.IsValid ? await next(invocationContext) : {Fqn.IEndpoint}.GetErrorResult(endpoint, result);");
+                $"return result.IsValid ? await next(invocationContext) : {Fqn.IEndpoint}.GetValidationErrorResult(endpoint, result);");
         }
     }
 
@@ -157,7 +157,7 @@ internal class EndpointBuilder : SourceBuilder
             AppendLine(
                 $"{Fqn.ValidationResult}[] results = await {Fqn.Task}.WhenAll({string.Join(", ", parameters.Select(GetValidationResultAsync))});");
             AppendLine(
-                $"return {Fqn.Linq}.Any(results, static result => !result.IsValid) ? {Fqn.IEndpoint}.GetErrorResult(endpoint, results) : await next(invocationContext);");
+                $"return {Fqn.Linq}.Any(results, static result => !result.IsValid) ? {Fqn.IEndpoint}.GetValidationErrorResult(endpoint, results) : await next(invocationContext);");
         }
     }
 
