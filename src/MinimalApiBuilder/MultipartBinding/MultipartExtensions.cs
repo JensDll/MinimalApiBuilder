@@ -1,13 +1,16 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 
 namespace MinimalApiBuilder;
 
 internal static class MultipartExtensions
 {
-    public static string GetBoundary(this HttpContext context, int lengthLimit = 70)
+    public static string GetBoundary(this HttpContext context)
     {
         if (context.Request.ContentType is null)
         {
@@ -21,6 +24,9 @@ internal static class MultipartExtensions
         {
             throw new MultipartBindingException("Missing content-type boundary");
         }
+
+        IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();
+        int lengthLimit = formOptions.Value.MultipartBoundaryLengthLimit;
 
         if (boundary.Length > lengthLimit)
         {
