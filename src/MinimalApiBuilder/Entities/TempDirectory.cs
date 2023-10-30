@@ -8,7 +8,9 @@ internal static class TempDirectory
 
         if (!Directory.Exists(tempDirectory))
         {
+#pragma warning disable CA1065
             throw new DirectoryNotFoundException(tempDirectory);
+#pragma warning restore CA1065
         }
 
         Path = tempDirectory;

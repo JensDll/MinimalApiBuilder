@@ -1,21 +1,20 @@
 ﻿namespace MinimalApiBuilder.IntegrationTests;
 
-public class HttpClientFixture : IDisposable
+public sealed class HttpClientFixture : IDisposable
 {
+    private readonly TestWebApplicationFactory<Program> _factory;
+
     public HttpClientFixture()
     {
-        Factory = new TestWebApplicationFactory<Program>();
-        Client = Factory.CreateClient();
+        _factory = new TestWebApplicationFactory<Program>();
+        Client = _factory.CreateClient();
     }
-
-    internal TestWebApplicationFactory<Program> Factory { get; }
 
     internal HttpClient Client { get; }
 
     public void Dispose()
     {
-        GC.SuppressFinalize(this);
-        Factory.Dispose();
+        _factory.Dispose();
         Client.Dispose();
     }
 }

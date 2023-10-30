@@ -18,13 +18,13 @@ namespace Features
             {
                 global::Features.Endpoint endpoint = invocationContext.GetArgument<global::Features.Endpoint>(0);
                 global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.FirstRequest>>(invocationContext.HttpContext.RequestServices).Validate(invocationContext.GetArgument<global::Features.FirstRequest>(1));
-                return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, result));
+                return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::MinimalApiBuilder.IEndpoint.GetValidationErrorResult(endpoint, result));
             });
             global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
             {
                 global::Features.Endpoint endpoint = invocationContext.GetArgument<global::Features.Endpoint>(0);
                 global::FluentValidation.Results.ValidationResult result = await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::Features.SecondRequest>>(invocationContext.HttpContext.RequestServices).ValidateAsync(invocationContext.GetArgument<global::Features.SecondRequest>(2));
-                return result.IsValid ? await next(invocationContext) : global::MinimalApiBuilder.IEndpoint.GetErrorResult(endpoint, result);
+                return result.IsValid ? await next(invocationContext) : global::MinimalApiBuilder.IEndpoint.GetValidationErrorResult(endpoint, result);
             });
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]

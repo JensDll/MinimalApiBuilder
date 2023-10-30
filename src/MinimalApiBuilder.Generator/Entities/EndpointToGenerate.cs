@@ -8,7 +8,6 @@ internal class EndpointToGenerate : IWithSyntaxTree
 {
     private const string MinimalApiBuilderEndpointName = "MinimalApiBuilder.MinimalApiBuilderEndpoint";
     private const string RouteHandlerBuilderName = "Microsoft.AspNetCore.Builder.RouteHandlerBuilder";
-
     private readonly string _identifier;
 
     private EndpointToGenerate(
