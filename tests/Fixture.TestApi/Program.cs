@@ -1,4 +1,5 @@
 using Fixture.TestApi.Extensions;
+using Fixture.TestApi.Features;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,5 +26,6 @@ if (app.Environment.IsDevelopment())
 app.UseDeveloperExceptionPage();
 
 app.MapValidationFeatures();
+app.MapPost<BasicEndpoint>("/hello");
 
 app.Run();

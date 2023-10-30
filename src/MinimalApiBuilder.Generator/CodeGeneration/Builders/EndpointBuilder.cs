@@ -114,9 +114,11 @@ internal class EndpointBuilder : SourceBuilder
         using (OpenAddEndpointFilter())
         {
             AppendLine(GetEndpoint(endpointParameter));
-            AppendLine($"{Fqn.ValidationResult} result = {GetValidationResult(parameter)};");
-            AppendLine(
-                $"return result.IsValid ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetValidationErrorResult(endpoint, result));");
+            AppendLine($"{parameter} parameter = invocationContext.GetArgument<{parameter}>({parameter.Position});");
+            AppendLine("return next(invocationContext);");
+            // AppendLine($"{Fqn.ValidationResult} result = {GetValidationResult(parameter)};");
+            // AppendLine(
+            //     $"return result.IsValid ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetValidationErrorResult(endpoint, result));");
         }
     }
 
