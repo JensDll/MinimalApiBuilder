@@ -17,7 +17,7 @@ tab_width = 4
 # https://github.com/dotnet/roslyn/tree/252def9efa028af3f0562929b4b0e8a74dcd3124/src/Analyzers/Core/Analyzers/EnforceOnBuildValues.cs#L120
 
 ######## DESIGN RULES ########
-# Don't require reference null checks
+# Don't require argument null checks
 dotnet_diagnostic.CA1062.severity = none
 ######## DESIGN RULES ########
 
