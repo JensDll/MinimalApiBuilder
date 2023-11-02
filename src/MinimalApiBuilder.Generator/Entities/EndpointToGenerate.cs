@@ -6,8 +6,6 @@ namespace MinimalApiBuilder.Generator.Entities;
 
 internal class EndpointToGenerate : IWithSyntaxTree
 {
-    private const string MinimalApiBuilderEndpointName = "MinimalApiBuilder.MinimalApiBuilderEndpoint";
-    private const string RouteHandlerBuilderName = "Microsoft.AspNetCore.Builder.RouteHandlerBuilder";
     private readonly string _identifier;
 
     private EndpointToGenerate(
@@ -38,52 +36,42 @@ internal class EndpointToGenerate : IWithSyntaxTree
 
     public override string ToString() => _identifier;
 
-    public static EndpointToGenerate? Create(ClassDeclarationSyntax endpointDeclaration,
-        SemanticModel semanticModel, CancellationToken cancellationToken)
+    public static EndpointToGenerate? Create(
+        INamedTypeSymbol endpoint,
+        ClassDeclarationSyntax endpointSyntax,
+        WellKnownTypes wellKnownTypes,
+        CancellationToken cancellationToken)
     {
-        if (semanticModel.GetDeclaredSymbol(endpointDeclaration, cancellationToken)
-            is not INamedTypeSymbol endpointSymbol)
+        INamedTypeSymbol minimalApiBuilderEndpoint =
+            wellKnownTypes[WellKnownTypes.Type.MinimalApiBuilder_MinimalApiBuilderEndpoint];
+
+        if (!SymbolEqualityComparer.Default.Equals(endpoint.BaseType, minimalApiBuilderEndpoint))
         {
             return null;
         }
 
-        if (semanticModel.Compilation.GetTypeByMetadataName(MinimalApiBuilderEndpointName)
-            is not { } minimalApiBuilderEndpointSymbol)
-        {
-            return null;
-        }
-
-        if (!minimalApiBuilderEndpointSymbol.Equals(endpointSymbol.BaseType, SymbolEqualityComparer.Default))
-        {
-            return null;
-        }
-
-        if (semanticModel.Compilation.GetTypeByMetadataName(RouteHandlerBuilderName)
-            is not { } routeHandlerBuilderSymbol)
-        {
-            return null;
-        }
+        INamedTypeSymbol routeHandlerBuilder =
+            wellKnownTypes[WellKnownTypes.Type.Microsoft_AspNetCore_Builder_RouteHandlerBuilder];
 
         bool needsConfigure = true;
         EndpointToGenerateHandler? handler = null;
 
-        foreach (ISymbol member in endpointSymbol.GetMembers())
+        foreach (ISymbol member in endpoint.GetMembers())
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            switch (member)
+            if (member is not IMethodSymbol method)
             {
-                case IMethodSymbol methodSymbol:
-                    if (TryGetHandler(endpointSymbol, methodSymbol, out var endpointHandler))
-                    {
-                        handler = endpointHandler;
-                    }
-                    else if (IsConfigure(methodSymbol, routeHandlerBuilderSymbol))
-                    {
-                        needsConfigure = false;
-                    }
+                continue;
+            }
 
-                    break;
+            if (TryGetHandler(endpoint, method, wellKnownTypes, out var endpointHandler))
+            {
+                handler = endpointHandler;
+                continue;
+            }
+
+            if (IsConfigure(method, routeHandlerBuilder))
+            {
+                needsConfigure = false;
             }
         }
 
@@ -92,41 +80,39 @@ internal class EndpointToGenerate : IWithSyntaxTree
             return null;
         }
 
-        EndpointToGenerate endpoint = new(
-            identifier: endpointSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            syntaxTree: endpointDeclaration.SyntaxTree,
-            namespaceName: endpointSymbol.ContainingNamespace.IsGlobalNamespace
+        cancellationToken.ThrowIfCancellationRequested();
+
+        EndpointToGenerate result = new(
+            identifier: endpoint.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            syntaxTree: endpointSyntax.SyntaxTree,
+            namespaceName: endpoint.ContainingNamespace.IsGlobalNamespace
                 ? null
-                : endpointSymbol.ContainingNamespace.ToDisplayString(),
-            className: endpointSymbol.Name,
+                : endpoint.ContainingNamespace.ToDisplayString(),
+            className: endpoint.Name,
             handler: handler,
             needsConfigure: needsConfigure);
 
-        return endpoint;
+        return result;
     }
 
-    private static bool TryGetHandler(ISymbol endpointSymbol, IMethodSymbol methodSymbol,
+    private static bool TryGetHandler(ISymbol endpoint, IMethodSymbol method, WellKnownTypes wellKnownTypes,
         out EndpointToGenerateHandler? handler)
     {
         handler = null;
 
-        if (methodSymbol.Name is not ("Handle" or "HandleAsync"))
+        if (method.Name is not ("Handle" or "HandleAsync"))
         {
             return false;
         }
 
-        var parameters = new EndpointToGenerateHandlerParameter[methodSymbol.Parameters.Length];
+        var parameters = new EndpointToGenerateHandlerParameter[method.Parameters.Length];
         EndpointToGenerateHandlerParameter? endpointParameter = null;
 
-        for (int i = 0; i < methodSymbol.Parameters.Length; ++i)
+        for (int i = 0; i < method.Parameters.Length; ++i)
         {
-            IParameterSymbol parameterSymbol = methodSymbol.Parameters[i];
-
-            parameters[i] = new EndpointToGenerateHandlerParameter(
-                identifier: parameterSymbol.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-                position: i);
-
-            if (parameterSymbol.Type.Equals(endpointSymbol, SymbolEqualityComparer.Default))
+            IParameterSymbol parameter = method.Parameters[i];
+            parameters[i] = new EndpointToGenerateHandlerParameter(parameter, i, wellKnownTypes);
+            if (SymbolEqualityComparer.Default.Equals(parameter.Type, endpoint))
             {
                 endpointParameter = parameters[i];
             }
@@ -138,16 +124,16 @@ internal class EndpointToGenerate : IWithSyntaxTree
         }
 
         handler = new EndpointToGenerateHandler(
-            name: methodSymbol.Name,
+            name: method.Name,
             endpointParameter: endpointParameter,
             parameters: parameters);
 
         return true;
     }
 
-    private static bool IsConfigure(IMethodSymbol methodSymbol, ISymbol routeHandlerBuilderSymbol)
+    private static bool IsConfigure(IMethodSymbol method, ISymbol routeHandlerBuilder)
     {
-        return methodSymbol is { Name: "Configure", Parameters.Length: 1, ReturnsVoid: true, IsStatic: true } &&
-               methodSymbol.Parameters[0].Type.Equals(routeHandlerBuilderSymbol, SymbolEqualityComparer.Default);
+        return method is { Name: "Configure", Parameters.Length: 1, ReturnsVoid: true, IsStatic: true } &&
+               SymbolEqualityComparer.Default.Equals(method.Parameters[0].Type, routeHandlerBuilder);
     }
 }

@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MinimalApiBuilder.Entities;
 
@@ -13,7 +12,15 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     private readonly HttpContext _context;
     private readonly FormOptions _formOptions;
 
-    private MultipartReader(HttpContext context) : base(context.GetBoundary(), context.Request.Body)
+    /// <summary>
+    /// Initializes a new instance of <see cref="MultipartReader" />.
+    /// </summary>
+    /// <param name="context">The current HTTP request context</param>
+    /// <exception cref="MultipartBindingException">
+    /// Thrown if the request is not a multipart request.
+    /// </exception>
+    /// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
+    public MultipartReader(HttpContext context) : base(context.GetBoundary(), context.Request.Body)
     {
         if (!context.IsMultipart())
         {
@@ -24,21 +31,6 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
 
         _context = context;
         _formOptions = formOptions.Value;
-    }
-
-    public static MultipartReader? Create(HttpContext context)
-    {
-        try
-        {
-            return new MultipartReader(context);
-        }
-        catch (MultipartBindingException e)
-        {
-            ILoggerFactory loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
-            ILogger logger = loggerFactory.CreateLogger<MultipartReader>();
-            logger.FailedToCreateMultipartReader(e.Message);
-            return null;
-        }
     }
 
     public new async Task<NextSection?> ReadNextSectionAsync(CancellationToken cancellationToken = default)

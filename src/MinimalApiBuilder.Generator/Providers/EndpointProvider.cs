@@ -27,7 +27,14 @@ internal static class EndpointProvider
 
     private static EndpointToGenerate? Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
-        return EndpointToGenerate.Create(Unsafe.As<ClassDeclarationSyntax>(context.Node),
-            context.SemanticModel, cancellationToken);
+        if (context.SemanticModel.GetDeclaredSymbol(context.Node, cancellationToken) is not INamedTypeSymbol endpoint)
+        {
+            return null;
+        }
+
+        ClassDeclarationSyntax endpointSyntax = Unsafe.As<ClassDeclarationSyntax>(context.Node);
+        WellKnownTypes wellKnownTypes = WellKnownTypes.GetOrCreate(context.SemanticModel.Compilation);
+
+        return EndpointToGenerate.Create(endpoint, endpointSyntax, wellKnownTypes, cancellationToken);
     }
 }

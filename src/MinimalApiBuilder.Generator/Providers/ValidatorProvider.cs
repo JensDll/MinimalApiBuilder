@@ -28,7 +28,14 @@ internal static class ValidatorProvider
 
     private static ValidatorToGenerate? Transform(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
-        return ValidatorToGenerate.Create(Unsafe.As<ClassDeclarationSyntax>(context.Node),
-            context.SemanticModel, cancellationToken);
+        if (context.SemanticModel.GetDeclaredSymbol(context.Node, cancellationToken) is not INamedTypeSymbol validator)
+        {
+            return null;
+        }
+
+        ClassDeclarationSyntax validatorSyntax = Unsafe.As<ClassDeclarationSyntax>(context.Node);
+        WellKnownTypes wellKnownTypes = WellKnownTypes.GetOrCreate(context.SemanticModel.Compilation);
+
+        return ValidatorToGenerate.Create(validator, validatorSyntax, wellKnownTypes, cancellationToken);
     }
 }

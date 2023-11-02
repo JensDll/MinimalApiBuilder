@@ -183,7 +183,7 @@ csharp_indent_switch_labels = true
 csharp_indent_labels = one_less_than_current
 csharp_indent_block_contents = true
 csharp_indent_braces = false
-csharp_indent_case_contents_when_block = true
+csharp_indent_case_contents_when_block = false
 
 csharp_space_after_cast = false
 csharp_space_after_colon_in_inheritance_clause = true
@@ -317,6 +317,7 @@ resharper_csharp_outdent_statement_labels = true
 resharper_csharp_blank_lines_around_field = 0
 resharper_csharp_indent_raw_literal_string = do_not_change
 resharper_csharp_empty_block_style = together
+resharper_xmldoc_indent_text = zero_indent
 ######## RESHARPER ########
 
 [*.{received,verified}.cs]

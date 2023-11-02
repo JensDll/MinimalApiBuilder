@@ -28,4 +28,10 @@ internal static class Fqn
     public const string IServiceCollection = "global::Microsoft.Extensions.DependencyInjection.IServiceCollection";
 
     public const string IValidator = "global::FluentValidation.IValidator";
+
+    public const string HttpStatusCode = "global::System.Net.HttpStatusCode";
+
+    public const string ErrorDto = "global::MinimalApiBuilder.ErrorDto";
+
+    public const string TypedResults = "global::Microsoft.AspNetCore.Http.TypedResults";
 }

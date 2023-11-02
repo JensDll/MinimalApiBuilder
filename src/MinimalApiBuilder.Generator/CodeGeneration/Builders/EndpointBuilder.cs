@@ -111,29 +111,83 @@ internal class EndpointBuilder : SourceBuilder
         EndpointToGenerateHandlerParameter endpointParameter,
         EndpointToGenerateHandlerParameter parameter)
     {
-        using (OpenAddEndpointFilter())
+        using IDisposable filterBlock = OpenAddEndpointFilter();
+        AppendLine(GetEndpoint(endpointParameter));
+        AppendLine(GetArgument(parameter, "a"));
+
+        if (parameter.HasCustomBinding)
         {
-            AppendLine(GetEndpoint(endpointParameter));
-            AppendLine($"{parameter} parameter = invocationContext.GetArgument<{parameter}>({parameter.Position});");
-            AppendLine("return next(invocationContext);");
-            // AppendLine($"{Fqn.ValidationResult} result = {GetValidationResult(parameter)};");
-            // AppendLine(
-            //     $"return result.IsValid ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetValidationErrorResult(endpoint, result));");
+            string nullCheck = parameter.IsValueType ? " || !a.HasValue" : " || a is null";
+            string check = $"endpoint.HasValidationError{(parameter.NeedsNullValidation ? nullCheck : "")}";
+            using (OpenBlock($"if ({check})"))
+            {
+                AppendLine($"return {FromResult($"{Fqn.TypedResults}.BadRequest({ModelBindingFailed})")};");
+            }
         }
+
+        AppendLine($"{Fqn.ValidationResult} r = {GetValidator(parameter)}.Validate(a);");
+
+        const string errors = $"{Fqn.Linq}.Select(r.Errors, static failure => failure.ErrorMessage)";
+        const string errorDto =
+            $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
+        const string badRequest = $"{Fqn.TypedResults}.BadRequest({errorDto})";
+
+        AppendLine(
+            $"return r.IsValid ? next(invocationContext) : {FromResult(badRequest)};");
     }
 
     private void AddValidatorsFilter(
         EndpointToGenerateHandlerParameter endpointParameter,
-        IEnumerable<EndpointToGenerateHandlerParameter> parameters)
+        IList<EndpointToGenerateHandlerParameter> parameters)
     {
-        using (OpenAddEndpointFilter())
+        using IDisposable filterBlock = OpenAddEndpointFilter();
+
+        AppendLine(GetEndpoint(endpointParameter));
+
+        List<string> nullChecks = new(parameters.Count);
+
+        bool anyCustomBinding = false;
+
+        for (int i = 0; i < parameters.Count; ++i)
         {
-            AppendLine(GetEndpoint(endpointParameter));
-            AppendLine(
-                $"{Fqn.ValidationResult}[] results = {{ {string.Join(", ", parameters.Select(GetValidationResult))} }};");
-            AppendLine(
-                $"return {Fqn.Linq}.Any(results, static result => !result.IsValid) ? {Fqn.ValueTask}.FromResult<object?>({Fqn.IEndpoint}.GetValidationErrorResult(endpoint, results)) : next(invocationContext);");
+            var parameter = parameters[i];
+            AppendLine(GetArgument(parameter, $"a{i}"));
+
+            if (parameter.NeedsNullValidation)
+            {
+                nullChecks.Add(parameter.IsValueType ? $"!a{i}.HasValue" : $"a{i} is null");
+            }
+
+            anyCustomBinding |= parameter.HasCustomBinding;
         }
+
+        if (anyCustomBinding)
+        {
+            nullChecks.Insert(0, "endpoint.HasValidationError");
+            using (OpenBlock($"if ({string.Join(" || ", nullChecks)})"))
+            {
+                AppendLine($"return {FromResult($"{Fqn.TypedResults}.BadRequest({ModelBindingFailed})")};");
+            }
+        }
+
+        List<string> isValidChecks = new(parameters.Count);
+        List<string> validationResults = new(parameters.Count);
+
+        for (int i = 0; i < parameters.Count; ++i)
+        {
+            var parameter = parameters[i];
+            AppendLine($"{Fqn.ValidationResult} r{i} = {GetValidator(parameter)}.Validate(a{i});");
+            isValidChecks.Add($"r{i}.IsValid");
+            validationResults.Add($"r{i}");
+        }
+
+        string errors =
+            $"{Fqn.Linq}.SelectMany(new[] {{ {string.Join(", ", validationResults)} }}, static result => result.Errors, static (_, failure) => failure.ErrorMessage)";
+        string errorDto =
+            $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
+
+        AppendLine(
+            $"return {string.Join(" && ", isValidChecks)} ? next(invocationContext) : {FromResult($"{Fqn.TypedResults}.BadRequest({errorDto})")};");
     }
 
     private void AddAsyncValidatorFilter(
@@ -163,11 +217,8 @@ internal class EndpointBuilder : SourceBuilder
         }
     }
 
-    private static string GetEndpoint(EndpointToGenerateHandlerParameter endpointParameter) =>
-        $"{endpointParameter} endpoint = invocationContext.GetArgument<{endpointParameter}>({endpointParameter.Position});";
-
-    private static string GetValidationResult(EndpointToGenerateHandlerParameter parameter) =>
-        $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}.Validate(invocationContext.GetArgument<{parameter}>({parameter.Position}))";
+    private static string GetValidator(EndpointToGenerateHandlerParameter parameter) =>
+        $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}";
 
     private static string GetValidationResultAsync(EndpointToGenerateHandlerParameter parameter) =>
         $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}.ValidateAsync(invocationContext.GetArgument<{parameter}>({parameter.Position}))";
@@ -182,4 +233,14 @@ internal class EndpointBuilder : SourceBuilder
     private IDisposable OpenAddEndpointFilterAsync() => OpenBlock(
         $"{Fqn.AddEndpointFilter}(builder, static async (invocationContext, next) =>",
         ");");
+
+    private static string GetArgument(EndpointToGenerateHandlerParameter parameter, string variableName) =>
+        $"{parameter} {variableName} = invocationContext.GetArgument<{parameter}>({parameter.Position});";
+
+    private static string GetEndpoint(EndpointToGenerateHandlerParameter endpoint) => GetArgument(endpoint, "endpoint");
+
+    private static string FromResult(string value) => $"{Fqn.ValueTask}.FromResult<object?>({value})";
+
+    private const string ModelBindingFailed =
+        $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Model binding failed\", Errors = endpoint.ValidationErrors }}";
 }

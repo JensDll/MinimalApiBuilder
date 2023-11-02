@@ -20,7 +20,7 @@ public class RequestValidator : AbstractValidator<AsyncValidationRequest>
         RuleFor(static request => request.Foo)
             .MustAsync(static async (foo, cancellationToken) =>
             {
-                await Task.Delay(0, cancellationToken);
+                await Task.CompletedTask;
                 return foo is not ("invalid" or "false" or "no");
             });
     }
@@ -33,7 +33,7 @@ public class ParametersValidator : AbstractValidator<AsyncValidationParameters>
         RuleFor(static parameters => parameters.Bar)
             .MustAsync(static async (value, cancellationToken) =>
             {
-                await Task.Delay(0, cancellationToken);
+                await Task.CompletedTask;
                 return value % 2 == 0;
             });
     }
