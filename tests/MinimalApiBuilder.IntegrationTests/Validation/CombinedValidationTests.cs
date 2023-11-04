@@ -2,45 +2,35 @@
 using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation.Async;
 using Fixture.TestApi.Features.Validation.Sync;
-using Xunit;
+using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests;
 
-[Collection(HttpClientCollectionFixture.Name)]
 public class CombinedValidationTests
 {
-    private readonly HttpClient _client;
-
-    public CombinedValidationTests(HttpClientFixture fixture)
-    {
-        _client = fixture.Client;
-    }
-
-    [Theory]
-    [MemberData(nameof(Invalid))]
+    [TestCaseSource(nameof(Invalid))]
     public async Task Combined_Validation_With_Invalid_Request(
         AsyncValidationRequest request,
         SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
-            await _client.PutAsJsonAsync($"/validation/combination?bar={parameters.Bar}", request);
+            await TestSetup.Client.PutAsJsonAsync($"/validation/combination?bar={parameters.Bar}", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }
 
-    [Theory]
-    [MemberData(nameof(Valid))]
+    [TestCaseSource(nameof(Valid))]
     public async Task Combined_Validation_With_Valid_Request(
         AsyncValidationRequest request,
         SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
-            await _client.PutAsJsonAsync($"/validation/combination?bar={parameters.Bar}", request);
+            await TestSetup.Client.PutAsJsonAsync($"/validation/combination?bar={parameters.Bar}", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
 
-    public static readonly IEnumerable<object[]> Invalid = new[]
+    public static readonly object[] Invalid =
     {
         new object[]
         {
@@ -64,7 +54,7 @@ public class CombinedValidationTests
         }
     };
 
-    public static readonly IEnumerable<object[]> Valid = new[]
+    public static readonly object[] Valid =
     {
         new object[]
         {

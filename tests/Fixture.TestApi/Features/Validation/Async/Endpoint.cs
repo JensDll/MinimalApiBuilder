@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MinimalApiBuilder;
 using Serilog;
@@ -10,7 +11,7 @@ namespace Fixture.TestApi.Features.Validation.Async;
 
 public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static async Task<IResult> HandleAsync(
+    private static async Task<Results<Ok, BadRequest>> HandleAsync(
         [FromServices] AsyncSingleValidationEndpoint endpoint,
         AsyncValidationRequest request,
         HttpContext context,
@@ -26,10 +27,10 @@ public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
         catch (MultipartBindingException e)
         {
             logger.Error(e, "Error binding multipart request");
-            return Results.BadRequest();
+            return TypedResults.Ok();
         }
 
-        return Results.Ok();
+        return TypedResults.BadRequest();
     }
 
     public static void Configure(RouteHandlerBuilder builder)

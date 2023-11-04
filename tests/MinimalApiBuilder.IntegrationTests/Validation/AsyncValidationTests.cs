@@ -1,76 +1,64 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation.Async;
-using Xunit;
+using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests;
 
-[Collection(HttpClientCollectionFixture.Name)]
 public class AsyncValidationTests
 {
-    private readonly HttpClient _client;
-
-    public AsyncValidationTests(HttpClientFixture fixture)
-    {
-        _client = fixture.Client;
-    }
-
-    [Theory]
-    [MemberData(nameof(InvalidSingle))]
+    [TestCaseSource(nameof(InvalidSingle))]
     public async Task Single_Parameter_Validation_With_Invalid_Request(AsyncValidationRequest request)
     {
-        HttpResponseMessage response = await _client.PostAsJsonAsync("/validation/async/single", request);
+        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/validation/async/single", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }
 
-    [Theory]
-    [MemberData(nameof(ValidSingle))]
+    [TestCaseSource(nameof(ValidSingle))]
     public async Task Single_Parameter_Validation_With_Valid_Request(AsyncValidationRequest request)
     {
-        HttpResponseMessage response = await _client.PostAsJsonAsync("/validation/async/single", request);
+        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/validation/async/single", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
 
-    [Theory]
-    [MemberData(nameof(InvalidMultiple))]
+    [TestCaseSource(nameof(InvalidMultiple))]
     public async Task Multiple_Parameters_Validation_With_Invalid_Request(
         AsyncValidationRequest request,
         AsyncValidationParameters parameters)
     {
         HttpResponseMessage response =
-            await _client.PatchAsJsonAsync($"/validation/async/multiple?bar={parameters.Bar}", request);
+            await TestSetup.Client.PatchAsJsonAsync($"/validation/async/multiple?bar={parameters.Bar}", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }
 
-    [Theory]
-    [MemberData(nameof(ValidMultiple))]
+    [TestCaseSource(nameof(ValidMultiple))]
     public async Task Multiple_Parameters_Validation_With_Valid_Request(
         AsyncValidationRequest request,
         AsyncValidationParameters parameters)
     {
         HttpResponseMessage response =
-            await _client.PatchAsJsonAsync($"/validation/async/multiple?bar={parameters.Bar}", request);
+            await TestSetup.Client.PatchAsJsonAsync($"/validation/async/multiple?bar={parameters.Bar}", request);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
 
-    public static readonly IEnumerable<object[]> InvalidSingle = new[]
+    public static readonly object[] InvalidSingle =
     {
         new object[] { new AsyncValidationRequest { Foo = "invalid" } },
         new object[] { new AsyncValidationRequest { Foo = "false" } },
         new object[] { new AsyncValidationRequest { Foo = "no" } }
     };
 
-    public static readonly IEnumerable<object[]> ValidSingle = new[]
+    public static readonly object[] ValidSingle =
     {
         new object[] { new AsyncValidationRequest { Foo = "valid" } },
         new object[] { new AsyncValidationRequest { Foo = "also valid" } }
     };
 
-    public static readonly IEnumerable<object[]> InvalidMultiple = new[]
+    public static readonly object[] InvalidMultiple =
     {
         new object[] { new AsyncValidationRequest { Foo = "invalid" }, new AsyncValidationParameters(2) },
         new object[] { new AsyncValidationRequest { Foo = "false" }, new AsyncValidationParameters(3) },
@@ -78,7 +66,7 @@ public class AsyncValidationTests
         new object[] { new AsyncValidationRequest { Foo = "valid" }, new AsyncValidationParameters(3) }
     };
 
-    public static readonly IEnumerable<object[]> ValidMultiple = new[]
+    public static readonly object[] ValidMultiple =
     {
         new object[] { new AsyncValidationRequest { Foo = "valid" }, new AsyncValidationParameters(2) },
         new object[] { new AsyncValidationRequest { Foo = "also valid" }, new AsyncValidationParameters(4) }
