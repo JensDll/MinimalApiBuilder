@@ -10,7 +10,7 @@ using Serilog;
 
 namespace Fixture.TestApi.Features.CustomBinding.BindAsync;
 
-public struct Request
+public class Request
 {
     public required string Value { get; init; }
 
@@ -19,17 +19,8 @@ public struct Request
         await Task.CompletedTask;
         BindAsyncEndpoint endpoint = context.RequestServices.GetRequiredService<BindAsyncEndpoint>();
         endpoint.Logger.Information("Binding request {Name} (BindAsync) ", info.Name);
-        endpoint.AddValidationError("BindAsyncFailed");
+        endpoint.AddValidationError($"{nameof(BindAsync)} failed");
         return null;
-    }
-}
-
-internal struct Foo
-{
-    public static bool TryParse(string value, out Foo result)
-    {
-        result = default;
-        return false;
     }
 }
 
@@ -42,7 +33,7 @@ public partial class BindAsyncEndpoint : MinimalApiBuilderEndpoint
 
     public ILogger Logger { get; }
 
-    private static IResult Handle([FromServices] BindAsyncEndpoint endpoint, Request foo)
+    private static IResult HandleAsync([FromServices] BindAsyncEndpoint endpoint, Request? request)
     {
         return TypedResults.Ok();
     }

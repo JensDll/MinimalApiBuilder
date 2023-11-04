@@ -4,17 +4,18 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerateHandlerParameter
+internal class EndpointToGenerateHandlerParameter : IToGenerate
 {
     private readonly string _identifier;
 
     public EndpointToGenerateHandlerParameter(IParameterSymbol parameter, int position, WellKnownTypes wellKnownTypes)
     {
         _identifier = parameter.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        Symbol = parameter;
         Position = position;
         IsValueType = parameter.Type.IsValueType;
         HasCustomBinding = false;
-        NeedsNullValidation = parameter.Type.NullableAnnotation == NullableAnnotation.Annotated;
+        IsNullable = parameter.Type.NullableAnnotation == NullableAnnotation.Annotated;
 
         ITypeSymbol unwrapped = parameter.Type.UnwrapType();
 
@@ -25,29 +26,35 @@ internal class EndpointToGenerateHandlerParameter
                 continue;
             }
 
-            if (IsBindAsync(method, wellKnownTypes, out INamedTypeSymbol? resultType))
+            if (IsBindAsync(method, wellKnownTypes, out var resultType))
             {
                 HasCustomBinding = true;
-                NeedsNullValidation = resultType!.TypeArguments[0].NullableAnnotation == NullableAnnotation.Annotated;
+                NeedsCustomBindingNullCheck =
+                    !IsNullable && resultType!.TypeArguments[0].NullableAnnotation == NullableAnnotation.Annotated;
                 break;
             }
 
             if (IsTryParse(method, wellKnownTypes, out resultType))
             {
                 HasCustomBinding = true;
-                NeedsNullValidation = resultType!.NullableAnnotation == NullableAnnotation.Annotated;
+                NeedsCustomBindingNullCheck =
+                    !IsNullable && resultType!.NullableAnnotation == NullableAnnotation.Annotated;
                 break;
             }
         }
     }
 
+    public ISymbol Symbol { get; }
+
     public int Position { get; }
 
-    public bool NeedsNullValidation { get; }
+    public bool IsNullable { get; }
 
     public bool IsValueType { get; }
 
     public bool HasCustomBinding { get; }
+
+    public bool NeedsCustomBindingNullCheck { get; }
 
     public override string ToString() => _identifier;
 

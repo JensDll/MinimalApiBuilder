@@ -1,14 +1,22 @@
+using Microsoft.CodeAnalysis;
+using MinimalApiBuilder.Generator.Common;
+
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerateHandler
+internal class EndpointToGenerateHandler : IToGenerate
 {
-    public EndpointToGenerateHandler(string name, EndpointToGenerateHandlerParameter endpointParameter,
+    public EndpointToGenerateHandler(
+        IMethodSymbol handler,
+        EndpointToGenerateHandlerParameter endpointParameter,
         EndpointToGenerateHandlerParameter[] parameters)
     {
-        Name = name;
+        Symbol = handler;
+        Name = handler.Name;
         EndpointParameter = endpointParameter;
         Parameters = parameters;
     }
+
+    public ISymbol Symbol { get; }
 
     public string Name { get; }
 

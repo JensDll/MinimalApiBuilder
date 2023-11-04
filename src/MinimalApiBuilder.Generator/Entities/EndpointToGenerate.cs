@@ -4,25 +4,28 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerate : IWithSyntaxTree
+internal class EndpointToGenerate : IWithSyntaxTree, IToGenerate
 {
     private readonly string _identifier;
 
     private EndpointToGenerate(
-        string identifier,
+        INamedTypeSymbol endpoint,
         SyntaxTree syntaxTree,
-        string className,
-        string? namespaceName,
         EndpointToGenerateHandler handler,
         bool needsConfigure)
     {
-        _identifier = identifier;
-        ClassName = className;
-        NamespaceName = namespaceName;
+        _identifier = endpoint.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        Symbol = endpoint;
+        ClassName = endpoint.Name;
+        NamespaceName = endpoint.ContainingNamespace.IsGlobalNamespace
+            ? null
+            : endpoint.ContainingNamespace.ToDisplayString();
         Handler = handler;
         NeedsConfigure = needsConfigure;
         SyntaxTree = syntaxTree;
     }
+
+    public ISymbol Symbol { get; }
 
     public string ClassName { get; }
 
@@ -33,6 +36,7 @@ internal class EndpointToGenerate : IWithSyntaxTree
     public bool NeedsConfigure { get; }
 
     public SyntaxTree SyntaxTree { get; }
+
 
     public override string ToString() => _identifier;
 
@@ -83,12 +87,8 @@ internal class EndpointToGenerate : IWithSyntaxTree
         cancellationToken.ThrowIfCancellationRequested();
 
         EndpointToGenerate result = new(
-            identifier: endpoint.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            endpoint: endpoint,
             syntaxTree: endpointSyntax.SyntaxTree,
-            namespaceName: endpoint.ContainingNamespace.IsGlobalNamespace
-                ? null
-                : endpoint.ContainingNamespace.ToDisplayString(),
-            className: endpoint.Name,
             handler: handler,
             needsConfigure: needsConfigure);
 
@@ -124,7 +124,7 @@ internal class EndpointToGenerate : IWithSyntaxTree
         }
 
         handler = new EndpointToGenerateHandler(
-            name: method.Name,
+            handler: method,
             endpointParameter: endpointParameter,
             parameters: parameters);
 

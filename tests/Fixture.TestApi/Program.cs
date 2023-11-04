@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
 using Fixture.TestApi.Extensions;
 using Fixture.TestApi.Features.CustomBinding;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,21 +34,4 @@ app.UseDeveloperExceptionPage();
 app.MapValidationFeatures();
 app.MapCustomBindingFeatures();
 
-app.MapPost("/foo", static (Foo r) => $"Hello {r.Value}!")
-    .AddEndpointFilter(static (ic, next) =>
-    {
-        return next(ic);
-    });
-
 app.Run();
-
-internal class Foo
-{
-    public required string Value { get; init; }
-
-    public static async ValueTask<Foo> BindAsync(HttpContext context)
-    {
-        await Task.CompletedTask;
-        return null!;
-    }
-}

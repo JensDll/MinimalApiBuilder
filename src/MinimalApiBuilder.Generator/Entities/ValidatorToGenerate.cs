@@ -4,21 +4,23 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class ValidatorToGenerate
+internal class ValidatorToGenerate : IToGenerate
 {
     private readonly string _identifier;
 
     private ValidatorToGenerate(
-        string identifier,
-        string validatedType,
+        INamedTypeSymbol validator,
         bool isAsync,
         string serviceLifetime)
     {
-        _identifier = identifier;
-        ValidatedType = validatedType;
+        _identifier = validator.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        Symbol = validator;
+        ValidatedType = validator.BaseType!.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         IsAsync = isAsync;
         ServiceLifetime = serviceLifetime;
     }
+
+    public ISymbol Symbol { get; }
 
     public string ValidatedType { get; }
 
@@ -50,9 +52,7 @@ internal class ValidatorToGenerate
         cancellationToken.ThrowIfCancellationRequested();
 
         ValidatorToGenerate result = new(
-            identifier: validator.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            validatedType: validator.BaseType.TypeArguments[0]
-                .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+            validator: validator,
             isAsync: isAsync,
             serviceLifetime: serviceLifetime);
 

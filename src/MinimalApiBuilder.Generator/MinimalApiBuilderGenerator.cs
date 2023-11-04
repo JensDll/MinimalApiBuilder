@@ -49,6 +49,9 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
             dependencyInjectionBuilder.AddService(entry);
         }
 
+        endpointBuilder.ReportDiagnostics(context);
+        dependencyInjectionBuilder.ReportDiagnostics(context);
+
         dependencyInjectionBuilder.AddSource(context);
         endpointBuilder.AddSource(context);
     }

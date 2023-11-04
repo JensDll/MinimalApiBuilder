@@ -4,29 +4,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
-using MinimalApiBuilder.Generator.UnitTests.Fixtures;
 
 namespace MinimalApiBuilder.Generator.UnitTests;
 
-public static class TestHelper
+public abstract class GeneratorUnitTest
 {
-    public static SettingsTask Verify(string source)
+    private static readonly CSharpParseOptions s_parseOptions = new(LanguageVersion.CSharp11);
+    private static readonly CSharpCompilationOptions s_compilationOptions =
+        new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+            .WithNullableContextOptions(NullableContextOptions.Enable);
+    private static readonly string s_dllDirectory =
+        Path.GetDirectoryName(typeof(object).Assembly.Location)
+        ?? throw new InvalidOperationException("Cannot find object assembly directory");
+
+    protected static Task VerifyGeneratorAsync(string source)
     {
         TestAnalyzerConfigOptionsProvider optionsProvider = new(
             globalOptions: new TestAnalyzerConfigOptions(),
             localOptions: new TestAnalyzerConfigOptions(),
-            snapshotFolder: "default");
+            snapshotFolder: "default_configuration");
 
-        return Verify(source, optionsProvider);
+        return VerifyGeneratorAsync(source, optionsProvider);
     }
 
-    public static SettingsTask Verify(string source, TestAnalyzerConfigOptionsProvider optionsProvider)
+    protected static async Task VerifyGeneratorAsync(string source, TestAnalyzerConfigOptionsProvider optionsProvider)
     {
-        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
-
-        string dllDirectory = Path.GetDirectoryName(typeof(object).Assembly.Location)
-                              ?? throw new InvalidOperationException("Cannot find object assembly directory");
-
         MetadataReference[] references =
         {
             MetadataReference.CreateFromFile(typeof(RouteHandlerBuilder).Assembly.Location),
@@ -35,26 +37,37 @@ public static class TestHelper
             MetadataReference.CreateFromFile(typeof(ServiceLifetime).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Attribute).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(HttpContext).Assembly.Location),
-            MetadataReference.CreateFromFile(Path.Join(dllDirectory, "System.Runtime.dll"))
+            MetadataReference.CreateFromFile(typeof(TypedResults).Assembly.Location),
+            MetadataReference.CreateFromFile(Path.Join(s_dllDirectory, "System.Runtime.dll"))
         };
 
-        CSharpCompilationOptions options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-            .WithNullableContextOptions(NullableContextOptions.Enable);
+        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText($"""
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Http.HttpResults;
+using MinimalApiBuilder;
+using FluentValidation;
+using System.Threading.Tasks;
+using System.Reflection;
+
+{source}
+""");
 
         CSharpCompilation compilation = CSharpCompilation.Create(
-            assemblyName: "MinimalApiBuilderGeneratorUnitTests",
+            assemblyName: nameof(GeneratorUnitTest),
             syntaxTrees: new[] { syntaxTree },
             references: references,
-            options: options);
+            options: s_compilationOptions);
 
         IIncrementalGenerator generator = new MinimalApiBuilderGenerator();
         IEnumerable<ISourceGenerator> generators = GetSourceGenerators(generator);
 
         GeneratorDriver driver = CSharpGeneratorDriver
-            .Create(generators, optionsProvider: optionsProvider)
+            .Create(generators, optionsProvider: optionsProvider, parseOptions: s_parseOptions)
             .RunGenerators(compilation);
 
-        return Verifier.Verify(driver).UseDirectory(optionsProvider.SnapshotFolder).DisableDiff();
+        await Verify(driver).UseDirectory(optionsProvider.SnapshotFolder).DisableDiff();
     }
 
     private static IEnumerable<ISourceGenerator> GetSourceGenerators(params IIncrementalGenerator[] generators)

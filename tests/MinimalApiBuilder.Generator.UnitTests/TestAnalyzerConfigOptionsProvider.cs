@@ -1,14 +1,15 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace MinimalApiBuilder.Generator.UnitTests.Fixtures;
+namespace MinimalApiBuilder.Generator.UnitTests;
 
 public class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
 {
     private readonly AnalyzerConfigOptions _localOptions;
     private readonly string _snapshotFolder;
 
-    public TestAnalyzerConfigOptionsProvider(AnalyzerConfigOptions globalOptions,
+    public TestAnalyzerConfigOptionsProvider(
+        AnalyzerConfigOptions globalOptions,
         AnalyzerConfigOptions localOptions,
         string snapshotFolder)
     {
@@ -18,7 +19,7 @@ public class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
         SnapshotFolder = Path.Join("__snapshots__", snapshotFolder);
     }
 
-    public string SnapshotFolder { get; }
+    internal string SnapshotFolder { get; }
 
     public override AnalyzerConfigOptions GlobalOptions { get; }
 

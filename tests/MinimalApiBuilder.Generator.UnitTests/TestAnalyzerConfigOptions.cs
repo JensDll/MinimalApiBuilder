@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 
-namespace MinimalApiBuilder.Generator.UnitTests.Fixtures;
+namespace MinimalApiBuilder.Generator.UnitTests;
 
 public class TestAnalyzerConfigOptions : AnalyzerConfigOptions
 {
