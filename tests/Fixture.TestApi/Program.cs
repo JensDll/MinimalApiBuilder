@@ -1,5 +1,4 @@
 using Fixture.TestApi.Extensions;
-using Fixture.TestApi.Features.CustomBinding;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -32,6 +31,5 @@ if (app.Environment.IsDevelopment())
 app.UseDeveloperExceptionPage();
 
 app.MapValidationFeatures();
-app.MapCustomBindingFeatures();
 
 app.Run();

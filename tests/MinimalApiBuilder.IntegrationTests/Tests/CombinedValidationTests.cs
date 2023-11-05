@@ -4,7 +4,7 @@ using Fixture.TestApi.Features.Validation.Async;
 using Fixture.TestApi.Features.Validation.Sync;
 using NUnit.Framework;
 
-namespace MinimalApiBuilder.IntegrationTests;
+namespace MinimalApiBuilder.IntegrationTests.Tests;
 
 public class CombinedValidationTests
 {

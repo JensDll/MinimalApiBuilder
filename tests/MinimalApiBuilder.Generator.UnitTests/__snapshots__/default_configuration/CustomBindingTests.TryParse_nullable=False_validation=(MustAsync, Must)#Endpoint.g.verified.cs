@@ -64,6 +64,10 @@ public partial class E3 : global::MinimalApiBuilder.IEndpoint
         {
             global::E3 endpoint = invocationContext.GetArgument<global::E3>(0);
             global::R2 a = invocationContext.GetArgument<global::R2>(2);
+            if (endpoint.HasValidationError)
+            {
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors }));
+            }
             global::FluentValidation.Results.ValidationResult r = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
             return r.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) }));
         });
@@ -95,6 +99,10 @@ public partial class E4 : global::MinimalApiBuilder.IEndpoint
         {
             global::E4 endpoint = invocationContext.GetArgument<global::E4>(0);
             global::R2 a = invocationContext.GetArgument<global::R2>(2);
+            if (endpoint.HasValidationError)
+            {
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors }));
+            }
             global::FluentValidation.Results.ValidationResult r = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
             return r.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) }));
         });
@@ -126,6 +134,10 @@ public partial class E5 : global::MinimalApiBuilder.IEndpoint
         {
             global::E5 endpoint = invocationContext.GetArgument<global::E5>(0);
             global::R2 a = invocationContext.GetArgument<global::R2>(2);
+            if (endpoint.HasValidationError)
+            {
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors }));
+            }
             global::FluentValidation.Results.ValidationResult r = a is null ? global::MinimalApiBuilder.StaticData.SuccessValidationResult : global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
             return r.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) }));
         });

@@ -43,11 +43,11 @@ internal class WellKnownTypes
         return s_wellKnownTypesCache.GetOrCreateValue(compilation, static c => new WellKnownTypes(c));
     }
 
-    public INamedTypeSymbol this[Type type] => _types[(int)type] ?? GetOrCache((int)type);
+    public INamedTypeSymbol this[Type type] => _types[(int)type] ?? GetAndCache((int)type);
 
     public INamedTypeSymbol this[SpecialType type] => _compilation.GetSpecialType(type);
 
-    private INamedTypeSymbol GetOrCache(int index)
+    private INamedTypeSymbol GetAndCache(int index)
     {
         if (_compilation.GetTypeByMetadataName(s_names[index]) is not { } wellKnownType)
         {

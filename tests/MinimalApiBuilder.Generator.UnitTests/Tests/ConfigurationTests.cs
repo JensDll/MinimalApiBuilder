@@ -53,7 +53,8 @@ public class ConfigurationTests : GeneratorUnitTest
     {
         // lang=cs
         const string source = """
-public partial class E : MinimalApiBuilderEndpoint {
+public partial class E : MinimalApiBuilderEndpoint
+{
     public static int Handle(E e) => 0;
 }
 """;

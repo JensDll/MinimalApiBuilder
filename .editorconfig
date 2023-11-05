@@ -320,7 +320,7 @@ resharper_csharp_empty_block_style = together
 resharper_xmldoc_indent_text = zero_indent
 ######## RESHARPER ########
 
-[*.{received,verified}.cs]
+[*.{received,verified}.{cs,txt}]
 charset = "utf-8-bom"
 indent_size = unset
 indent_style = unset

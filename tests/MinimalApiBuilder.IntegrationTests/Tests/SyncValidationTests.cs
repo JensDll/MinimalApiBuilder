@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation.Sync;
 using NUnit.Framework;
 
-namespace MinimalApiBuilder.IntegrationTests;
+namespace MinimalApiBuilder.IntegrationTests.Tests;
 
 public class SyncValidationTests
 {
@@ -54,8 +54,8 @@ public class SyncValidationTests
 
     public static readonly object[] ValidSingle =
     {
-        new SyncValidationRequest() { Foo = "valid" },
-        new SyncValidationRequest() { Foo = "also valid" }
+        new SyncValidationRequest { Foo = "valid" },
+        new SyncValidationRequest { Foo = "also valid" }
     };
 
     public static readonly object[] InvalidMultiple =
