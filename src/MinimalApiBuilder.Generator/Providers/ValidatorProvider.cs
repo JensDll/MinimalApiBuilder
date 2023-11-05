@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MinimalApiBuilder.Generator.Common;
 using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.Providers;

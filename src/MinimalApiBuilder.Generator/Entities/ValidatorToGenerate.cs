@@ -43,11 +43,8 @@ internal class ValidatorToGenerate : IToGenerate
             return null;
         }
 
-        INamedTypeSymbol registerValidatorAttribute =
-            wellKnownTypes[WellKnownTypes.Type.MinimalApiBuilder_RegisterValidatorAttribute];
-
         bool isAsync = GetIsAsync(validatorSyntax);
-        string serviceLifetime = GetValidatorServiceLifetime(validator, registerValidatorAttribute);
+        string serviceLifetime = GetValidatorServiceLifetime(validator, wellKnownTypes);
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -59,8 +56,11 @@ internal class ValidatorToGenerate : IToGenerate
         return result;
     }
 
-    private static string GetValidatorServiceLifetime(ISymbol validator, ISymbol registerValidatorAttribute)
+    private static string GetValidatorServiceLifetime(ISymbol validator, WellKnownTypes wellKnownTypes)
     {
+        INamedTypeSymbol registerValidatorAttribute =
+            wellKnownTypes[WellKnownTypes.Type.MinimalApiBuilder_RegisterValidatorAttribute];
+
         foreach (AttributeData attribute in validator.GetAttributes())
         {
             if (!SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, registerValidatorAttribute) ||

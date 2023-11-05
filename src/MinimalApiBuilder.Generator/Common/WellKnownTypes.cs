@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace MinimalApiBuilder.Generator.Entities;
+namespace MinimalApiBuilder.Generator.Common;
 
 internal class WellKnownTypes
 {

@@ -1,4 +1,4 @@
-﻿namespace MinimalApiBuilder.Generator.Entities;
+﻿namespace MinimalApiBuilder.Generator.Common;
 
 internal class Disposable : IDisposable
 {

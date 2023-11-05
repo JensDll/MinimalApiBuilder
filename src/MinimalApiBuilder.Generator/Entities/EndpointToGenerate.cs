@@ -37,7 +37,6 @@ internal class EndpointToGenerate : IWithSyntaxTree, IToGenerate
 
     public SyntaxTree SyntaxTree { get; }
 
-
     public override string ToString() => _identifier;
 
     public static EndpointToGenerate? Create(
