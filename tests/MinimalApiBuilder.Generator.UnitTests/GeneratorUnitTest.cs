@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using FluentValidation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -36,6 +37,7 @@ public abstract class GeneratorUnitTest
         MetadataReference.CreateFromFile(Path.Join(s_dllDirectory, "System.Runtime.dll")),
         MetadataReference.CreateFromFile(Path.Join(s_dllDirectory, "System.Collections.dll")),
         // AspNetCore
+        MetadataReference.CreateFromFile(typeof(RouteAttribute).Assembly.Location),
         MetadataReference.CreateFromFile(typeof(RouteHandlerBuilder).Assembly.Location),
         MetadataReference.CreateFromFile(typeof(ServiceLifetime).Assembly.Location),
         MetadataReference.CreateFromFile(typeof(HttpContext).Assembly.Location),
@@ -87,8 +89,10 @@ public abstract class GeneratorUnitTest
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText($"""
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using MinimalApiBuilder;
 using FluentValidation;
 using System;

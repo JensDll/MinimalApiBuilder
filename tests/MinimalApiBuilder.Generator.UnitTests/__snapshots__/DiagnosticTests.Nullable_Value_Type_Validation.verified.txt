@@ -5,7 +5,7 @@
       Title: Nullable value type will not be validated,
       Severity: Warning,
       WarningLevel: 1,
-      Location: : (15,37)-(15,38),
+      Location: : (17,37)-(17,38),
       HelpLink: https://github.com/JensDll/MinimalApiBuilder,
       MessageFormat: The nullable value type '{0}' will not take part in automatic request validation. Consider using a reference type.,
       Message: The nullable value type 'global::R?' will not take part in automatic request validation. Consider using a reference type.,
