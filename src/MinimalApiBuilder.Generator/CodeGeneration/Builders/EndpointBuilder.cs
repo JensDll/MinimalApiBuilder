@@ -57,9 +57,9 @@ internal class EndpointBuilder : SourceBuilder
                 AppendLine($"{Fqn.WithName}(builder, Name);");
             }
 
-            bool filterAdded = AddValidation(endpoint);
+            bool anyAdded = AddValidation(endpoint);
 
-            if (!filterAdded && endpoint.Handler.Parameters.Any(static parameter => parameter.HasCustomBinding))
+            if (!anyAdded && endpoint.Handler.Parameters.Any(static parameter => parameter.HasCustomBinding))
             {
                 using IDisposable filterBlock = OpenAddEndpointFilter();
                 AppendLine(GetEndpoint(endpoint.Handler.EndpointParameter));
