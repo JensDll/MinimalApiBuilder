@@ -76,11 +76,8 @@ public abstract class GeneratorUnitTest
 
     protected static Task VerifyGeneratorAsync(string source)
     {
-        TestAnalyzerConfigOptionsProvider optionsProvider = new(
-            globalOptions: new TestAnalyzerConfigOptions(),
-            localOptions: new TestAnalyzerConfigOptions(),
-            friendlyName: "default_configuration");
-
+        TestAnalyzerConfigOptionsProvider optionsProvider =
+            new(new TestAnalyzerConfigOptions(), new TestAnalyzerConfigOptions());
         return VerifyGeneratorAsync(source, optionsProvider);
     }
 

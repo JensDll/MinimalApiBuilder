@@ -11,7 +11,7 @@ public class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
     public TestAnalyzerConfigOptionsProvider(
         AnalyzerConfigOptions globalOptions,
         AnalyzerConfigOptions localOptions,
-        string friendlyName)
+        string friendlyName = "default_configuration")
     {
         _localOptions = localOptions;
         _friendlyName = friendlyName;
