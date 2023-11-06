@@ -30,8 +30,7 @@ internal static class MultipartExtensions
 
         if (boundary.Length > lengthLimit)
         {
-            throw new MultipartBindingException(
-                $"Multipart boundary length limit '{lengthLimit}' exceeded");
+            throw new MultipartBindingException($"Multipart boundary length limit '{lengthLimit}' exceeded");
         }
 
         return boundary;
@@ -57,13 +56,13 @@ internal static class MultipartExtensions
         IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();
         int lengthLimit = formOptions.Value.MultipartBoundaryLengthLimit;
 
-        if (boundary.Length <= lengthLimit)
+        if (boundary.Length > lengthLimit)
         {
-            return boundary;
+            endpoint.AddValidationError($"Multipart boundary length limit '{lengthLimit}' exceeded");
+            return string.Empty;
         }
 
-        endpoint.AddValidationError($"Multipart boundary length limit '{lengthLimit}' exceeded");
-        return string.Empty;
+        return boundary;
     }
 
     public static bool IsMultipart(this HttpContext context)

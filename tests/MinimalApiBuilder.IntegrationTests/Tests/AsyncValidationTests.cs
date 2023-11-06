@@ -21,6 +21,10 @@ public class AsyncValidationTests
         HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/validation/async/single", request);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        string[]? result = await response.Content.ReadFromJsonAsync<string[]>();
+        Assert.That(result, Is.Not.Null);
+        string[] expected = { "Missing content-type boundary", "Content-Type must be multipart/form-data" };
+        Assert.That(result, Is.EquivalentTo(expected));
     }
 
     [TestCaseSource(nameof(InvalidMultiple))]

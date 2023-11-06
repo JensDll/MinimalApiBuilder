@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +12,7 @@ namespace Fixture.TestApi.Features.Validation.Async;
 
 public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static async Task<Results<Ok, BadRequest>> HandleAsync(
+    private static async Task<Results<Ok<ICollection<string>>, BadRequest>> HandleAsync(
         [FromServices] AsyncSingleValidationEndpoint endpoint,
         AsyncValidationRequest request,
         HttpContext context,
@@ -19,18 +20,8 @@ public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
         CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
-
-        try
-        {
-            MultipartReader reader = new(context);
-        }
-        catch (MultipartBindingException e)
-        {
-            logger.Error(e, "Error binding multipart request");
-            return TypedResults.Ok();
-        }
-
-        return TypedResults.BadRequest();
+        MultipartReader _ = new(context, endpoint);
+        return TypedResults.Ok(endpoint.ValidationErrors);
     }
 
     public static void Configure(RouteHandlerBuilder builder)
