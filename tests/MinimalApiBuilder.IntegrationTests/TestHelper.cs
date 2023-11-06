@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using Xunit;
+using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests;
 
@@ -8,17 +8,14 @@ public static class TestHelper
 {
     public static async Task AssertErrorResultAsync(HttpResponseMessage response)
     {
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         ErrorDto? errorResult = await response.Content.ReadFromJsonAsync<ErrorDto>();
-
-        Assert.NotNull(errorResult);
-
+        Assert.That(errorResult, Is.Not.Null);
         Assert.Multiple(() =>
         {
-            Assert.Equal(HttpStatusCode.BadRequest, errorResult.StatusCode);
-            Assert.True(errorResult.Message.Length > 0);
-            Assert.True(errorResult.Errors.Any());
+            Assert.That(errorResult!.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+            Assert.That(errorResult.Message, Is.Not.Null);
+            Assert.That(errorResult.Errors, Is.Not.Empty);
         });
     }
 }

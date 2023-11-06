@@ -22,7 +22,10 @@ internal class EndpointToGenerateHandlerParameterEqualityComparer :
             return false;
         }
 
-        return x.Position == y.Position;
+        return x.Position == y.Position &&
+               x.IsNullable == y.IsNullable &&
+               x.IsValueType == y.IsValueType &&
+               x.HasCustomBinding == y.HasCustomBinding;
     }
 
     public int GetHashCode(EndpointToGenerateHandlerParameter obj)

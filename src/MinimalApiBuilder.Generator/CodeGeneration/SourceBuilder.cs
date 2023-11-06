@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
+using MinimalApiBuilder.Generator.Common;
 using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.CodeGeneration;
@@ -23,11 +24,19 @@ internal abstract class SourceBuilder
         Options = options;
     }
 
-    public bool IsAdded { get; protected set; }
-
     protected GeneratorOptions Options { get; set; }
 
+    protected ICollection<Diagnostic> Diagnostics { get; } = new List<Diagnostic>();
+
     public abstract void AddSource(SourceProductionContext context);
+
+    public void ReportDiagnostics(SourceProductionContext context)
+    {
+        foreach (Diagnostic diagnostic in Diagnostics)
+        {
+            context.ReportDiagnostic(diagnostic);
+        }
+    }
 
     public sealed override string ToString() => _builder.ToString();
 

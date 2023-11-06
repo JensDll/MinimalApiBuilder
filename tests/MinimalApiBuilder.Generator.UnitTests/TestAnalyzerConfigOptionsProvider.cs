@@ -6,19 +6,17 @@ namespace MinimalApiBuilder.Generator.UnitTests;
 public class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
 {
     private readonly AnalyzerConfigOptions _localOptions;
-    private readonly string _snapshotFolder;
+    private readonly string _friendlyName;
 
-    public TestAnalyzerConfigOptionsProvider(AnalyzerConfigOptions globalOptions,
+    public TestAnalyzerConfigOptionsProvider(
+        AnalyzerConfigOptions globalOptions,
         AnalyzerConfigOptions localOptions,
-        string snapshotFolder)
+        string friendlyName = "default_configuration")
     {
         _localOptions = localOptions;
-        _snapshotFolder = snapshotFolder;
+        _friendlyName = friendlyName;
         GlobalOptions = globalOptions;
-        SnapshotFolder = Path.Join("__snapshots__", snapshotFolder);
     }
-
-    public string SnapshotFolder { get; }
 
     public override AnalyzerConfigOptions GlobalOptions { get; }
 
@@ -32,8 +30,8 @@ public class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsProvider
         throw new NotImplementedException();
     }
 
-    public override string ToString()
+    public sealed override string ToString()
     {
-        return _snapshotFolder;
+        return _friendlyName;
     }
 }

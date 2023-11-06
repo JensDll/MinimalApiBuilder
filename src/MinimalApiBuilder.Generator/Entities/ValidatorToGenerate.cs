@@ -4,23 +4,23 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class ValidatorToGenerate
+internal class ValidatorToGenerate : IToGenerate
 {
-    private const string AbstractValidatorName = "FluentValidation.AbstractValidator`1";
-    private const string RegisterValidatorAttributeName = "MinimalApiBuilder.RegisterValidatorAttribute";
     private readonly string _identifier;
 
     private ValidatorToGenerate(
-        string identifier,
-        string validatedType,
+        INamedTypeSymbol validator,
         bool isAsync,
         string serviceLifetime)
     {
-        _identifier = identifier;
-        ValidatedType = validatedType;
+        _identifier = validator.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        Symbol = validator;
+        ValidatedType = validator.BaseType!.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         IsAsync = isAsync;
         ServiceLifetime = serviceLifetime;
     }
+
+    public ISymbol Symbol { get; }
 
     public string ValidatedType { get; }
 
@@ -30,51 +30,40 @@ internal class ValidatorToGenerate
 
     public override string ToString() => _identifier;
 
-    public static ValidatorToGenerate? Create(ClassDeclarationSyntax validatorDeclaration,
-        SemanticModel semanticModel, CancellationToken cancellationToken)
+    public static ValidatorToGenerate? Create(
+        INamedTypeSymbol validator,
+        ClassDeclarationSyntax validatorSyntax,
+        WellKnownTypes wellKnownTypes,
+        CancellationToken cancellationToken)
     {
-        if (semanticModel.GetDeclaredSymbol(validatorDeclaration, cancellationToken)
-            is not INamedTypeSymbol validatorSymbol)
+        INamedTypeSymbol abstractValidator = wellKnownTypes[WellKnownTypes.Type.FluentValidation_AbstractValidator_1];
+
+        if (!SymbolEqualityComparer.Default.Equals(validator.BaseType?.OriginalDefinition, abstractValidator))
         {
             return null;
         }
 
-        if (semanticModel.Compilation.GetTypeByMetadataName(AbstractValidatorName)
-            is not { } abstractValidatorSymbol)
-        {
-            return null;
-        }
+        bool isAsync = GetIsAsync(validatorSyntax);
+        string serviceLifetime = GetValidatorServiceLifetime(validator, wellKnownTypes);
 
-        if (semanticModel.Compilation.GetTypeByMetadataName(RegisterValidatorAttributeName)
-            is not { } registerValidatorAttributeSymbol)
-        {
-            return null;
-        }
+        cancellationToken.ThrowIfCancellationRequested();
 
-        if (!abstractValidatorSymbol.Equals(validatorSymbol.BaseType!.OriginalDefinition,
-                SymbolEqualityComparer.Default))
-        {
-            return null;
-        }
-
-        bool isAsync = GetIsAsync(validatorDeclaration);
-        string serviceLifetime = GetValidatorServiceLifetime(validatorSymbol, registerValidatorAttributeSymbol);
-
-        ValidatorToGenerate validator = new(
-            identifier: validatorSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
-            validatedType: validatorSymbol.BaseType!.TypeArguments[0]
-                .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat),
+        ValidatorToGenerate result = new(
+            validator: validator,
             isAsync: isAsync,
             serviceLifetime: serviceLifetime);
 
-        return validator;
+        return result;
     }
 
-    private static string GetValidatorServiceLifetime(ISymbol validatorSymbol, ISymbol registerValidatorAttributeSymbol)
+    private static string GetValidatorServiceLifetime(ISymbol validator, WellKnownTypes wellKnownTypes)
     {
-        foreach (AttributeData attribute in validatorSymbol.GetAttributes())
+        INamedTypeSymbol registerValidatorAttribute =
+            wellKnownTypes[WellKnownTypes.Type.MinimalApiBuilder_RegisterValidatorAttribute];
+
+        foreach (AttributeData attribute in validator.GetAttributes())
         {
-            if (!registerValidatorAttributeSymbol.Equals(attribute.AttributeClass, SymbolEqualityComparer.Default) ||
+            if (!SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, registerValidatorAttribute) ||
                 attribute.ConstructorArguments.Length != 1 ||
                 attribute.ConstructorArguments[0].Value is not int lifetime)
             {
@@ -87,26 +76,22 @@ internal class ValidatorToGenerate
         return "Singleton";
     }
 
-    private static bool GetIsAsync(TypeDeclarationSyntax validatorDeclaration)
+    private static bool GetIsAsync(TypeDeclarationSyntax validatorSyntax)
     {
-        foreach (MemberDeclarationSyntax member in validatorDeclaration.Members)
+        foreach (MemberDeclarationSyntax member in validatorSyntax.Members)
         {
-            if (member is not ConstructorDeclarationSyntax constructorDeclaration)
+            if (member is not ConstructorDeclarationSyntax constructorSyntax)
             {
                 continue;
             }
 
-            foreach (SyntaxNode node in constructorDeclaration.DescendantNodes())
-            {
-                if (node is IdentifierNameSyntax validatorNode &&
-                    node.Parent is MemberAccessExpressionSyntax &&
-                    node.Parent.Parent is InvocationExpressionSyntax &&
-                    validatorNode.Identifier.Text is "MustAsync" or "WhenAsync" or "UnlessAsync"
-                        or "CustomAsync" or "SetAsyncValidator")
-                {
-                    return true;
-                }
-            }
+            return constructorSyntax.DescendantNodes()
+                .OfType<IdentifierNameSyntax>()
+                .Any(static nameSyntax =>
+                    nameSyntax.Parent is MemberAccessExpressionSyntax &&
+                    nameSyntax.Parent.Parent is InvocationExpressionSyntax &&
+                    nameSyntax.Identifier.Text is "MustAsync" or "WhenAsync" or "UnlessAsync" or "CustomAsync"
+                        or "SetAsyncValidator");
         }
 
         return false;

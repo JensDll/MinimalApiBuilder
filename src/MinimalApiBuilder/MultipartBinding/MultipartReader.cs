@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MinimalApiBuilder.Entities;
 
@@ -13,7 +12,15 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     private readonly HttpContext _context;
     private readonly FormOptions _formOptions;
 
-    private MultipartReader(HttpContext context) : base(context.GetBoundary(), context.Request.Body)
+    /// <summary>
+    /// Initializes a new instance of <see cref="MultipartReader" />.
+    /// </summary>
+    /// <param name="context">The current HTTP request context.</param>
+    /// <exception cref="MultipartBindingException">
+    /// Thrown if the request is not a multipart request.
+    /// </exception>
+    /// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
+    public MultipartReader(HttpContext context) : base(context.GetBoundary(), context.Request.Body)
     {
         if (!context.IsMultipart())
         {
@@ -26,19 +33,26 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
         _formOptions = formOptions.Value;
     }
 
-    public static MultipartReader? Create(HttpContext context)
+    /// <summary>
+    /// Initializes a new instance of <see cref="MultipartReader" />. Multipart request errors are added to
+    /// <see cref="MinimalApiBuilderEndpoint" />.<see cref="MinimalApiBuilderEndpoint.ValidationErrors" />
+    /// without throwing an exception.
+    /// </summary>
+    /// <param name="context">The current HTTP request context.</param>
+    /// <param name="endpoint">The current endpoint handling the request.</param>
+    /// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
+    public MultipartReader(HttpContext context, MinimalApiBuilderEndpoint endpoint)
+        : base(context.GetBoundary(endpoint), context.Request.Body)
     {
-        try
+        if (!context.IsMultipart())
         {
-            return new MultipartReader(context);
+            endpoint.AddValidationError("Content-Type must be multipart/form-data");
         }
-        catch (MultipartBindingException e)
-        {
-            ILoggerFactory loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
-            ILogger logger = loggerFactory.CreateLogger<MultipartReader>();
-            logger.FailedToCreateMultipartReader(e.Message);
-            return null;
-        }
+
+        IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();
+
+        _context = context;
+        _formOptions = formOptions.Value;
     }
 
     public new async Task<NextSection?> ReadNextSectionAsync(CancellationToken cancellationToken = default)

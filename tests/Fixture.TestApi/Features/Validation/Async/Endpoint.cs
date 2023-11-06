@@ -1,7 +1,10 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using MinimalApiBuilder;
 using Serilog;
 
@@ -9,31 +12,24 @@ namespace Fixture.TestApi.Features.Validation.Async;
 
 public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private readonly ILogger _logger;
-
-    public AsyncSingleValidationEndpoint(ILogger logger)
-    {
-        _logger = logger;
-    }
-
-    private static async Task<IResult> HandleAsync(
-        AsyncSingleValidationEndpoint endpoint,
+    private static async Task<Results<Ok<ICollection<string>>, BadRequest>> HandleAsync(
+        [FromServices] AsyncSingleValidationEndpoint endpoint,
         AsyncValidationRequest request,
         HttpContext context,
+        [FromServices] ILogger logger,
         CancellationToken cancellationToken)
     {
-        await Task.Delay(0, cancellationToken);
-        MultipartReader? reader = MultipartReader.Create(context);
-        return reader is not null ? Results.BadRequest() : Results.Ok();
+        await Task.CompletedTask;
+        MultipartReader _ = new(context, endpoint);
+        return TypedResults.Ok(endpoint.ValidationErrors);
     }
 
     public static void Configure(RouteHandlerBuilder builder)
     {
         builder.AddEndpointFilter(static (invocationContext, next) =>
         {
-            var endpoint = invocationContext.GetArgument<AsyncSingleValidationEndpoint>(0);
-            endpoint._logger.Information("Executing handler for {Endpoint}",
-                nameof(AsyncSingleValidationEndpoint));
+            ILogger logger = invocationContext.GetArgument<ILogger>(3);
+            logger.Information("Executing handler for {Endpoint}", nameof(AsyncSingleValidationEndpoint));
             return next(invocationContext);
         });
     }

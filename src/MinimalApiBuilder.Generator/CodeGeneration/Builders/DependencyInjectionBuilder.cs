@@ -13,7 +13,7 @@ internal class DependencyInjectionBuilder : SourceBuilder
     public DependencyInjectionBuilder(GeneratorOptions options) : base(options)
     {
         _namespaceDisposable = OpenBlock("namespace MinimalApiBuilder");
-        _classDisposable = OpenBlock("public static class DependencyInjection");
+        _classDisposable = OpenBlock("public static class MinimalApiBuilderDependencyInjectionExtensions");
         MarkAsGenerated();
         _methodDisposable =
             OpenBlock(
@@ -26,7 +26,7 @@ internal class DependencyInjectionBuilder : SourceBuilder
         _methodDisposable.Dispose();
         _classDisposable.Dispose();
         _namespaceDisposable.Dispose();
-        context.AddSource("DependencyInjection.g.cs", ToString());
+        context.AddSource("MinimalApiBuilderDependencyInjectionExtensions.g.cs", ToString());
     }
 
     public void AddService(EndpointToGenerate endpoint)

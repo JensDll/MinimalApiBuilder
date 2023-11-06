@@ -1,0 +1,2 @@
+[*.cs]
+resharper_csharp_max_line_length = 360

@@ -11,4 +11,6 @@ public class TestAnalyzerConfigOptions : AnalyzerConfigOptions
     {
         return Options.TryGetValue(key, out value);
     }
+
+    public override IEnumerable<string> Keys => Options.Keys;
 }

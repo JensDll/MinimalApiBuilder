@@ -457,3 +457,4 @@ dist/
 packages/
 artifacts/
 *.received.cs
+*.received.txt

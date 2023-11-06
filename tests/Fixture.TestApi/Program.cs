@@ -1,6 +1,7 @@
 using Fixture.TestApi.Extensions;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MinimalApiBuilder;
@@ -13,6 +14,11 @@ builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
     .AddMinimalApiBuilderEndpoints();
+
+builder.Services.Configure<RouteHandlerOptions>(static options =>
+{
+    options.ThrowOnBadRequest = false;
+});
 
 WebApplication app = builder.Build();
 
