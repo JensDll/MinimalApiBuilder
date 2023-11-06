@@ -81,7 +81,7 @@ public class R2Validator : AbstractValidator<R2>
     }
 
     [Test]
-    public async Task TryParse([Values] bool nullable, [ValueSource(nameof(Validation))] (string, string) validation)
+    public Task TryParse([Values] bool nullable, [ValueSource(nameof(Validation))] (string, string) validation)
     {
         string nullableMark = GetNullableMark(nullable);
         string rule1 = GetRule(validation.Item1);
@@ -149,7 +149,54 @@ public class R2Validator : AbstractValidator<R2>
 }
 """;
 
-        await VerifyGeneratorAsync(source);
+        return VerifyGeneratorAsync(source);
+    }
+
+    [Test]
+    public Task BindAsync_Without_Validators([Values] bool nullable)
+    {
+        string nullableMark = GetNullableMark(nullable);
+
+        // lang=cs
+        string source = $$"""
+public class R {
+    public static ValueTask<R{{nullableMark}}> BindAsync(HttpContext context)
+    {
+        return ValueTask.FromResult<R{{nullableMark}}>(new R());
+    }
+}
+
+public partial class E : MinimalApiBuilderEndpoint
+{
+    private static int Handle(E e, R r) => 1;
+}
+""";
+
+        return VerifyGeneratorAsync(source);
+    }
+
+    [Test]
+    public Task TryParse_Without_Validators([Values] bool nullable)
+    {
+        string nullableMark = GetNullableMark(nullable);
+
+        // lang=cs
+        string source = $$"""
+public class R {
+    public static bool TryParse(string value, out R{{nullableMark}} r)
+    {
+        r = new R();
+        return false;
+    }
+}
+
+public partial class E : MinimalApiBuilderEndpoint
+{
+    private static int Handle(E e, R r) => 1;
+}
+""";
+
+        return VerifyGeneratorAsync(source);
     }
 
     private static string GetNullableMark(bool nullable) => nullable ? "?" : "";
