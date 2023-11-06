@@ -19,7 +19,7 @@ internal class EndpointBuilder : SourceBuilder
 
     public override void AddSource(SourceProductionContext context)
     {
-        context.AddSource("Endpoint.g.cs", ToString());
+        context.AddSource("MinimalApiBuilderEndpoints.g.cs", ToString());
     }
 
     public void AddEndpoint(EndpointToGenerate endpoint)

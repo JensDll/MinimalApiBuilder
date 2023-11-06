@@ -20,18 +20,10 @@ public abstract class GeneratorUnitTest
 {
     private static readonly CSharpParseOptions s_parseOptions = new(LanguageVersion.CSharp11);
 
-    private static readonly CSharpCompilationOptions s_compilationOptions =
-        new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-            .WithNullableContextOptions(NullableContextOptions.Enable)
-            .WithSpecificDiagnosticOptions(new Dictionary<string, ReportDiagnostic>
-            {
-                { "CS1701", ReportDiagnostic.Suppress },
-                { "CA2012", ReportDiagnostic.Warn }
-            });
 
     private static readonly string s_dllDirectory =
         Path.GetDirectoryName(typeof(object).Assembly.Location)
-        ?? throw new InvalidOperationException("Cannot find object assembly directory");
+        ?? throw new DirectoryNotFoundException("Cannot find object assembly directory");
 
     private static readonly MetadataReference[] s_metadataReferences =
     {
@@ -62,6 +54,30 @@ public abstract class GeneratorUnitTest
             .Where(static type => type.GetCustomAttribute<DiagnosticAnalyzerAttribute>() is not null)
             .Select(static type => Unsafe.As<DiagnosticAnalyzer>(Activator.CreateInstance(type))!)
             .ToImmutableArray();
+
+    private static readonly Dictionary<string, ReportDiagnostic> s_diagnosticsOptions =
+        s_analyzers
+            .SelectMany(static analyzer => analyzer.SupportedDiagnostics)
+            .Select(descriptor => descriptor.Id)
+            .Distinct()
+            .Where(static id => id.StartsWith("CA", StringComparison.Ordinal))
+            .ToDictionary(static id => id, _ => ReportDiagnostic.Warn)
+            .AddAndReturn("CS1701", ReportDiagnostic.Suppress)
+            // CA1014: Mark assemblies with CLSCompliantAttribute
+            .ChangeAndReturn("CA1014", ReportDiagnostic.Suppress)
+            // CA1016: Mark assemblies with AssemblyVersionAttribute
+            .ChangeAndReturn("CA1016", ReportDiagnostic.Suppress)
+            // CA1017: Mark assemblies with ComVisibleAttribute
+            .ChangeAndReturn("CA1017", ReportDiagnostic.Suppress)
+            // CA1050: Declare types in namespaces
+            .ChangeAndReturn("CA1050", ReportDiagnostic.Suppress)
+            // CA2007: Do not directly await a Task
+            .ChangeAndReturn("CA2007", ReportDiagnostic.Suppress);
+
+    private static readonly CSharpCompilationOptions s_compilationOptions =
+        new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+            .WithNullableContextOptions(NullableContextOptions.Enable)
+            .WithSpecificDiagnosticOptions(s_diagnosticsOptions);
 
     protected static Task VerifyGeneratorAsync(string source)
     {
@@ -115,9 +131,9 @@ using System.Threading.Tasks;
 
     private static void AssertCompilation(Compilation compilation)
     {
-        MemoryStream output = new();
+        using MemoryStream output = new();
         EmitResult result = compilation.Emit(output);
-        IEnumerable<Diagnostic> warningsOrWorse = WarningOrWorse(result.Diagnostics);
+        IEnumerable<Diagnostic> warningsOrWorse = WarningsOrWorse(result.Diagnostics);
         Assert.Multiple(() =>
         {
             Assert.That(result.Success, Is.True);
@@ -130,7 +146,7 @@ using System.Threading.Tasks;
         compilation = RemoveAnnotationPreventingCodeAnalysis(compilation);
         CompilationWithAnalyzers withAnalyzers = compilation.WithAnalyzers(s_analyzers);
         ImmutableArray<Diagnostic> diagnostics = await withAnalyzers.GetAnalyzerDiagnosticsAsync();
-        IEnumerable<Diagnostic> warningsOrWorse = WarningOrWorse(diagnostics);
+        IEnumerable<Diagnostic> warningsOrWorse = WarningsOrWorse(diagnostics);
         Assert.That(warningsOrWorse, Is.Empty);
     }
 
@@ -138,10 +154,13 @@ using System.Threading.Tasks;
     {
         GeneratedCodeRewriter rewriter = new();
 
+        List<SyntaxTree> nonGeneratedSyntaxTrees = new();
+
         foreach (SyntaxTree syntaxTree in compilation.SyntaxTrees)
         {
             if (!syntaxTree.FilePath.EndsWith(".g.cs", StringComparison.OrdinalIgnoreCase))
             {
+                nonGeneratedSyntaxTrees.Add(syntaxTree);
                 continue;
             }
 
@@ -151,10 +170,10 @@ using System.Threading.Tasks;
             compilation = compilation.ReplaceSyntaxTree(syntaxTree, newSource.SyntaxTree);
         }
 
-        return compilation;
+        return compilation.RemoveSyntaxTrees(nonGeneratedSyntaxTrees);
     }
 
-    private static IEnumerable<Diagnostic> WarningOrWorse(IEnumerable<Diagnostic> diagnostics)
+    private static IEnumerable<Diagnostic> WarningsOrWorse(IEnumerable<Diagnostic> diagnostics)
     {
         return diagnostics.Where(static diagnostic => diagnostic.Severity >= DiagnosticSeverity.Warning);
     }
