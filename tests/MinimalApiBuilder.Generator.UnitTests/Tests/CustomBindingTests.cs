@@ -13,15 +13,9 @@ public class CustomBindingTests : GeneratorUnitTest
     [Test]
     public Task BindAsync([Values] bool nullable, [ValueSource(nameof(Validation))] (string, string) validation)
     {
-        string nullableMark = nullable ? "?" : "";
-
-        string rule1 = validation.Item1 == "Must"
-            ? "RuleFor(static x => x.Value).Must(static _ => true)"
-            : "RuleFor(static x => x.Value).MustAsync(static (_, _) => Task.FromResult(true))";
-
-        string rule2 = validation.Item2 == "Must"
-            ? "RuleFor(static x => x.Value).Must(static _ => true)"
-            : "RuleFor(static x => x.Value).MustAsync(static (_, _) => Task.FromResult(true))";
+        string nullableMark = GetNullableMark(nullable);
+        string rule1 = GetRule(validation.Item1);
+        string rule2 = GetRule(validation.Item2);
 
         // lang=cs
         string source = $$"""
@@ -89,15 +83,9 @@ public class R2Validator : AbstractValidator<R2>
     [Test]
     public async Task TryParse([Values] bool nullable, [ValueSource(nameof(Validation))] (string, string) validation)
     {
-        string nullableMark = nullable ? "?" : "";
-
-        string rule1 = validation.Item1 == "Must"
-            ? "RuleFor(static x => x.Value).Must(static _ => true)"
-            : "RuleFor(static x => x.Value).MustAsync(static (_, _) => Task.FromResult(true))";
-
-        string rule2 = validation.Item2 == "Must"
-            ? "RuleFor(static x => x.Value).Must(static _ => true)"
-            : "RuleFor(static x => x.Value).MustAsync(static (_, _) => Task.FromResult(true))";
+        string nullableMark = GetNullableMark(nullable);
+        string rule1 = GetRule(validation.Item1);
+        string rule2 = GetRule(validation.Item2);
 
         // lang=cs
         string source = $$"""
@@ -163,4 +151,10 @@ public class R2Validator : AbstractValidator<R2>
 
         await VerifyGeneratorAsync(source);
     }
+
+    private static string GetNullableMark(bool nullable) => nullable ? "?" : "";
+
+    private static string GetRule(string validation) => validation == "Must"
+        ? "RuleFor(static x => x.Value).Must(static _ => true)"
+        : "RuleFor(static x => x.Value).MustAsync(static (_, _) => Task.FromResult(true))";
 }

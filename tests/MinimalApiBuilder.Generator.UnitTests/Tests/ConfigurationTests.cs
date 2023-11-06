@@ -15,7 +15,7 @@ public class ConfigurationTests : GeneratorUnitTest
                 }
             },
             localOptions: new TestAnalyzerConfigOptions(),
-            snapshotFolder: "assign_name_global_true");
+            friendlyName: "assign_name_global_true");
 
         yield return new TestAnalyzerConfigOptionsProvider(
             globalOptions: new TestAnalyzerConfigOptions(),
@@ -26,7 +26,7 @@ public class ConfigurationTests : GeneratorUnitTest
                     [GeneratorOptions.Keys.AssignNameToEndpoint] = "true"
                 }
             },
-            snapshotFolder: "assign_name_local_true");
+            friendlyName: "assign_name_local_true");
 
         yield return new TestAnalyzerConfigOptionsProvider(
             globalOptions: new TestAnalyzerConfigOptions
@@ -43,7 +43,7 @@ public class ConfigurationTests : GeneratorUnitTest
                     [GeneratorOptions.Keys.AssignNameToEndpoint] = "false"
                 }
             },
-            snapshotFolder: "assign_name_global_true_local_false");
+            friendlyName: "assign_name_global_true_local_false");
     }
 
     [Test]

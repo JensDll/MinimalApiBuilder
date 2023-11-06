@@ -208,7 +208,6 @@ internal class EndpointBuilder : SourceBuilder
         using IDisposable filterBlock = OpenAddEndpointFilterAsync();
         AppendLine(GetEndpoint(endpoint));
 
-
         bool anyCustomBinding = false;
 
         for (int i = 0; i < parameters.Count; ++i)
