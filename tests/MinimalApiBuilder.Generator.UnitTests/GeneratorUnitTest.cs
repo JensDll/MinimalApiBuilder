@@ -20,7 +20,6 @@ public abstract class GeneratorUnitTest
 {
     private static readonly CSharpParseOptions s_parseOptions = new(LanguageVersion.CSharp11);
 
-
     private static readonly string s_dllDirectory =
         Path.GetDirectoryName(typeof(object).Assembly.Location)
         ?? throw new DirectoryNotFoundException("Cannot find object assembly directory");
@@ -63,16 +62,12 @@ public abstract class GeneratorUnitTest
             .Where(static id => id.StartsWith("CA", StringComparison.Ordinal))
             .ToDictionary(static id => id, _ => ReportDiagnostic.Warn)
             .AddAndReturn("CS1701", ReportDiagnostic.Suppress)
-            // CA1014: Mark assemblies with CLSCompliantAttribute
-            .ChangeAndReturn("CA1014", ReportDiagnostic.Suppress)
-            // CA1016: Mark assemblies with AssemblyVersionAttribute
-            .ChangeAndReturn("CA1016", ReportDiagnostic.Suppress)
-            // CA1017: Mark assemblies with ComVisibleAttribute
-            .ChangeAndReturn("CA1017", ReportDiagnostic.Suppress)
-            // CA1050: Declare types in namespaces
-            .ChangeAndReturn("CA1050", ReportDiagnostic.Suppress)
-            // CA2007: Do not directly await a Task
-            .ChangeAndReturn("CA2007", ReportDiagnostic.Suppress);
+            .ChangeAndReturn("CA1014", ReportDiagnostic.Suppress) // CA1014: Mark assemblies with CLSCompliantAttribute
+            .ChangeAndReturn("CA1016",
+                ReportDiagnostic.Suppress) // CA1016: Mark assemblies with AssemblyVersionAttribute
+            .ChangeAndReturn("CA1017", ReportDiagnostic.Suppress) // CA1017: Mark assemblies with ComVisibleAttribute
+            .ChangeAndReturn("CA1050", ReportDiagnostic.Suppress) // CA1050: Declare types in namespaces
+            .ChangeAndReturn("CA2007", ReportDiagnostic.Suppress); // CA2007: Do not directly await a Task
 
     private static readonly CSharpCompilationOptions s_compilationOptions =
         new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
@@ -107,7 +102,7 @@ using System.Threading.Tasks;
 """);
 
         var compilation = CSharpCompilation.Create(
-            assemblyName: nameof(GeneratorUnitTest),
+            assemblyName: nameof(GeneratorUnitTest) + "Assembly",
             syntaxTrees: new[] { syntaxTree },
             references: s_metadataReferences,
             options: s_compilationOptions);
@@ -119,9 +114,10 @@ using System.Threading.Tasks;
             .Create(generators, optionsProvider: optionsProvider, parseOptions: s_parseOptions)
             .RunGeneratorsAndUpdateCompilation(compilation, out var newCompilation, out _);
 
-        AssertCompilation(newCompilation);
-
-        await Task.WhenAll(Verify(driver).DisableDiff(), AssertCompilationWithAnalyzersAsync(newCompilation));
+        await Task.WhenAll(
+            Task.Run(() => AssertCompilation(newCompilation)),
+            AssertCompilationWithAnalyzersAsync(newCompilation),
+            Verify(driver).DisableDiff());
     }
 
     private static IEnumerable<ISourceGenerator> GetSourceGenerators(params IIncrementalGenerator[] generators)
