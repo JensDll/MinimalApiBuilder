@@ -140,14 +140,14 @@ using System.Threading.Tasks;
 
     private static async Task AssertCompilationWithAnalyzersAsync(Compilation compilation)
     {
-        compilation = RemoveAnnotationPreventingCodeAnalysis(compilation);
+        compilation = RemoveAnnotationsPreventingCodeAnalysis(compilation);
         CompilationWithAnalyzers withAnalyzers = compilation.WithAnalyzers(s_analyzers);
         ImmutableArray<Diagnostic> diagnostics = await withAnalyzers.GetAnalyzerDiagnosticsAsync();
         IEnumerable<Diagnostic> warningsOrWorse = WarningsOrWorse(diagnostics);
         Assert.That(warningsOrWorse, Is.Empty);
     }
 
-    private static Compilation RemoveAnnotationPreventingCodeAnalysis(Compilation compilation)
+    private static Compilation RemoveAnnotationsPreventingCodeAnalysis(Compilation compilation)
     {
         GeneratedCodeRewriter rewriter = new();
 
