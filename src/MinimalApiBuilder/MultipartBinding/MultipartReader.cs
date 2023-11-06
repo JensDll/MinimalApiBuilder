@@ -15,7 +15,7 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     /// <summary>
     /// Initializes a new instance of <see cref="MultipartReader" />.
     /// </summary>
-    /// <param name="context">The current HTTP request context</param>
+    /// <param name="context">The current HTTP request context.</param>
     /// <exception cref="MultipartBindingException">
     /// Thrown if the request is not a multipart request.
     /// </exception>
@@ -25,6 +25,28 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
         if (!context.IsMultipart())
         {
             throw new MultipartBindingException("Content-Type must be multipart/form-data");
+        }
+
+        IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();
+
+        _context = context;
+        _formOptions = formOptions.Value;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of <see cref="MultipartReader" />. Multipart request errors are added to
+    /// <see cref="MinimalApiBuilderEndpoint" />.<see cref="MinimalApiBuilderEndpoint.ValidationErrors" />
+    /// without throwing an exception.
+    /// </summary>
+    /// <param name="context">The current HTTP request context.</param>
+    /// <param name="endpoint">The current endpoint handling the request.</param>
+    /// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
+    public MultipartReader(HttpContext context, MinimalApiBuilderEndpoint endpoint)
+        : base(context.GetBoundary(endpoint), context.Request.Body)
+    {
+        if (!context.IsMultipart())
+        {
+            endpoint.AddValidationError("Content-Type must be multipart/form-data");
         }
 
         IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();

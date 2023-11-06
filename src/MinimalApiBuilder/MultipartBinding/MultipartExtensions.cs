@@ -37,6 +37,35 @@ internal static class MultipartExtensions
         return boundary;
     }
 
+    public static string GetBoundary(this HttpContext context, MinimalApiBuilderEndpoint endpoint)
+    {
+        if (context.Request.ContentType is null)
+        {
+            endpoint.AddValidationError("Missing content-type header");
+            return string.Empty;
+        }
+
+        MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse(context.Request.ContentType);
+        string? boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary).Value;
+
+        if (string.IsNullOrWhiteSpace(boundary))
+        {
+            endpoint.AddValidationError("Missing content-type boundary");
+            return string.Empty;
+        }
+
+        IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();
+        int lengthLimit = formOptions.Value.MultipartBoundaryLengthLimit;
+
+        if (boundary.Length <= lengthLimit)
+        {
+            return boundary;
+        }
+
+        endpoint.AddValidationError($"Multipart boundary length limit '{lengthLimit}' exceeded");
+        return string.Empty;
+    }
+
     public static bool IsMultipart(this HttpContext context)
     {
         return !string.IsNullOrEmpty(context.Request.ContentType) &&
