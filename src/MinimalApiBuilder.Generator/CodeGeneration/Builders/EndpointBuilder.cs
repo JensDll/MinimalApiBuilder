@@ -7,6 +7,7 @@ namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 internal class EndpointBuilder : SourceBuilder
 {
     private const string ModelBindingFailed = $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Model binding failed\", Errors = endpoint.ValidationErrors }}";
+    private const string ModelBindingFailedBadRequest = $"{Fqn.TypedResults}.BadRequest({ModelBindingFailed})";
     private const string Next = "next(invocationContext)";
 
     private readonly IReadOnlyDictionary<string, ValidatorToGenerate> _validators;
@@ -56,7 +57,15 @@ internal class EndpointBuilder : SourceBuilder
                 AppendLine($"{Fqn.WithName}(builder, Name);");
             }
 
-            AddValidation(endpoint);
+            bool filterAdded = AddValidation(endpoint);
+
+            if (!filterAdded && endpoint.Handler.Parameters.Any(static parameter => parameter.HasCustomBinding))
+            {
+                using IDisposable filterBlock = OpenAddEndpointFilter();
+                AppendLine(GetEndpoint(endpoint.Handler.EndpointParameter));
+                AddModelBindingFailed();
+                AppendLine($"return {Next};");
+            }
         }
 
         if (endpoint.NeedsConfigure)
@@ -66,7 +75,19 @@ internal class EndpointBuilder : SourceBuilder
         }
     }
 
-    private void AddValidation(EndpointToGenerate endpoint)
+    private void AddModelBindingFailed()
+    {
+        using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
+        AppendLine($"return {Fqn.ValueTask}.FromResult<object?>({ModelBindingFailedBadRequest});");
+    }
+
+    private void AddAsyncModelBindingFailed()
+    {
+        using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
+        AppendLine($"return {ModelBindingFailedBadRequest};");
+    }
+
+    private bool AddValidation(EndpointToGenerate endpoint)
     {
         List<EndpointToGenerateHandlerParameter> parametersToValidateSync = new();
         List<EndpointToGenerateHandlerParameter> parametersToValidateAsync = new();
@@ -96,13 +117,17 @@ internal class EndpointBuilder : SourceBuilder
             }
         }
 
+        bool anyFilterAdded = false;
+
         switch (parametersToValidateSync.Count)
         {
             case 1:
                 AddValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateSync[0]);
+                anyFilterAdded = true;
                 break;
             case > 1:
                 AddValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateSync);
+                anyFilterAdded = true;
                 break;
         }
 
@@ -110,11 +135,15 @@ internal class EndpointBuilder : SourceBuilder
         {
             case 1:
                 AddAsyncValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateAsync[0]);
+                anyFilterAdded = true;
                 break;
             case > 1:
                 AddAsyncValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateAsync);
+                anyFilterAdded = true;
                 break;
         }
+
+        return anyFilterAdded;
     }
 
     private void AddValidationFilter(EndpointToGenerateHandlerParameter endpoint, EndpointToGenerateHandlerParameter parameter)
@@ -129,8 +158,7 @@ internal class EndpointBuilder : SourceBuilder
 
         if (parameter.HasCustomBinding)
         {
-            using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
-            AppendLine($"return {Fqn.ValueTask}.FromResult<object?>({Fqn.TypedResults}.BadRequest({ModelBindingFailed}));");
+            AddModelBindingFailed();
         }
 
         AppendLine(parameter.IsNullable
@@ -152,8 +180,7 @@ internal class EndpointBuilder : SourceBuilder
 
         if (parameter.HasCustomBinding)
         {
-            using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
-            AppendLine($"return {Fqn.TypedResults}.BadRequest({ModelBindingFailed});");
+            AddAsyncModelBindingFailed();
         }
 
         AppendLine(parameter.IsNullable
@@ -163,7 +190,9 @@ internal class EndpointBuilder : SourceBuilder
         AppendLine($"return r.IsValid ? await {Next} : {badRequest};");
     }
 
-    private void AddValidationFilter(EndpointToGenerateHandlerParameter endpoint, IList<EndpointToGenerateHandlerParameter> parameters)
+    private void AddValidationFilter(
+        EndpointToGenerateHandlerParameter endpoint,
+        IList<EndpointToGenerateHandlerParameter> parameters)
     {
         using IDisposable filterBlock = OpenAddEndpointFilter();
         AppendLine(GetEndpoint(endpoint));
@@ -179,8 +208,7 @@ internal class EndpointBuilder : SourceBuilder
 
         if (anyCustomBinding)
         {
-            using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
-            AppendLine($"return {Fqn.ValueTask}.FromResult<object?>({Fqn.TypedResults}.BadRequest({ModelBindingFailed}));");
+            AddModelBindingFailed();
         }
 
         List<string> isValidChecks = new(parameters.Count);
@@ -203,7 +231,9 @@ internal class EndpointBuilder : SourceBuilder
         AppendLine($"return {string.Join(" && ", isValidChecks)} ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.TypedResults}.BadRequest({errorDto}));");
     }
 
-    private void AddAsyncValidationFilter(EndpointToGenerateHandlerParameter endpoint, IList<EndpointToGenerateHandlerParameter> parameters)
+    private void AddAsyncValidationFilter(
+        EndpointToGenerateHandlerParameter endpoint,
+        IList<EndpointToGenerateHandlerParameter> parameters)
     {
         using IDisposable filterBlock = OpenAddEndpointFilterAsync();
         AppendLine(GetEndpoint(endpoint));
@@ -219,8 +249,7 @@ internal class EndpointBuilder : SourceBuilder
 
         if (anyCustomBinding)
         {
-            using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
-            AppendLine($"return {Fqn.TypedResults}.BadRequest({ModelBindingFailed});");
+            AddAsyncModelBindingFailed();
         }
 
         List<string> tasks = new(parameters.Count);
