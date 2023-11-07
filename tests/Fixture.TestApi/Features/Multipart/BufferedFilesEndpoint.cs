@@ -18,14 +18,8 @@ internal partial class BufferedFilesEndpoint : MinimalApiBuilderEndpoint
         return TypedResults.Ok(request.Files.Select(static file =>
         {
             Stream stream = file.OpenReadStream();
-
             byte[] data = new byte[file.Length];
-            int totalRead = stream.Read(data, 0, data.Length);
-            while (totalRead < data.Length)
-            {
-                totalRead += stream.Read(data, totalRead, data.Length - totalRead);
-            }
-
+            stream.ReadExactly(data, 0, data.Length);
             return new BufferedFilesResponse
             {
                 Name = file.FileName,
