@@ -30,7 +30,7 @@ internal static class Fqn
     public const string WithName =
         "global::Microsoft.AspNetCore.Builder.RoutingEndpointConventionBuilderExtensions.WithName";
 
-    public const string IEndpoint = "global::MinimalApiBuilder.IEndpoint";
+    public const string IMinimalApiBuilderEndpoint = "global::MinimalApiBuilder.IMinimalApiBuilderEndpoint";
 
     public const string IServiceCollection = "global::Microsoft.Extensions.DependencyInjection.IServiceCollection";
 

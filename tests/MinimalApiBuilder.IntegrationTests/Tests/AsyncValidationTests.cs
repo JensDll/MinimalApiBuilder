@@ -5,7 +5,7 @@ using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests.Tests;
 
-public class AsyncValidationTests
+internal sealed class AsyncValidationTests
 {
     [TestCaseSource(nameof(InvalidSingle))]
     public async Task Single_Parameter_Validation_With_Invalid_Request(AsyncValidationRequest request)

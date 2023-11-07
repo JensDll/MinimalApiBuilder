@@ -23,6 +23,7 @@ internal class EndpointToGenerate : IWithSyntaxTree, IToGenerate
         Handler = handler;
         NeedsConfigure = needsConfigure;
         SyntaxTree = syntaxTree;
+        Accessibility = endpoint.DeclaredAccessibility;
     }
 
     public ISymbol Symbol { get; }
@@ -34,6 +35,8 @@ internal class EndpointToGenerate : IWithSyntaxTree, IToGenerate
     public EndpointToGenerateHandler Handler { get; }
 
     public bool NeedsConfigure { get; }
+
+    public Accessibility Accessibility { get; }
 
     public SyntaxTree SyntaxTree { get; }
 

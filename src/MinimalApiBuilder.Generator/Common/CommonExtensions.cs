@@ -2,9 +2,9 @@
 
 namespace MinimalApiBuilder.Generator.Common;
 
-internal static class Extensions
+internal static class CommonExtensions
 {
-    public static string ServiceLifetimeToString(this int value)
+    public static string ToServiceLifetimeString(this int value)
     {
         return value switch
         {
@@ -12,6 +12,19 @@ internal static class Extensions
             1 => "Scoped",
             2 => "Transient",
             _ => "Singleton"
+        };
+    }
+
+    public static string ToAccessibilityString(this Accessibility accessibility)
+    {
+        return accessibility switch
+        {
+            Accessibility.Private => "private",
+            Accessibility.ProtectedAndInternal => "protected internal",
+            Accessibility.Protected => "protected",
+            Accessibility.Internal => "internal",
+            Accessibility.ProtectedOrInternal => "protected internal",
+            _ => "public"
         };
     }
 

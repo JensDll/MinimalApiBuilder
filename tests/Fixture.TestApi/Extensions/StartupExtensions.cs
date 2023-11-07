@@ -6,7 +6,7 @@ using ILogger = Serilog.ILogger;
 
 namespace Fixture.TestApi.Extensions;
 
-public static class StartupExtensions
+internal static class StartupExtensions
 {
     public static ILogger AddSerilogLogger(this ILoggingBuilder builder)
     {

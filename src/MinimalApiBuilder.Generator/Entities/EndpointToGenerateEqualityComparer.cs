@@ -21,12 +21,11 @@ internal class EndpointToGenerateEqualityComparer : IEqualityComparer<EndpointTo
             return false;
         }
 
-        var handlerComparer = EndpointToGenerateHandlerEqualityComparer.Instance;
-
         return x.ClassName == y.ClassName &&
                x.NamespaceName == y.NamespaceName &&
-               handlerComparer.Equals(x.Handler, y.Handler) &&
-               x.NeedsConfigure == y.NeedsConfigure;
+               x.NeedsConfigure == y.NeedsConfigure &&
+               x.Accessibility == y.Accessibility &&
+               EndpointToGenerateHandlerEqualityComparer.Instance.Equals(x.Handler, y.Handler);
     }
 
     public int GetHashCode(EndpointToGenerate obj)

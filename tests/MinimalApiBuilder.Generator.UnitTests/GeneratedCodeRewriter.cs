@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace MinimalApiBuilder.Generator.UnitTests;
 
-public class GeneratedCodeRewriter : CSharpSyntaxRewriter
+internal sealed class GeneratedCodeRewriter : CSharpSyntaxRewriter
 {
     private static readonly SourceText s_generatedCodeAttributeSourceText
         = SourceText.From("global::System.CodeDom.Compiler.GeneratedCodeAttribute");

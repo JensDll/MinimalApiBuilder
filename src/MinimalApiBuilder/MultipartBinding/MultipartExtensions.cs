@@ -10,32 +10,6 @@ namespace MinimalApiBuilder;
 
 internal static class MultipartExtensions
 {
-    public static string GetBoundary(this HttpContext context)
-    {
-        if (context.Request.ContentType is null)
-        {
-            throw new MultipartBindingException("Missing content-type header");
-        }
-
-        MediaTypeHeaderValue contentType = MediaTypeHeaderValue.Parse(context.Request.ContentType);
-        string? boundary = HeaderUtilities.RemoveQuotes(contentType.Boundary).Value;
-
-        if (string.IsNullOrWhiteSpace(boundary))
-        {
-            throw new MultipartBindingException("Missing content-type boundary");
-        }
-
-        IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();
-        int lengthLimit = formOptions.Value.MultipartBoundaryLengthLimit;
-
-        if (boundary.Length > lengthLimit)
-        {
-            throw new MultipartBindingException($"Multipart boundary length limit '{lengthLimit}' exceeded");
-        }
-
-        return boundary;
-    }
-
     public static string GetBoundary(this HttpContext context, MinimalApiBuilderEndpoint endpoint)
     {
         if (context.Request.ContentType is null)

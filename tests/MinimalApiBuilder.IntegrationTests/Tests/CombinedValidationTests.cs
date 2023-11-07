@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests.Tests;
 
-public class CombinedValidationTests
+internal sealed class CombinedValidationTests
 {
     [TestCaseSource(nameof(Invalid))]
     public async Task Combined_Validation_With_Invalid_Request(

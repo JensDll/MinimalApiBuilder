@@ -1,6 +1,6 @@
 ﻿namespace MinimalApiBuilder.Generator.UnitTests.Tests;
 
-public class BasicTests : GeneratorUnitTest
+internal sealed class BasicTests : GeneratorUnitTest
 {
     [Test]
     public Task With_Configure()

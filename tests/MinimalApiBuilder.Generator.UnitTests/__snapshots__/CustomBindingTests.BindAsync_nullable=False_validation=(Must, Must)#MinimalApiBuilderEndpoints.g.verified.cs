@@ -5,7 +5,7 @@
 
 #nullable enable
 
-public partial class E1 : global::MinimalApiBuilder.IEndpoint
+public partial class E1 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static global::System.Delegate _auto_generated_Handler { get; } = Handle;
@@ -29,7 +29,7 @@ public partial class E1 : global::MinimalApiBuilder.IEndpoint
     {
     }
 }
-public partial class E2 : global::MinimalApiBuilder.IEndpoint
+public partial class E2 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static global::System.Delegate _auto_generated_Handler { get; } = Handle;
@@ -53,7 +53,7 @@ public partial class E2 : global::MinimalApiBuilder.IEndpoint
     {
     }
 }
-public partial class E3 : global::MinimalApiBuilder.IEndpoint
+public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static global::System.Delegate _auto_generated_Handler { get; } = Handle;
@@ -79,7 +79,7 @@ public partial class E3 : global::MinimalApiBuilder.IEndpoint
     {
     }
 }
-public partial class E4 : global::MinimalApiBuilder.IEndpoint
+public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static global::System.Delegate _auto_generated_Handler { get; } = Handle;
@@ -105,7 +105,7 @@ public partial class E4 : global::MinimalApiBuilder.IEndpoint
     {
     }
 }
-public partial class E5 : global::MinimalApiBuilder.IEndpoint
+public partial class E5 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static global::System.Delegate _auto_generated_Handler { get; } = Handle;

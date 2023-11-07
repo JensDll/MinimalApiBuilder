@@ -2,7 +2,7 @@
 
 namespace MinimalApiBuilder.Generator.UnitTests.Tests;
 
-public class ValidatorServiceLifetimeTests : GeneratorUnitTest
+internal sealed class ValidatorServiceLifetimeTests : GeneratorUnitTest
 {
     [Test]
     public Task With_Single_Attribute(

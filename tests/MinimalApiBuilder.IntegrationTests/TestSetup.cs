@@ -3,7 +3,7 @@
 namespace MinimalApiBuilder.IntegrationTests;
 
 [SetUpFixture]
-public class TestSetup
+internal sealed class TestSetup
 {
     private static TestWebApplicationFactory<Program> s_factory = null!;
 

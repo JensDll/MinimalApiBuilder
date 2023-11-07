@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests;
 
-public static class TestHelper
+internal static class TestHelper
 {
     public static async Task AssertErrorResultAsync(HttpResponseMessage response)
     {
