@@ -1,7 +1,7 @@
 ﻿namespace MinimalApiBuilder;
 
 /// <summary>
-/// The base class of all Minimal API Builder endpoints.
+/// The base class of all minimal API builder endpoints.
 /// </summary>
 public abstract partial class MinimalApiBuilderEndpoint
 {
@@ -16,9 +16,9 @@ public abstract partial class MinimalApiBuilderEndpoint
     public bool HasValidationError => ValidationErrors.Count > 0;
 
     /// <summary>
-    /// Add a validation error to <see cref="ValidationErrors" />.
+    /// Adds a new validation error to the <see cref="ValidationErrors" />.
     /// </summary>
-    /// <param name="message">The message of the error.</param>
+    /// <param name="message">The message of the validation error.</param>
     public void AddValidationError(string message)
     {
         ValidationErrors.Add(message);

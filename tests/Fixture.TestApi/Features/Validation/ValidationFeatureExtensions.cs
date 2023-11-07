@@ -8,7 +8,7 @@ using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation;
 
-internal static class FeatureExtensions
+internal static class ValidationFeatureExtensions
 {
     public static void MapValidationFeatures(this IEndpointRouteBuilder endpoints)
     {

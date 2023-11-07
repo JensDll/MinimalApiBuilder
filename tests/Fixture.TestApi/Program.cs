@@ -1,4 +1,5 @@
 using Fixture.TestApi.Extensions;
+using Fixture.TestApi.Features.Multipart;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -31,5 +32,6 @@ if (app.Environment.IsDevelopment())
 app.UseDeveloperExceptionPage();
 
 app.MapValidationFeatures();
+app.MapMultipartFeature();
 
 app.Run();

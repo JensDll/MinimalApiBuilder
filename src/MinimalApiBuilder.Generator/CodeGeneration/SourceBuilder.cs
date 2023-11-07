@@ -62,13 +62,7 @@ internal abstract class SourceBuilder
             AppendLine(values[i]);
         }
 
-        WriteBlockStart(values[values.Length - 1]);
-
-        return new Disposable(() =>
-        {
-            DecreaseIndent();
-            AppendLine("}");
-        });
+        return OpenBlock(values[values.Length - 1]);
     }
 
     protected IDisposable OpenBlock(string value, string afterClose)
