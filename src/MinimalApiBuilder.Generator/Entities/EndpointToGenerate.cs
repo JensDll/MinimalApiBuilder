@@ -9,7 +9,7 @@ internal class EndpointToGenerate : IWithSyntaxTree, IToGenerate
     private readonly string _identifier;
 
     private EndpointToGenerate(
-        INamedTypeSymbol endpoint,
+        ISymbol endpoint,
         SyntaxTree syntaxTree,
         EndpointToGenerateHandler handler,
         bool needsConfigure)

@@ -11,5 +11,6 @@ internal static class MultipartFeatureExtensions
     {
         RouteGroupBuilder group = endpoints.MapGroup("/multipart").WithTags("Multipart");
         group.MapPost<ZipStreamEndpoint>("/zipstream");
+        group.MapPost<BufferedFilesEndpoint>("/bufferedfiles");
     }
 }
