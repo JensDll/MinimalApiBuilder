@@ -26,6 +26,11 @@ dotnet_diagnostic.CA1062.severity = none
 dotnet_diagnostic.CA2007.severity = none
 ######## RELIABILITY RULES ########
 
+######## PERFORMANCE RULES ########
+# Avoid uninstantiated internal classes
+dotnet_diagnostic.CA1812.severity = none
+######## PERFORMANCE RULES ########
+
 ######## LANGUAGE RULES ########
 # Avoid `this` qualifier
 dotnet_diagnostic.IDE0003.severity = warning
@@ -142,6 +147,7 @@ csharp_using_directive_placement = outside_namespace
 dotnet_diagnostic.IDE0001.severity = warning
 dotnet_diagnostic.IDE0002.severity = warning
 dotnet_diagnostic.IDE0004.severity = warning
+dotnet_diagnostic.IDE0005.severity = warning
 dotnet_diagnostic.IDE0035.severity = warning
 dotnet_diagnostic.IDE0051.severity = warning
 dotnet_diagnostic.IDE0052.severity = warning
@@ -318,6 +324,8 @@ resharper_csharp_blank_lines_around_field = 0
 resharper_csharp_indent_raw_literal_string = do_not_change
 resharper_csharp_empty_block_style = together
 resharper_xmldoc_indent_text = zero_indent
+resharper_xmldoc_wrap_lines = false
+resharper_xmldoc_wrap_tags_and_pi = false
 ######## RESHARPER ########
 
 [*.{received,verified}.{cs,txt}]

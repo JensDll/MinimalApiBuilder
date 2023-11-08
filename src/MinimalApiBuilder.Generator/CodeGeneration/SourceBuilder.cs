@@ -16,7 +16,7 @@ internal abstract class SourceBuilder
 
 ");
     private int _indent;
-    private static readonly string s_generatedCodeAttribute =
+    protected static readonly string s_generatedCodeAttribute =
         $@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{typeof(SourceBuilder).Assembly.GetName().Name}"", ""{typeof(SourceBuilder).Assembly.GetName().Version}"")]";
 
     protected SourceBuilder(GeneratorOptions options)
@@ -53,6 +53,16 @@ internal abstract class SourceBuilder
             DecreaseIndent();
             AppendLine("}");
         });
+    }
+
+    protected IDisposable OpenBlock(params string[] values)
+    {
+        for (int i = 0; i < values.Length - 1; i++)
+        {
+            AppendLine(values[i]);
+        }
+
+        return OpenBlock(values[values.Length - 1]);
     }
 
     protected IDisposable OpenBlock(string value, string afterClose)

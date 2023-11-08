@@ -7,8 +7,15 @@
 
 namespace MinimalApiBuilder
 {
+    /// <summary>
+    /// Minimal API builder dependency injection extension methods.
+    /// </summary>
     public static class MinimalApiBuilderDependencyInjectionExtensions
     {
+        /// <summary>
+        /// Adds the necessary types to the <see cref="global::Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.
+        /// </summary>
+        /// <param name="services">The <see cref="global::Microsoft.Extensions.DependencyInjection.IServiceCollection"/>.</param>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddMinimalApiBuilderEndpoints(this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)
         {

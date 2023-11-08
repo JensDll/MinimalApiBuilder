@@ -6,7 +6,7 @@ using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation.Combination;
 
-public partial class CombinedValidationEndpoint : MinimalApiBuilderEndpoint
+internal partial class CombinedValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private static IResult Handle(AsyncValidationRequest request,
         [AsParameters] SyncValidationParameters parameters,

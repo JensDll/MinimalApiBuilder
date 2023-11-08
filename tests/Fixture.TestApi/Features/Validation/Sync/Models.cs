@@ -2,14 +2,14 @@
 
 namespace Fixture.TestApi.Features.Validation.Sync;
 
-public class SyncValidationRequest
+internal class SyncValidationRequest
 {
     public required string Foo { get; init; }
 };
 
-public record struct SyncValidationParameters(int Bar);
+internal record struct SyncValidationParameters(int Bar);
 
-public class RequestValidator : AbstractValidator<SyncValidationRequest>
+internal class RequestValidator : AbstractValidator<SyncValidationRequest>
 {
     public RequestValidator()
     {
@@ -18,7 +18,7 @@ public class RequestValidator : AbstractValidator<SyncValidationRequest>
     }
 }
 
-public class ParametersValidator : AbstractValidator<SyncValidationParameters>
+internal class ParametersValidator : AbstractValidator<SyncValidationParameters>
 {
     public ParametersValidator()
     {

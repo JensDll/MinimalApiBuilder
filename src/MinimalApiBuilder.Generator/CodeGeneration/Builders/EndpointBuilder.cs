@@ -6,9 +6,11 @@ namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 
 internal class EndpointBuilder : SourceBuilder
 {
-    private const string ModelBindingFailed = $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Model binding failed\", Errors = endpoint.ValidationErrors }}";
+    private const string ModelBindingFailed =
+        $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Model binding failed\", Errors = endpoint.ValidationErrors }}";
     private const string ModelBindingFailedBadRequest = $"{Fqn.TypedResults}.BadRequest({ModelBindingFailed})";
     private const string Next = "next(invocationContext)";
+
 
     private readonly IReadOnlyDictionary<string, ValidatorToGenerate> _validators;
 
@@ -28,7 +30,8 @@ internal class EndpointBuilder : SourceBuilder
         Options = Options.GetForTarget(endpoint);
 
         using (endpoint.NamespaceName is null ? Disposable.Empty : OpenBlock($"namespace {endpoint.NamespaceName}"))
-        using (OpenBlock($"public partial class {endpoint.ClassName} : {Fqn.IEndpoint}"))
+        using (OpenBlock(
+                   $"{endpoint.Accessibility.ToAccessibilityString()} partial class {endpoint.ClassName} : {Fqn.IMinimalApiBuilderEndpoint}"))
         {
             AddProperties(endpoint);
             AddConfigure(endpoint);
@@ -102,7 +105,8 @@ internal class EndpointBuilder : SourceBuilder
             if (parameter is { IsValueType: true, IsNullable: true })
             {
                 Diagnostic diagnostic =
-                    Diagnostic.Create(DiagnosticDescriptors.NullableValueTypeWillNotBeValidated, parameter.Symbol.Locations[0], parameter);
+                    Diagnostic.Create(DiagnosticDescriptors.NullableValueTypeWillNotBeValidated,
+                        parameter.Symbol.Locations[0], parameter);
                 Diagnostics.Add(diagnostic);
                 continue;
             }
@@ -146,10 +150,12 @@ internal class EndpointBuilder : SourceBuilder
         return anyFilterAdded;
     }
 
-    private void AddValidationFilter(EndpointToGenerateHandlerParameter endpoint, EndpointToGenerateHandlerParameter parameter)
+    private void AddValidationFilter(EndpointToGenerateHandlerParameter endpoint,
+        EndpointToGenerateHandlerParameter parameter)
     {
         const string errors = $"{Fqn.Linq}.Select(r.Errors, static failure => failure.ErrorMessage)";
-        const string errorDto = $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
+        const string errorDto =
+            $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
         const string badRequest = $"{Fqn.TypedResults}.BadRequest({errorDto})";
 
         using IDisposable filterBlock = OpenAddEndpointFilter();
@@ -168,10 +174,12 @@ internal class EndpointBuilder : SourceBuilder
         AppendLine($"return r.IsValid ? {Next} : {Fqn.ValueTask}.FromResult<object?>({badRequest});");
     }
 
-    private void AddAsyncValidationFilter(EndpointToGenerateHandlerParameter endpoint, EndpointToGenerateHandlerParameter parameter)
+    private void AddAsyncValidationFilter(EndpointToGenerateHandlerParameter endpoint,
+        EndpointToGenerateHandlerParameter parameter)
     {
         const string errors = $"{Fqn.Linq}.Select(r.Errors, static failure => failure.ErrorMessage)";
-        const string errorDto = $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
+        const string errorDto =
+            $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
         const string badRequest = $"{Fqn.TypedResults}.BadRequest({errorDto})";
 
         using IDisposable filterBlock = OpenAddEndpointFilterAsync();
@@ -225,10 +233,13 @@ internal class EndpointBuilder : SourceBuilder
             validationResults.Add(name);
         }
 
-        string errors = $"{Fqn.Linq}.SelectMany(new[] {{ {string.Join(", ", validationResults)} }}, static result => result.Errors, static (_, failure) => failure.ErrorMessage)";
-        string errorDto = $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
+        string errors =
+            $"{Fqn.Linq}.SelectMany(new[] {{ {string.Join(", ", validationResults)} }}, static result => result.Errors, static (_, failure) => failure.ErrorMessage)";
+        string errorDto =
+            $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
 
-        AppendLine($"return {string.Join(" && ", isValidChecks)} ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.TypedResults}.BadRequest({errorDto}));");
+        AppendLine(
+            $"return {string.Join(" && ", isValidChecks)} ? next(invocationContext) : {Fqn.ValueTask}.FromResult<object?>({Fqn.TypedResults}.BadRequest({errorDto}));");
     }
 
     private void AddAsyncValidationFilter(
@@ -260,12 +271,16 @@ internal class EndpointBuilder : SourceBuilder
         AppendLine($"{Fqn.TaskValidationResult}[] tasks = {{ {string.Join(", ", tasks)} }};");
         AppendLine($"{Fqn.ValidationResult}[] results = await {Fqn.Task}.WhenAll(tasks);");
 
-        string isValid = string.Join(" && ", Enumerable.Range(0, tasks.Count).Select(static i => $"results[{i}].IsValid"));
-        const string errors = $"{Fqn.Linq}.SelectMany(results, static result => result.Errors, static (_, failure) => failure.ErrorMessage)";
-        const string errorDto = $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
+        string isValid = string.Join(" && ",
+            Enumerable.Range(0, tasks.Count).Select(static i => $"results[{i}].IsValid"));
+        const string errors =
+            $"{Fqn.Linq}.SelectMany(results, static result => result.Errors, static (_, failure) => failure.ErrorMessage)";
+        const string errorDto =
+            $"new {Fqn.ErrorDto} {{ StatusCode = {Fqn.HttpStatusCode}.BadRequest, Message = \"Validation failed\", Errors = {errors} }}";
 
         AppendLine($"return {isValid} ? await next(invocationContext) : {Fqn.TypedResults}.BadRequest({errorDto});");
     }
+
 
     private IDisposable OpenAddEndpointFilter() =>
         OpenBlock($"{Fqn.AddEndpointFilter}(builder, static (invocationContext, next) =>", ");");
@@ -282,5 +297,6 @@ internal class EndpointBuilder : SourceBuilder
     private static string GetArgument(EndpointToGenerateHandlerParameter parameter, string variableName) =>
         $"{parameter} {variableName} = invocationContext.GetArgument<{parameter}>({parameter.Position});";
 
-    private static string GetEndpoint(EndpointToGenerateHandlerParameter endpoint) => GetArgument(endpoint, nameof(endpoint));
+    private static string GetEndpoint(EndpointToGenerateHandlerParameter endpoint) =>
+        GetArgument(endpoint, nameof(endpoint));
 }

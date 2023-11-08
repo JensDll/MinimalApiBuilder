@@ -5,7 +5,7 @@
 
 #nullable enable
 
-public partial class E : global::MinimalApiBuilder.IEndpoint
+public partial class E : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static global::System.Delegate _auto_generated_Handler { get; } = Handle;

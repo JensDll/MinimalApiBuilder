@@ -6,7 +6,7 @@ namespace MinimalApiBuilder.Generator.Entities;
 internal class EndpointToGenerateHandler : IToGenerate
 {
     public EndpointToGenerateHandler(
-        IMethodSymbol handler,
+        ISymbol handler,
         EndpointToGenerateHandlerParameter endpointParameter,
         EndpointToGenerateHandlerParameter[] parameters)
     {

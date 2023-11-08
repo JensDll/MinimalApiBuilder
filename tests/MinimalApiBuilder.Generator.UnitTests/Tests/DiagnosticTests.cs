@@ -1,6 +1,6 @@
 ﻿namespace MinimalApiBuilder.Generator.UnitTests.Tests;
 
-public class DiagnosticTests : GeneratorUnitTest
+internal sealed class DiagnosticTests : GeneratorUnitTest
 {
     [Test]
     public async Task Nullable_Value_Type_Validation()

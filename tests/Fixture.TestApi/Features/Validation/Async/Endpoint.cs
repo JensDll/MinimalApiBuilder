@@ -10,7 +10,7 @@ using Serilog;
 
 namespace Fixture.TestApi.Features.Validation.Async;
 
-public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
+internal partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private static async Task<Results<Ok<ICollection<string>>, BadRequest>> HandleAsync(
         [FromServices] AsyncSingleValidationEndpoint endpoint,
@@ -35,7 +35,7 @@ public partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
     }
 }
 
-public partial class AsyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
+internal partial class AsyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private readonly ILogger _logger;
 

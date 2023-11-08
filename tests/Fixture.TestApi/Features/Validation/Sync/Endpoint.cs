@@ -3,7 +3,7 @@ using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation.Sync;
 
-public partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
+internal partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private static IResult Handle(
         SyncValidationRequest request,
@@ -13,7 +13,7 @@ public partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
     }
 }
 
-public partial class SyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
+internal partial class SyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     private static IResult Handle(
         SyncValidationRequest request,

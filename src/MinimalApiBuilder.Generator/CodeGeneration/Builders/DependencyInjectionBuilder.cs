@@ -13,11 +13,18 @@ internal class DependencyInjectionBuilder : SourceBuilder
     public DependencyInjectionBuilder(GeneratorOptions options) : base(options)
     {
         _namespaceDisposable = OpenBlock("namespace MinimalApiBuilder");
-        _classDisposable = OpenBlock("public static class MinimalApiBuilderDependencyInjectionExtensions");
-        MarkAsGenerated();
-        _methodDisposable =
-            OpenBlock(
-                $"public static {Fqn.IServiceCollection} AddMinimalApiBuilderEndpoints(this {Fqn.IServiceCollection} services)");
+        _classDisposable = OpenBlock(
+            "/// <summary>",
+            "/// Minimal API builder dependency injection extension methods.",
+            "/// </summary>",
+            "public static class MinimalApiBuilderDependencyInjectionExtensions");
+        _methodDisposable = OpenBlock(
+            "/// <summary>",
+            $"/// Adds the necessary types to the <see cref=\"{Fqn.IServiceCollection}\"/>.",
+            "/// </summary>",
+            $"/// <param name=\"services\">The <see cref=\"{Fqn.IServiceCollection}\"/>.</param>",
+            s_generatedCodeAttribute,
+            $"public static {Fqn.IServiceCollection} AddMinimalApiBuilderEndpoints(this {Fqn.IServiceCollection} services)");
     }
 
     public override void AddSource(SourceProductionContext context)

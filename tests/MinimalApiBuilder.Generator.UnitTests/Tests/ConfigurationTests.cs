@@ -2,7 +2,7 @@
 
 namespace MinimalApiBuilder.Generator.UnitTests.Tests;
 
-public class ConfigurationTests : GeneratorUnitTest
+internal sealed class ConfigurationTests : GeneratorUnitTest
 {
     private static IEnumerable<TestAnalyzerConfigOptionsProvider> AssignNameProviders()
     {

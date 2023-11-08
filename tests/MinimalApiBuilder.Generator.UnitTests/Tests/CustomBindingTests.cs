@@ -1,6 +1,6 @@
 ﻿namespace MinimalApiBuilder.Generator.UnitTests.Tests;
 
-public class CustomBindingTests : GeneratorUnitTest
+internal sealed class CustomBindingTests : GeneratorUnitTest
 {
     private static IEnumerable<(string, string)> Validation()
     {
@@ -160,6 +160,7 @@ public class R2Validator : AbstractValidator<R2>
         // lang=cs
         string source = $$"""
 public class R {
+    public int Value { get; set; }
     public static ValueTask<R{{nullableMark}}> BindAsync(HttpContext context)
     {
         return ValueTask.FromResult<R{{nullableMark}}>(new R());
@@ -183,6 +184,7 @@ public partial class E : MinimalApiBuilderEndpoint
         // lang=cs
         string source = $$"""
 public class R {
+    public int Value { get; set; }
     public static bool TryParse(string value, out R{{nullableMark}} r)
     {
         r = new R();

@@ -7,40 +7,22 @@ using MinimalApiBuilder.Entities;
 
 namespace MinimalApiBuilder;
 
+/// <summary>
+/// A multipart/form-data reader using <see cref="MinimalApiBuilderEndpoint" /> to hold any validation errors.
+/// </summary>
+/// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
 public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
 {
     private readonly HttpContext _context;
     private readonly FormOptions _formOptions;
+    private readonly MinimalApiBuilderEndpoint _endpoint;
 
     /// <summary>
-    /// Initializes a new instance of <see cref="MultipartReader" />.
+    /// Initializes a new instance of <see cref="MultipartReader" />. Multipart request errors are added to the
+    /// <see cref="MinimalApiBuilderEndpoint.ValidationErrors" /> without throwing an exception.
     /// </summary>
-    /// <param name="context">The current HTTP request context.</param>
-    /// <exception cref="MultipartBindingException">
-    /// Thrown if the request is not a multipart request.
-    /// </exception>
-    /// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
-    public MultipartReader(HttpContext context) : base(context.GetBoundary(), context.Request.Body)
-    {
-        if (!context.IsMultipart())
-        {
-            throw new MultipartBindingException("Content-Type must be multipart/form-data");
-        }
-
-        IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();
-
-        _context = context;
-        _formOptions = formOptions.Value;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of <see cref="MultipartReader" />. Multipart request errors are added to
-    /// <see cref="MinimalApiBuilderEndpoint" />.<see cref="MinimalApiBuilderEndpoint.ValidationErrors" />
-    /// without throwing an exception.
-    /// </summary>
-    /// <param name="context">The current HTTP request context.</param>
-    /// <param name="endpoint">The current endpoint handling the request.</param>
-    /// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
+    /// <param name="context">The current <see cref="HttpContext" />.</param>
+    /// <param name="endpoint">The current <see cref="MinimalApiBuilderEndpoint" /> handling the request.</param>
     public MultipartReader(HttpContext context, MinimalApiBuilderEndpoint endpoint)
         : base(context.GetBoundary(endpoint), context.Request.Body)
     {
@@ -53,14 +35,28 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
 
         _context = context;
         _formOptions = formOptions.Value;
+        _endpoint = endpoint;
     }
 
+    /// <summary>
+    /// Reads the next <see cref="NextSection" /> from the underlying
+    /// <see cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />.
+    /// </summary>
+    /// <param name="cancellationToken">A <see cref="CancellationToken" /> used to cancel the operation.</param>
+    /// <returns></returns>
     public new async Task<NextSection?> ReadNextSectionAsync(CancellationToken cancellationToken = default)
     {
         MultipartSection? section = await base.ReadNextSectionAsync(cancellationToken);
-        return section is null ? null : new NextSection(section);
+        return section is null ? null : new NextSection(section, _endpoint);
     }
 
+    /// <summary>
+    /// Reads the next <see cref="NextSection" /> from the underlying
+    /// <see cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
+    /// using a <see cref="FileBufferingReadStream" /> as the body.
+    /// </summary>
+    /// <param name="cancellationToken">A <see cref="CancellationToken" /> used to cancel the operation.</param>
+    /// <returns></returns>
     public async Task<NextSection?> ReadNextSectionBufferedAsync(CancellationToken cancellationToken = default)
     {
         MultipartSection? section = await base.ReadNextSectionAsync(cancellationToken);
@@ -75,10 +71,17 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
         section.Body = fileStream;
         _context.Response.RegisterForDisposeAsync(fileStream);
 
-        return new NextSection(section);
+        return new NextSection(section, _endpoint);
     }
 
-    public async Task<IReadOnlyList<FormFile>?> ReadFilesBufferedAsync(CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Continually reads the next <see cref="NextSection" /> from the underlying
+    /// <see cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
+    /// using <see cref="ReadNextSectionBufferedAsync" />.
+    /// </summary>
+    /// <param name="cancellationToken">A <see cref="CancellationToken" /> used to cancel the operation.</param>
+    /// <returns></returns>
+    public async Task<IReadOnlyList<IFormFile>?> ReadFilesBufferedAsync(CancellationToken cancellationToken = default)
     {
         List<FormFile> files = new();
 

@@ -5,15 +5,15 @@ using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation.Async;
 
-public class AsyncValidationRequest
+internal class AsyncValidationRequest
 {
     public required string Foo { get; init; }
 }
 
-public record struct AsyncValidationParameters(int Bar);
+internal record struct AsyncValidationParameters(int Bar);
 
 [RegisterValidator(ServiceLifetime.Transient)]
-public class RequestValidator : AbstractValidator<AsyncValidationRequest>
+internal class RequestValidator : AbstractValidator<AsyncValidationRequest>
 {
     public RequestValidator()
     {
@@ -26,7 +26,7 @@ public class RequestValidator : AbstractValidator<AsyncValidationRequest>
     }
 }
 
-public class ParametersValidator : AbstractValidator<AsyncValidationParameters>
+internal class ParametersValidator : AbstractValidator<AsyncValidationParameters>
 {
     public ParametersValidator()
     {

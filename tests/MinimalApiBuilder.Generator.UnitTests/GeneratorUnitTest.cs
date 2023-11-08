@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalApiBuilder.Generator.UnitTests;
 
-public abstract class GeneratorUnitTest
+internal abstract class GeneratorUnitTest
 {
     private static readonly CSharpParseOptions s_parseOptions = new(LanguageVersion.CSharp11);
 
@@ -69,6 +69,7 @@ public abstract class GeneratorUnitTest
                 ReportDiagnostic.Suppress) // CA1016: Mark assemblies with AssemblyVersionAttribute
             .ChangeAndReturn("CA1017", ReportDiagnostic.Suppress) // CA1017: Mark assemblies with ComVisibleAttribute
             .ChangeAndReturn("CA1050", ReportDiagnostic.Suppress) // CA1050: Declare types in namespaces
+            .ChangeAndReturn("CA1812", ReportDiagnostic.Suppress) // CA1812: Avoid uninstantiated internal classes
             .ChangeAndReturn("CA2007", ReportDiagnostic.Suppress); // CA2007: Do not directly await a Task
 
     private static readonly CSharpCompilationOptions s_compilationOptions =
@@ -78,29 +79,32 @@ public abstract class GeneratorUnitTest
 
     protected static Task VerifyGeneratorAsync(string source)
     {
-        TestAnalyzerConfigOptionsProvider optionsProvider =
-            new(new TestAnalyzerConfigOptions(), new TestAnalyzerConfigOptions());
-        return VerifyGeneratorAsync(source, optionsProvider);
+        return VerifyGeneratorAsync(source, TestAnalyzerConfigOptionsProvider.Default);
     }
 
-    protected static async Task VerifyGeneratorAsync(string source, TestAnalyzerConfigOptionsProvider optionsProvider)
+    protected static Task VerifyGeneratorAsync(string source, string mapActions)
     {
-        // lang=cs
-        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText($"""
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using MinimalApiBuilder;
-using FluentValidation;
-using System;
-using System.Reflection;
-using System.Threading.Tasks;
+        return VerifyGeneratorAsync(source, mapActions, TestAnalyzerConfigOptionsProvider.Default);
+    }
 
-{source}
-""");
+    protected static Task VerifyGeneratorAsync(
+        string source,
+        TestAnalyzerConfigOptionsProvider optionsProvider)
+    {
+        return VerifyGeneratorAsyncImpl(GetSource(source), optionsProvider);
+    }
+
+    protected static Task VerifyGeneratorAsync(
+        string source,
+        string mapActions,
+        TestAnalyzerConfigOptionsProvider optionsProvider)
+    {
+        return VerifyGeneratorAsyncImpl(GetSource(source, mapActions), optionsProvider);
+    }
+
+    private static async Task VerifyGeneratorAsyncImpl(string source, AnalyzerConfigOptionsProvider optionsProvider)
+    {
+        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
 
         var compilation = CSharpCompilation.Create(
             assemblyName: nameof(GeneratorUnitTest) + "Assembly",
@@ -151,13 +155,10 @@ using System.Threading.Tasks;
     {
         GeneratedCodeRewriter rewriter = new();
 
-        List<SyntaxTree> nonGeneratedSyntaxTrees = new();
-
         foreach (SyntaxTree syntaxTree in compilation.SyntaxTrees)
         {
             if (!syntaxTree.FilePath.EndsWith(".g.cs", StringComparison.OrdinalIgnoreCase))
             {
-                nonGeneratedSyntaxTrees.Add(syntaxTree);
                 continue;
             }
 
@@ -167,11 +168,48 @@ using System.Threading.Tasks;
             compilation = compilation.ReplaceSyntaxTree(syntaxTree, newSource.SyntaxTree);
         }
 
-        return compilation.RemoveSyntaxTrees(nonGeneratedSyntaxTrees);
+        return compilation;
     }
 
     private static IEnumerable<Diagnostic> WarningsOrWorse(IEnumerable<Diagnostic> diagnostics)
     {
         return diagnostics.Where(static diagnostic => diagnostic.Severity >= DiagnosticSeverity.Warning);
+    }
+
+    private static string GetSource(string source)
+    {
+        // lang=cs
+        return $"""
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
+using MinimalApiBuilder;
+using FluentValidation;
+using System;
+using System.Reflection;
+using System.Threading.Tasks;
+
+{source}
+""";
+    }
+
+    private static string GetSource(string source, string mapActions)
+    {
+        // lang=cs
+        return $$"""
+{{GetSource(source)}}
+
+public static class TestMapActions
+{
+    public static IEndpointRouteBuilder MapTestEndpoints(this IEndpointRouteBuilder app)
+    {
+        {{mapActions}}
+        return app;
+    }
+}
+""";
     }
 }

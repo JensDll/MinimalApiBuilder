@@ -1,6 +1,6 @@
 ﻿namespace MinimalApiBuilder.Generator.UnitTests;
 
-public static class DictionaryExtensions
+internal static class DictionaryExtensions
 {
     public static Dictionary<TKey, TValue> AddAndReturn<TKey, TValue>(this Dictionary<TKey, TValue> dictionary,
         TKey key, TValue value) where TKey : notnull

@@ -9,7 +9,7 @@ internal class ValidatorToGenerate : IToGenerate
     private readonly string _identifier;
 
     private ValidatorToGenerate(
-        INamedTypeSymbol validator,
+        ITypeSymbol validator,
         bool isAsync,
         string serviceLifetime)
     {
@@ -70,7 +70,7 @@ internal class ValidatorToGenerate : IToGenerate
                 continue;
             }
 
-            return lifetime.ServiceLifetimeToString();
+            return lifetime.ToServiceLifetimeString();
         }
 
         return "Singleton";
