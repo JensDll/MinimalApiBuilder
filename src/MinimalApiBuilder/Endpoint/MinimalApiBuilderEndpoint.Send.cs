@@ -6,14 +6,14 @@ namespace MinimalApiBuilder;
 public abstract partial class MinimalApiBuilderEndpoint
 {
     /// <summary>
-    /// Send a <see cref="ErrorDto" /> JSON response for the current request.
+    /// Sends an <see cref="ErrorDto" /> JSON response for the current request.
     /// </summary>
     /// <param name="httpContext">The <see cref="HttpContext" /> of the current request.</param>
     /// <param name="message">
-    /// The <see cref="ErrorDto" />.<see cref="ErrorDto.Message" />.
+    /// The <see cref="ErrorDto.Message" />.
     /// </param>
     /// <param name="statusCode">
-    /// The <see cref="ErrorDto" />.<see cref="ErrorDto.StatusCode" />.
+    /// The <see cref="ErrorDto.StatusCode" />.
     /// </param>
     /// <param name="cancellationToken">
     /// A <see cref="CancellationToken" /> used to cancel the operation.

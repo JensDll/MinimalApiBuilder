@@ -8,8 +8,7 @@ using MinimalApiBuilder.Entities;
 namespace MinimalApiBuilder;
 
 /// <summary>
-/// Reads multipart/form-data from the specified <see cref="HttpContext" />
-/// using <see cref="MinimalApiBuilderEndpoint" /> to hold any validation errors.
+/// A multipart/form-data reader using <see cref="MinimalApiBuilderEndpoint" /> to hold any validation errors.
 /// </summary>
 /// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
 public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
@@ -20,8 +19,7 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
 
     /// <summary>
     /// Initializes a new instance of <see cref="MultipartReader" />. Multipart request errors are added to the
-    /// <see cref="MinimalApiBuilderEndpoint" />.<see cref="MinimalApiBuilderEndpoint.ValidationErrors" />
-    /// without throwing an exception.
+    /// <see cref="MinimalApiBuilderEndpoint.ValidationErrors" /> without throwing an exception.
     /// </summary>
     /// <param name="context">The current <see cref="HttpContext" />.</param>
     /// <param name="endpoint">The current <see cref="MinimalApiBuilderEndpoint" /> handling the request.</param>

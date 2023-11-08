@@ -3,12 +3,12 @@
 namespace MinimalApiBuilder;
 
 /// <summary>
-/// Static data used by the Minimal API Builder generator.
+/// Static data used by the minimal API builder generator.
 /// </summary>
 public static class StaticData
 {
     /// <summary>
-    /// A successful <see cref="FluentValidation.Results.ValidationResult" />.
+    /// A successful <see cref="ValidationResult" />.
     /// </summary>
     public static readonly ValidationResult SuccessValidationResult = new();
 
