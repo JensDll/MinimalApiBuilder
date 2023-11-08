@@ -31,7 +31,7 @@ internal partial class BufferedFilesEndpoint : MinimalApiBuilderEndpoint
 
 internal class BufferedFilesRequest
 {
-    public required IReadOnlyList<FormFile> Files { get; init; }
+    public required IReadOnlyList<IFormFile> Files { get; init; }
 
     public static async ValueTask<BufferedFilesRequest?> BindAsync(HttpContext context)
     {
@@ -44,7 +44,7 @@ internal class BufferedFilesRequest
             return null;
         }
 
-        IReadOnlyList<FormFile>? files = await multipartReader.ReadFilesBufferedAsync(cancellationToken);
+        IReadOnlyList<IFormFile>? files = await multipartReader.ReadFilesBufferedAsync(cancellationToken);
 
         if (files is null)
         {
@@ -58,9 +58,9 @@ internal class BufferedFilesRequest
     }
 }
 
-internal readonly struct BufferedFilesResponse
+internal class BufferedFilesResponse
 {
-    public string Name { get; init; }
+    public required string Name { get; init; }
 
-    public byte[] Data { get; init; }
+    public required byte[] Data { get; init; }
 }

@@ -83,7 +83,7 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     /// </summary>
     /// <param name="cancellationToken">A <see cref="CancellationToken" /> used to cancel the operation.</param>
     /// <returns></returns>
-    public async Task<IReadOnlyList<FormFile>?> ReadFilesBufferedAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<IFormFile>?> ReadFilesBufferedAsync(CancellationToken cancellationToken = default)
     {
         List<FormFile> files = new();
 
