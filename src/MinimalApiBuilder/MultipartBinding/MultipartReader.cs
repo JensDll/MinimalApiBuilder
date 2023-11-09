@@ -8,7 +8,7 @@ using MinimalApiBuilder.Entities;
 namespace MinimalApiBuilder;
 
 /// <summary>
-/// A multipart/form-data reader using <see cref="MinimalApiBuilderEndpoint" /> to hold any validation errors.
+/// A multipart/form-data reader using <see cref="MinimalApiBuilderEndpoint" /> to hold validation errors.
 /// </summary>
 /// <seealso cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
 public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
@@ -28,7 +28,7 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     {
         if (!context.IsMultipart())
         {
-            endpoint.AddValidationError("Content-Type must be multipart/form-data");
+            endpoint.AddValidationError("multipart", "Content-Type must be multipart/form-data");
         }
 
         IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();

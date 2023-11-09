@@ -10,6 +10,7 @@ namespace MinimalApiBuilder
     /// <summary>
     /// Minimal API builder dependency injection extension methods.
     /// </summary>
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static class MinimalApiBuilderDependencyInjectionExtensions
     {
         /// <summary>

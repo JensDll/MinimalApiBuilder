@@ -3,12 +3,12 @@
 /// <summary>
 /// The base class of all minimal API builder endpoints.
 /// </summary>
-public abstract partial class MinimalApiBuilderEndpoint
+public abstract class MinimalApiBuilderEndpoint
 {
     /// <summary>
     /// The current validation errors of the request.
     /// </summary>
-    protected internal ICollection<string> ValidationErrors { get; } = new List<string>();
+    protected internal IDictionary<string, string[]> ValidationErrors { get; } = new Dictionary<string, string[]>();
 
     /// <summary>
     /// A <see cref="bool" /> property indicating any validation errors.
@@ -16,11 +16,24 @@ public abstract partial class MinimalApiBuilderEndpoint
     public bool HasValidationError => ValidationErrors.Count > 0;
 
     /// <summary>
-    /// Adds a new validation error to the <see cref="ValidationErrors" />.
+    /// Add a new validation error to the endpoint's <see cref="ValidationErrors" /> using the default group.
     /// </summary>
-    /// <param name="message">The message of the validation error.</param>
+    /// <param name="message">The error message.</param>
     public void AddValidationError(string message)
     {
-        ValidationErrors.Add(message);
+        AddValidationError(string.Empty, message);
+    }
+
+    /// <summary>
+    /// Add a new validation error to the endpoint's <see cref="ValidationErrors" /> using the specified group.
+    /// </summary>
+    /// <param name="group">The error group.</param>
+    /// <param name="message">The error message.</param>
+    public void AddValidationError(string group, string message)
+    {
+        bool contained = ValidationErrors.TryGetValue(group, out string[]? errors);
+        Array.Resize(ref errors, contained ? errors!.Length + 1 : 1);
+        errors[^1] = message;
+        ValidationErrors[group] = errors;
     }
 }

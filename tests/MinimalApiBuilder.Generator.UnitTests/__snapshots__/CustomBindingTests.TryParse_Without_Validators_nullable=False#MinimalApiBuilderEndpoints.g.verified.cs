@@ -5,6 +5,7 @@
 
 #nullable enable
 
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
 public partial class E : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -17,7 +18,7 @@ public partial class E : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::E endpoint = invocationContext.GetArgument<global::E>(0);
             if (endpoint.HasValidationError)
             {
-                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors }));
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred."));
             }
             return next(invocationContext);
         });

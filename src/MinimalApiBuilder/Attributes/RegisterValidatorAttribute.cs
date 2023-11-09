@@ -16,8 +16,7 @@ public sealed class RegisterValidatorAttribute : Attribute
     /// </summary>
     /// <param name="lifetime">
     /// The service lifetime with which the <see cref="AbstractValidator{T}" />
-    /// will be added to <see cref="IServiceCollection" />. Defaults to
-    /// <see cref="ServiceLifetime.Singleton" />.
+    /// will be added to <see cref="IServiceCollection" />. Defaults to <see cref="ServiceLifetime.Singleton" />.
     /// </param>
     [SuppressMessage("Style", "IDE0060:Remove unused parameter")]
     [SuppressMessage("Design", "CA1019:Define accessors for attribute arguments")]

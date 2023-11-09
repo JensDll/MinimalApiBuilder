@@ -20,11 +20,10 @@ public class NextSection
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FormMultipartSection" />.
+    /// Convert the current section to a <see cref="FormMultipartSection" />.
     /// </summary>
     /// <returns>
-    /// The converted <see cref="FormMultipartSection" /> or <c>null</c>
-    /// if the current section is not form data.
+    /// The converted <see cref="FormMultipartSection" /> or <c>null</c> if the current section is not form data.
     /// </returns>
     /// <remarks>
     /// Validation errors are added to <see cref="MinimalApiBuilderEndpoint.ValidationErrors" />.
@@ -36,15 +35,14 @@ public class NextSection
             return new FormMultipartSection(_section, contentDisposition);
         }
 
-        _endpoint.AddValidationError(
+        _endpoint.AddValidationError("multipart",
             $"The multipart section with the name '{contentDisposition?.Name}' is not form data");
 
         return null;
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FormMultipartSection" />
-    /// and validate the section's name.
+    /// Convert the current section to a <see cref="FormMultipartSection" /> and validate the its name.
     /// </summary>
     /// <param name="sectionName">
     /// The required form-section name.
@@ -69,7 +67,7 @@ public class NextSection
             return section;
         }
 
-        _endpoint.AddValidationError(
+        _endpoint.AddValidationError("multipart",
             $"The multipart section with the name '{section.Name}' does not match the expected name '{sectionName}'");
 
         return null;
@@ -94,11 +92,10 @@ public class NextSection
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FileMultipartSection" />.
+    /// Convert the current section to a <see cref="FileMultipartSection" />.
     /// </summary>
     /// <returns>
-    /// The converted <see cref="FileMultipartSection" /> or <c>null</c>
-    /// if the current section is not a file.
+    /// The converted <see cref="FileMultipartSection" /> or <c>null</c> if the current section is not a file.
     /// </returns>
     /// <remarks>
     /// Validation errors are added to <see cref="MinimalApiBuilderEndpoint.ValidationErrors" />.
@@ -110,14 +107,14 @@ public class NextSection
             return new FileMultipartSection(_section, contentDisposition);
         }
 
-        _endpoint.AddValidationError($"The multipart section with the name '{contentDisposition?.Name}' is not a file");
+        _endpoint.AddValidationError("multipart",
+            $"The multipart section with the name '{contentDisposition?.Name}' is not a file");
 
         return null;
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FileMultipartSection" />
-    /// and validate the section's name.
+    /// Convert the current section to <see cref="FileMultipartSection" /> and validate its name.
     /// </summary>
     /// <param name="sectionName">The required file-section name.</param>
     /// <returns>
@@ -140,7 +137,7 @@ public class NextSection
             return section;
         }
 
-        _endpoint.AddValidationError(
+        _endpoint.AddValidationError("multipart",
             $"The multipart section with the name '{section.Name}' does not match the expected name '{sectionName}'");
 
         return null;
