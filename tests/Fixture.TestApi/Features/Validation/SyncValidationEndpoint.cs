@@ -35,7 +35,8 @@ internal class SyncValidationRequestValidator : AbstractValidator<SyncValidation
     public SyncValidationRequestValidator()
     {
         RuleFor(static request => request.Value)
-            .Must(static value => bool.TryParse(value, out bool result) && result);
+            .Must(static value => bool.TryParse(value, out bool result) && result)
+            .WithMessage("Property '{PropertyName}' with value '{PropertyValue}' must be true.");
     }
 }
 
@@ -44,6 +45,7 @@ internal class SyncValidationParametersValidator : AbstractValidator<SyncValidat
     public SyncValidationParametersValidator()
     {
         RuleFor(static parameters => parameters.Value)
-            .Must(static value => value % 2 == 0);
+            .Must(static value => value % 2 == 0)
+            .WithMessage("Parameter '{PropertyName}' with value '{PropertyValue}' must be even.");
     }
 }

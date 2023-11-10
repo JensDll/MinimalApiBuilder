@@ -44,12 +44,11 @@ internal class AsyncValidationRequestValidator : AbstractValidator<AsyncValidati
 {
     public AsyncValidationRequestValidator()
     {
-        RuleFor(static request => request.Value)
-            .MustAsync(static async (value, _) =>
-            {
-                await Task.CompletedTask;
-                return bool.TryParse(value, out bool result) && result;
-            });
+        RuleFor(static request => request.Value).MustAsync(static async (value, _) =>
+        {
+            await Task.CompletedTask;
+            return bool.TryParse(value, out bool result) && result;
+        }).WithMessage("Property '{PropertyName}' with value '{PropertyValue}' must be true.");
     }
 }
 
@@ -57,11 +56,10 @@ internal class AsyncValidationParametersValidator : AbstractValidator<AsyncValid
 {
     public AsyncValidationParametersValidator()
     {
-        RuleFor(static parameters => parameters.Value)
-            .MustAsync(static async (value, _) =>
-            {
-                await Task.CompletedTask;
-                return value % 2 == 0;
-            });
+        RuleFor(static parameters => parameters.Value).MustAsync(static async (value, _) =>
+        {
+            await Task.CompletedTask;
+            return value % 2 == 0;
+        }).WithMessage("Parameter '{PropertyName}' with value '{PropertyValue}' must be even.");
     }
 }
