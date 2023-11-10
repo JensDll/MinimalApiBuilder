@@ -3,9 +3,9 @@
 namespace MinimalApiBuilder;
 
 /// <summary>
-/// Static data used by the minimal API builder generator.
+/// Static helper used by the minimal API builder generator.
 /// </summary>
-public static class StaticData
+public static class StaticHelper
 {
     /// <summary>
     /// A <see cref="ValidationResult" /> without errors.
@@ -15,11 +15,11 @@ public static class StaticData
     /// <summary>
     /// A completed <see cref="ValidationResult" /> <see cref="Task{TResult}" /> without errors.
     /// </summary>
-    public static readonly Task<ValidationResult>
-        SuccessValidationResultTask = Task.FromResult(SuccessValidationResult);
+    public static readonly Task<ValidationResult> SuccessValidationResultTask =
+        Task.FromResult(SuccessValidationResult);
 
     /// <summary>
-    /// Get the <see cref="ValidationResult" /> errors as a <see cref="ValidationFailure.PropertyName" />
+    /// Gets the <see cref="ValidationResult" /> errors as a <see cref="ValidationFailure.PropertyName" />
     /// grouped dictionary of error messages.
     /// </summary>
     /// <param name="result">The <see cref="ValidationResult" /> with errors.</param>
@@ -33,7 +33,7 @@ public static class StaticData
     }
 
     /// <summary>
-    /// Get every <see cref="ValidationResult" /> error as a <see cref="ValidationFailure.PropertyName" />
+    /// Gets every <see cref="ValidationResult" /> error as a <see cref="ValidationFailure.PropertyName" />
     /// grouped dictionary of error messages.
     /// </summary>
     /// <param name="results">The sequence of <see cref="ValidationResult" /> with errors.</param>

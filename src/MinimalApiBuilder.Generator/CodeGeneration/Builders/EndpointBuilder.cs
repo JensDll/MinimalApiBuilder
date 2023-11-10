@@ -79,7 +79,7 @@ internal partial class EndpointBuilder : SourceBuilder
         AppendLine($"return {Fqn.ValueTask}.FromResult<object?>({ModelBindingFailed()});");
     }
 
-    private void AddModelBindingFailedAsync()
+    private void AddAsyncModelBindingFailed()
     {
         using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
         AppendLine($"return {ModelBindingFailed()};");

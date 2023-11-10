@@ -11,12 +11,13 @@ public abstract class MinimalApiBuilderEndpoint
     protected internal IDictionary<string, string[]> ValidationErrors { get; } = new Dictionary<string, string[]>();
 
     /// <summary>
-    /// A <see cref="bool" /> property indicating any validation errors.
+    /// A <see cref="bool" /> property indicating validation errors.
     /// </summary>
     public bool HasValidationError => ValidationErrors.Count > 0;
 
     /// <summary>
-    /// Add a new validation error to the endpoint's <see cref="ValidationErrors" /> using the default group.
+    /// Adds a new validation error to the <see cref="ValidationErrors" />
+    /// using the default <see cref="string.Empty" /> group.
     /// </summary>
     /// <param name="message">The error message.</param>
     public void AddValidationError(string message)
@@ -25,7 +26,7 @@ public abstract class MinimalApiBuilderEndpoint
     }
 
     /// <summary>
-    /// Add a new validation error to the endpoint's <see cref="ValidationErrors" /> using the specified group.
+    /// Adds a new validation error to the <see cref="ValidationErrors" /> using the specified group.
     /// </summary>
     /// <param name="group">The error group.</param>
     /// <param name="message">The error message.</param>

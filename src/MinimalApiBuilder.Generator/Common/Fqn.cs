@@ -12,10 +12,10 @@ internal static class Fqn
 
     public const string ValidationResult = "global::FluentValidation.Results.ValidationResult";
 
-    public const string SuccessValidationResult = "global::MinimalApiBuilder.StaticData.SuccessValidationResult";
+    public const string SuccessValidationResult = "global::MinimalApiBuilder.StaticHelper.SuccessValidationResult";
 
     public const string SuccessValidationResultTask =
-        "global::MinimalApiBuilder.StaticData.SuccessValidationResultTask";
+        "global::MinimalApiBuilder.StaticHelper.SuccessValidationResultTask";
 
     public const string GetRequiredService =
         "global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService";
@@ -36,5 +36,5 @@ internal static class Fqn
 
     public const string ValidationProblem = $"{TypedResults}.ValidationProblem";
 
-    public const string GetErrors = "global::MinimalApiBuilder.StaticData.GetErrors";
+    public const string GetErrors = "global::MinimalApiBuilder.StaticHelper.GetErrors";
 }

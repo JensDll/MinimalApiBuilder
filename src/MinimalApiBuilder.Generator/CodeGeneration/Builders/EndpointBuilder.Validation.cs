@@ -53,11 +53,11 @@ internal partial class EndpointBuilder
         switch (parametersToValidateAsync.Count)
         {
             case 1:
-                AddValidationFilterAsync(endpoint.Handler.EndpointParameter, parametersToValidateAsync[0]);
+                AddAsyncValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateAsync[0]);
                 anyFilterAdded = true;
                 break;
             case > 1:
-                AddValidationFilterAsync(endpoint.Handler.EndpointParameter, parametersToValidateAsync);
+                AddAsyncValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateAsync);
                 anyFilterAdded = true;
                 break;
         }
@@ -87,7 +87,7 @@ internal partial class EndpointBuilder
 
     private void AddValidationFilter(
         EndpointToGenerateHandlerParameter endpoint,
-        IList<EndpointToGenerateHandlerParameter> parameters)
+        IReadOnlyList<EndpointToGenerateHandlerParameter> parameters)
     {
         using IDisposable filterBlock = OpenAddEndpointFilter();
         AppendLine(GetEndpoint(endpoint));
@@ -105,18 +105,18 @@ internal partial class EndpointBuilder
             AddModelBindingFailed();
         }
 
-        List<string> validationResults = new(parameters.Count);
-        validationResults.AddRange(parameters.Select(static (parameter, i) => parameter.IsNullable
+        List<string> results = new(parameters.Count);
+        results.AddRange(parameters.Select(static (parameter, i) => parameter.IsNullable
             ? $"a{i} is null ? {Fqn.SuccessValidationResult} : {GetValidator(parameter)}.Validate(a{i})"
             : $"{GetValidator(parameter)}.Validate(a{i})"));
 
-        string isValid = string.Join(" && ", validationResults.Select(static (_, i) => $"results[{i}].IsValid"));
+        string isValid = string.Join(" && ", results.Select(static (_, i) => $"results[{i}].IsValid"));
 
-        AppendLine($"{Fqn.ValidationResult}[] results = {{ {string.Join(", ", validationResults)} }};");
+        AppendLine($"{Fqn.ValidationResult}[] results = {{ {string.Join(", ", results)} }};");
         AppendLine($"return {isValid} ? {Next} : {Fqn.ValueTask}.FromResult<object?>({ValidationFailed("results")});");
     }
 
-    private void AddValidationFilterAsync(
+    private void AddAsyncValidationFilter(
         EndpointToGenerateHandlerParameter endpoint,
         EndpointToGenerateHandlerParameter parameter)
     {
@@ -126,7 +126,7 @@ internal partial class EndpointBuilder
 
         if (parameter.HasCustomBinding)
         {
-            AddModelBindingFailedAsync();
+            AddAsyncModelBindingFailed();
         }
 
         AppendLine(parameter.IsNullable
@@ -135,9 +135,9 @@ internal partial class EndpointBuilder
         AppendLine($"return result.IsValid ? await {Next} : {ValidationFailed("result")};");
     }
 
-    private void AddValidationFilterAsync(
+    private void AddAsyncValidationFilter(
         EndpointToGenerateHandlerParameter endpoint,
-        IList<EndpointToGenerateHandlerParameter> parameters)
+        IReadOnlyList<EndpointToGenerateHandlerParameter> parameters)
     {
         using IDisposable filterBlock = OpenAddEndpointFilterAsync();
         AppendLine(GetEndpoint(endpoint));
@@ -152,7 +152,7 @@ internal partial class EndpointBuilder
 
         if (anyCustomBinding)
         {
-            AddModelBindingFailedAsync();
+            AddAsyncModelBindingFailed();
         }
 
         List<string> tasks = new(parameters.Count);

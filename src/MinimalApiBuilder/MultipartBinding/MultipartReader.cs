@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using MinimalApiBuilder.Entities;
 
 namespace MinimalApiBuilder;
 
@@ -21,8 +20,12 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     /// Initializes a new instance of <see cref="MultipartReader" />. Multipart request errors are added to the
     /// <see cref="MinimalApiBuilderEndpoint.ValidationErrors" /> without throwing an exception.
     /// </summary>
-    /// <param name="context">The current <see cref="HttpContext" />.</param>
-    /// <param name="endpoint">The current <see cref="MinimalApiBuilderEndpoint" /> handling the request.</param>
+    /// <param name="context">
+    /// The current <see cref="HttpContext" />.
+    /// </param>
+    /// <param name="endpoint">
+    /// The current <see cref="MinimalApiBuilderEndpoint" /> handling the request.
+    /// </param>
     public MultipartReader(HttpContext context, MinimalApiBuilderEndpoint endpoint)
         : base(context.GetBoundary(endpoint), context.Request.Body)
     {
@@ -42,7 +45,9 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     /// Reads the next <see cref="NextSection" /> from the underlying
     /// <see cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />.
     /// </summary>
-    /// <param name="cancellationToken">A <see cref="CancellationToken" /> used to cancel the operation.</param>
+    /// <param name="cancellationToken">
+    /// A <see cref="CancellationToken" /> used to cancel the operation.
+    /// </param>
     /// <returns></returns>
     public new async Task<NextSection?> ReadNextSectionAsync(CancellationToken cancellationToken = default)
     {
@@ -55,7 +60,9 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     /// <see cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
     /// using a <see cref="FileBufferingReadStream" /> as the body.
     /// </summary>
-    /// <param name="cancellationToken">A <see cref="CancellationToken" /> used to cancel the operation.</param>
+    /// <param name="cancellationToken">
+    /// A <see cref="CancellationToken" /> used to cancel the operation.
+    /// </param>
     /// <returns></returns>
     public async Task<NextSection?> ReadNextSectionBufferedAsync(CancellationToken cancellationToken = default)
     {
@@ -79,7 +86,9 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     /// <see cref="Microsoft.AspNetCore.WebUtilities.MultipartReader" />
     /// using <see cref="ReadNextSectionBufferedAsync" />.
     /// </summary>
-    /// <param name="cancellationToken">A <see cref="CancellationToken" /> used to cancel the operation.</param>
+    /// <param name="cancellationToken">
+    /// A <see cref="CancellationToken" /> used to cancel the operation.
+    /// </param>
     /// <returns></returns>
     public async Task<IReadOnlyList<IFormFile>?> ReadFilesBufferedAsync(CancellationToken cancellationToken = default)
     {
