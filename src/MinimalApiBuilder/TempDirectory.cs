@@ -1,4 +1,4 @@
-namespace MinimalApiBuilder.Entities;
+namespace MinimalApiBuilder;
 
 internal static class TempDirectory
 {

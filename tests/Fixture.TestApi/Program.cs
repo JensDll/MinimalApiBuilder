@@ -11,10 +11,10 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Logging.AddSerilogLogger();
 
-builder.Services
-    .AddEndpointsApiExplorer()
-    .AddSwaggerGen()
-    .AddMinimalApiBuilderEndpoints();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddMinimalApiBuilderEndpoints();
+builder.Services.AddProblemDetails();
 
 builder.Services.Configure<RouteHandlerOptions>(static options =>
 {
@@ -29,7 +29,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseDeveloperExceptionPage();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler();
+}
+
+app.UseStatusCodePages();
 
 app.MapValidationFeatures();
 app.MapMultipartFeature();

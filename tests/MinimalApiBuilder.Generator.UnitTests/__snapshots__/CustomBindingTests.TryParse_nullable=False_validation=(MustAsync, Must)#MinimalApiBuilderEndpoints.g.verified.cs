@@ -5,6 +5,7 @@
 
 #nullable enable
 
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
 public partial class E1 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -18,10 +19,10 @@ public partial class E1 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::R1 a = invocationContext.GetArgument<global::R1>(1);
             if (endpoint.HasValidationError)
             {
-                return global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors });
+                return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
             }
-            global::FluentValidation.Results.ValidationResult r = await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return r.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) });
+            global::FluentValidation.Results.ValidationResult result = await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -29,6 +30,7 @@ public partial class E1 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
     }
 }
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
 public partial class E2 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -42,10 +44,10 @@ public partial class E2 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::R1 a = invocationContext.GetArgument<global::R1>(1);
             if (endpoint.HasValidationError)
             {
-                return global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors });
+                return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
             }
-            global::FluentValidation.Results.ValidationResult r = a is null ? global::MinimalApiBuilder.StaticData.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return r.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) });
+            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -53,6 +55,7 @@ public partial class E2 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
     }
 }
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
 public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -66,10 +69,10 @@ public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::R2 a = invocationContext.GetArgument<global::R2>(2);
             if (endpoint.HasValidationError)
             {
-                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors }));
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred."));
             }
-            global::FluentValidation.Results.ValidationResult r = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
-            return r.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) }));
+            global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
+            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), title: "One or more validation errors occurred."));
         });
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
@@ -77,10 +80,10 @@ public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::R1 a = invocationContext.GetArgument<global::R1>(1);
             if (endpoint.HasValidationError)
             {
-                return global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors });
+                return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
             }
-            global::FluentValidation.Results.ValidationResult r = await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return r.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) });
+            global::FluentValidation.Results.ValidationResult result = await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -88,6 +91,7 @@ public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
     }
 }
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
 public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -101,10 +105,10 @@ public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::R2 a = invocationContext.GetArgument<global::R2>(2);
             if (endpoint.HasValidationError)
             {
-                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors }));
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred."));
             }
-            global::FluentValidation.Results.ValidationResult r = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
-            return r.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) }));
+            global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
+            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), title: "One or more validation errors occurred."));
         });
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
@@ -112,10 +116,10 @@ public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::R1 a = invocationContext.GetArgument<global::R1>(1);
             if (endpoint.HasValidationError)
             {
-                return global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors });
+                return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
             }
-            global::FluentValidation.Results.ValidationResult r = a is null ? global::MinimalApiBuilder.StaticData.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return r.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) });
+            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -123,6 +127,7 @@ public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
     }
 }
+[global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
 public partial class E5 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -136,10 +141,10 @@ public partial class E5 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::R2 a = invocationContext.GetArgument<global::R2>(2);
             if (endpoint.HasValidationError)
             {
-                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors }));
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred."));
             }
-            global::FluentValidation.Results.ValidationResult r = a is null ? global::MinimalApiBuilder.StaticData.SuccessValidationResult : global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
-            return r.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) }));
+            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.StaticHelper.SuccessValidationResult : global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
+            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), title: "One or more validation errors occurred."));
         });
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
@@ -147,10 +152,10 @@ public partial class E5 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::R1 a = invocationContext.GetArgument<global::R1>(1);
             if (endpoint.HasValidationError)
             {
-                return global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Model binding failed", Errors = endpoint.ValidationErrors });
+                return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
             }
-            global::FluentValidation.Results.ValidationResult r = a is null ? global::MinimalApiBuilder.StaticData.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return r.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.BadRequest(new global::MinimalApiBuilder.ErrorDto { StatusCode = global::System.Net.HttpStatusCode.BadRequest, Message = "Validation failed", Errors = global::System.Linq.Enumerable.Select(r.Errors, static failure => failure.ErrorMessage) });
+            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]

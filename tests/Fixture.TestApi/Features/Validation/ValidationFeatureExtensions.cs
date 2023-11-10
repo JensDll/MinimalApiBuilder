@@ -1,7 +1,4 @@
-﻿using Fixture.TestApi.Features.Validation.Async;
-using Fixture.TestApi.Features.Validation.Combination;
-using Fixture.TestApi.Features.Validation.Sync;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using MinimalApiBuilder;

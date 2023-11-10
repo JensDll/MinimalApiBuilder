@@ -4,13 +4,12 @@ using Microsoft.Net.Http.Headers;
 namespace MinimalApiBuilder;
 
 /// <summary>
-/// Wrapper around <see cref="MultipartSection" />.
+/// A wrapper around <see cref="MultipartSection" />.
 /// </summary>
 public class NextSection
 {
     private readonly MultipartSection _section;
     private readonly MinimalApiBuilderEndpoint _endpoint;
-
     private ContentDispositionHeaderValue? _contentDispositionHeader;
 
     internal NextSection(MultipartSection section, MinimalApiBuilderEndpoint endpoint)
@@ -20,11 +19,10 @@ public class NextSection
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FormMultipartSection" />.
+    /// Converts the current section to a <see cref="FormMultipartSection" />.
     /// </summary>
     /// <returns>
-    /// The converted <see cref="FormMultipartSection" /> or <c>null</c>
-    /// if the current section is not form data.
+    /// The converted <see cref="FormMultipartSection" /> or <c>null</c> if the current section is not form data.
     /// </returns>
     /// <remarks>
     /// Validation errors are added to <see cref="MinimalApiBuilderEndpoint.ValidationErrors" />.
@@ -36,24 +34,23 @@ public class NextSection
             return new FormMultipartSection(_section, contentDisposition);
         }
 
-        _endpoint.AddValidationError(
+        _endpoint.AddValidationError("multipart",
             $"The multipart section with the name '{contentDisposition?.Name}' is not form data");
 
         return null;
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FormMultipartSection" />
-    /// and validate the section's name.
+    /// Converts the current section to a <see cref="FormMultipartSection" /> and validates its name.
     /// </summary>
     /// <param name="sectionName">
     /// The required form-section name.
     /// </param>
     /// <returns>
-    ///     <inheritdoc cref="AsFormSection()" />
+    /// The converted <see cref="FormMultipartSection" /> or <c>null</c> if the current section is not form data.
     /// </returns>
     /// <remarks>
-    ///     <inheritdoc cref="AsFormSection()" />
+    /// Validation errors are added to <see cref="MinimalApiBuilderEndpoint.ValidationErrors" />.
     /// </remarks>
     public FormMultipartSection? AsFormSection(string sectionName)
     {
@@ -69,14 +66,14 @@ public class NextSection
             return section;
         }
 
-        _endpoint.AddValidationError(
+        _endpoint.AddValidationError("multipart",
             $"The multipart section with the name '{section.Name}' does not match the expected name '{sectionName}'");
 
         return null;
     }
 
     /// <summary>
-    /// Check if the current section is a <see cref="FormMultipartSection" />.
+    /// Checks if the current section is a <see cref="FormMultipartSection" />.
     /// </summary>
     /// <returns></returns>
     public bool IsFormSection()
@@ -85,7 +82,7 @@ public class NextSection
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FormMultipartSection" /> without validation.
+    /// Converts the current section to a <see cref="FormMultipartSection" /> without validation.
     /// </summary>
     /// <returns></returns>
     public FormMultipartSection AsFormSectionDangerous()
@@ -94,11 +91,10 @@ public class NextSection
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FileMultipartSection" />.
+    /// Converts the current section to a <see cref="FileMultipartSection" />.
     /// </summary>
     /// <returns>
-    /// The converted <see cref="FileMultipartSection" /> or <c>null</c>
-    /// if the current section is not a file.
+    /// The converted <see cref="FileMultipartSection" /> or <c>null</c> if the current section is not a file.
     /// </returns>
     /// <remarks>
     /// Validation errors are added to <see cref="MinimalApiBuilderEndpoint.ValidationErrors" />.
@@ -110,21 +106,21 @@ public class NextSection
             return new FileMultipartSection(_section, contentDisposition);
         }
 
-        _endpoint.AddValidationError($"The multipart section with the name '{contentDisposition?.Name}' is not a file");
+        _endpoint.AddValidationError("multipart",
+            $"The multipart section with the name '{contentDisposition?.Name}' is not a file");
 
         return null;
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FileMultipartSection" />
-    /// and validate the section's name.
+    /// Converts the current section to a <see cref="FileMultipartSection" /> and validates its name.
     /// </summary>
     /// <param name="sectionName">The required file-section name.</param>
     /// <returns>
-    ///     <inheritdoc cref="AsFileSection()" />
+    /// The converted <see cref="FileMultipartSection" /> or <c>null</c> if the current section is not a file.
     /// </returns>
     /// <remarks>
-    ///     <inheritdoc cref="AsFileSection()" />
+    /// Validation errors are added to <see cref="MinimalApiBuilderEndpoint.ValidationErrors" />.
     /// </remarks>
     public FileMultipartSection? AsFileSection(string sectionName)
     {
@@ -140,14 +136,14 @@ public class NextSection
             return section;
         }
 
-        _endpoint.AddValidationError(
+        _endpoint.AddValidationError("multipart",
             $"The multipart section with the name '{section.Name}' does not match the expected name '{sectionName}'");
 
         return null;
     }
 
     /// <summary>
-    /// Check if the current section is a <see cref="FileMultipartSection" />.
+    /// Checks if the current section is a <see cref="FileMultipartSection" />.
     /// </summary>
     /// <returns></returns>
     public bool IsFileSection()
@@ -156,7 +152,7 @@ public class NextSection
     }
 
     /// <summary>
-    /// Convert the current section to <see cref="FileMultipartSection" /> without validation.
+    /// Converts the current section to a <see cref="FileMultipartSection" /> without validation.
     /// </summary>
     /// <returns></returns>
     public FileMultipartSection AsFileSectionDangerous()

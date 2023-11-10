@@ -6,19 +6,20 @@ namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 
 internal class DependencyInjectionBuilder : SourceBuilder
 {
-    private readonly IDisposable _namespaceDisposable;
-    private readonly IDisposable _classDisposable;
-    private readonly IDisposable _methodDisposable;
+    private readonly IDisposable _namespace;
+    private readonly IDisposable _class;
+    private readonly IDisposable _method;
 
     public DependencyInjectionBuilder(GeneratorOptions options) : base(options)
     {
-        _namespaceDisposable = OpenBlock("namespace MinimalApiBuilder");
-        _classDisposable = OpenBlock(
+        _namespace = OpenBlock("namespace MinimalApiBuilder");
+        _class = OpenBlock(
             "/// <summary>",
             "/// Minimal API builder dependency injection extension methods.",
             "/// </summary>",
+            s_generatedCodeAttribute,
             "public static class MinimalApiBuilderDependencyInjectionExtensions");
-        _methodDisposable = OpenBlock(
+        _method = OpenBlock(
             "/// <summary>",
             $"/// Adds the necessary types to the <see cref=\"{Fqn.IServiceCollection}\"/>.",
             "/// </summary>",
@@ -30,9 +31,9 @@ internal class DependencyInjectionBuilder : SourceBuilder
     public override void AddSource(SourceProductionContext context)
     {
         AppendLine("return services;");
-        _methodDisposable.Dispose();
-        _classDisposable.Dispose();
-        _namespaceDisposable.Dispose();
+        _method.Dispose();
+        _class.Dispose();
+        _namespace.Dispose();
         context.AddSource("MinimalApiBuilderDependencyInjectionExtensions.g.cs", ToString());
     }
 

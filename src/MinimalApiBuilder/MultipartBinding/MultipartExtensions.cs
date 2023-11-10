@@ -14,7 +14,7 @@ internal static class MultipartExtensions
     {
         if (context.Request.ContentType is null)
         {
-            endpoint.AddValidationError("Missing content-type header");
+            endpoint.AddValidationError("multipart", "Missing content-type header");
             return string.Empty;
         }
 
@@ -23,7 +23,7 @@ internal static class MultipartExtensions
 
         if (string.IsNullOrWhiteSpace(boundary))
         {
-            endpoint.AddValidationError("Missing content-type boundary");
+            endpoint.AddValidationError("multipart", "Missing content-type boundary");
             return string.Empty;
         }
 
@@ -32,7 +32,7 @@ internal static class MultipartExtensions
 
         if (boundary.Length > lengthLimit)
         {
-            endpoint.AddValidationError($"Multipart boundary length limit '{lengthLimit}' exceeded");
+            endpoint.AddValidationError("multipart", $"Multipart boundary length limit '{lengthLimit}' exceeded");
             return string.Empty;
         }
 

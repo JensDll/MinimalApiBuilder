@@ -8,18 +8,14 @@ internal static class Fqn
 
     public const string Task = "global::System.Threading.Tasks.Task";
 
-    public const string TaskValidationResult = $"global::System.Threading.Tasks.Task<{ValidationResult}>";
-
     public const string ValueTask = "global::System.Threading.Tasks.ValueTask";
 
     public const string ValidationResult = "global::FluentValidation.Results.ValidationResult";
 
-    public const string SuccessValidationResult = "global::MinimalApiBuilder.StaticData.SuccessValidationResult";
+    public const string SuccessValidationResult = "global::MinimalApiBuilder.StaticHelper.SuccessValidationResult";
 
     public const string SuccessValidationResultTask =
-        "global::MinimalApiBuilder.StaticData.SuccessValidationResultTask";
-
-    public const string Linq = "global::System.Linq.Enumerable";
+        "global::MinimalApiBuilder.StaticHelper.SuccessValidationResultTask";
 
     public const string GetRequiredService =
         "global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService";
@@ -36,9 +32,9 @@ internal static class Fqn
 
     public const string IValidator = "global::FluentValidation.IValidator";
 
-    public const string HttpStatusCode = "global::System.Net.HttpStatusCode";
-
-    public const string ErrorDto = "global::MinimalApiBuilder.ErrorDto";
-
     public const string TypedResults = "global::Microsoft.AspNetCore.Http.TypedResults";
+
+    public const string ValidationProblem = $"{TypedResults}.ValidationProblem";
+
+    public const string GetErrors = "global::MinimalApiBuilder.StaticHelper.GetErrors";
 }
