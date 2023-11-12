@@ -1,16 +1,17 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalApiBuilder.Generator.Common;
 
 internal static class CommonExtensions
 {
-    public static string ToServiceLifetimeString(this int value)
+    public static string ToStringEnum(this ServiceLifetime value)
     {
         return value switch
         {
-            0 => "Singleton",
-            1 => "Scoped",
-            2 => "Transient",
+            ServiceLifetime.Singleton => "Singleton",
+            ServiceLifetime.Scoped => "Scoped",
+            ServiceLifetime.Transient => "Transient",
             _ => "Singleton"
         };
     }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.Extensions.DependencyInjection;
 using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
@@ -11,7 +12,7 @@ internal class ValidatorToGenerate : IToGenerate
     private ValidatorToGenerate(
         ITypeSymbol validator,
         bool isAsync,
-        string serviceLifetime)
+        ServiceLifetime serviceLifetime)
     {
         _identifier = validator.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         Symbol = validator;
@@ -26,7 +27,7 @@ internal class ValidatorToGenerate : IToGenerate
 
     public bool IsAsync { get; }
 
-    public string ServiceLifetime { get; }
+    public ServiceLifetime ServiceLifetime { get; }
 
     public override string ToString() => _identifier;
 
@@ -44,7 +45,7 @@ internal class ValidatorToGenerate : IToGenerate
         }
 
         bool isAsync = GetIsAsync(validatorSyntax);
-        string serviceLifetime = GetValidatorServiceLifetime(validator, wellKnownTypes);
+        ServiceLifetime serviceLifetime = GetValidatorServiceLifetime(validator, wellKnownTypes);
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -56,7 +57,7 @@ internal class ValidatorToGenerate : IToGenerate
         return result;
     }
 
-    private static string GetValidatorServiceLifetime(ISymbol validator, WellKnownTypes wellKnownTypes)
+    private static ServiceLifetime GetValidatorServiceLifetime(ISymbol validator, WellKnownTypes wellKnownTypes)
     {
         INamedTypeSymbol registerValidatorAttribute =
             wellKnownTypes[WellKnownTypes.Type.MinimalApiBuilder_RegisterValidatorAttribute];
@@ -70,10 +71,10 @@ internal class ValidatorToGenerate : IToGenerate
                 continue;
             }
 
-            return lifetime.ToServiceLifetimeString();
+            return (ServiceLifetime)lifetime;
         }
 
-        return "Singleton";
+        return ServiceLifetime.Singleton;
     }
 
     private static bool GetIsAsync(TypeDeclarationSyntax validatorSyntax)

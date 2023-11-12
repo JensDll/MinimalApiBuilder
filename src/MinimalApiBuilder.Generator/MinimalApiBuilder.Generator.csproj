@@ -12,16 +12,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" PrivateAssets="all"/>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.7.0" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0"
+                      PrivateAssets="all" GeneratePathProperty="true"/>
   </ItemGroup>
 
   <ItemGroup>
     <InternalsVisibleTo Include="MinimalApiBuilder.Generator.UnitTests"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(PkgMicrosoft_Extensions_DependencyInjection_Abstractions)\lib\netstandard2.0\*.dll"
+          CopyToOutputDirectory="Always" Visible="false"/>
   </ItemGroup>
 
 </Project>

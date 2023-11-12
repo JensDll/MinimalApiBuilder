@@ -8,4 +8,3 @@ if ($Published) {
 } else {
   $env:MINIMALAPIBUILDER_TEST_TYPE = 'Local'
 }
-

@@ -1,6 +1,8 @@
-﻿namespace MinimalApiBuilder.Generator.UnitTests;
+﻿using Microsoft.CodeAnalysis;
 
-internal static class DictionaryExtensions
+namespace MinimalApiBuilder.Generator.UnitTests;
+
+internal static class TestExtensions
 {
     public static Dictionary<TKey, TValue> AddAndReturn<TKey, TValue>(this Dictionary<TKey, TValue> dictionary,
         TKey key, TValue value) where TKey : notnull
@@ -14,5 +16,10 @@ internal static class DictionaryExtensions
     {
         dictionary[key] = value;
         return dictionary;
+    }
+
+    public static IEnumerable<Diagnostic> WarningsOrWorse(this IEnumerable<Diagnostic> diagnostics)
+    {
+        return diagnostics.Where(static diagnostic => diagnostic.Severity >= DiagnosticSeverity.Warning);
     }
 }
