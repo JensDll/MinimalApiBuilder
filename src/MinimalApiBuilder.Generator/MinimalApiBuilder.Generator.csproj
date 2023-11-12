@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
     <IsRoslynComponent>true</IsRoslynComponent>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
