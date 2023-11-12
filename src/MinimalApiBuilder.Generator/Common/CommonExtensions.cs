@@ -1,22 +1,21 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalApiBuilder.Generator.Common;
 
 internal static class CommonExtensions
 {
-    public static string ToStringEnum(this ServiceLifetime value)
+    public static string ToStringServiceLifetime(this int value)
     {
         return value switch
         {
-            ServiceLifetime.Singleton => "Singleton",
-            ServiceLifetime.Scoped => "Scoped",
-            ServiceLifetime.Transient => "Transient",
+            0 => "Singleton",
+            1 => "Scoped",
+            2 => "Transient",
             _ => "Singleton"
         };
     }
 
-    public static string ToAccessibilityString(this Accessibility accessibility)
+    public static string ToStringEnum(this Accessibility accessibility)
     {
         return accessibility switch
         {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.Extensions.DependencyInjection;
 using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
@@ -12,7 +11,7 @@ internal class ValidatorToGenerate : IToGenerate
     private ValidatorToGenerate(
         ITypeSymbol validator,
         bool isAsync,
-        ServiceLifetime serviceLifetime)
+        int serviceLifetime)
     {
         _identifier = validator.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         Symbol = validator;
@@ -27,7 +26,7 @@ internal class ValidatorToGenerate : IToGenerate
 
     public bool IsAsync { get; }
 
-    public ServiceLifetime ServiceLifetime { get; }
+    public int ServiceLifetime { get; }
 
     public override string ToString() => _identifier;
 
@@ -45,7 +44,7 @@ internal class ValidatorToGenerate : IToGenerate
         }
 
         bool isAsync = GetIsAsync(validatorSyntax);
-        ServiceLifetime serviceLifetime = GetValidatorServiceLifetime(validator, wellKnownTypes);
+        int serviceLifetime = GetValidatorServiceLifetime(validator, wellKnownTypes);
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -57,7 +56,7 @@ internal class ValidatorToGenerate : IToGenerate
         return result;
     }
 
-    private static ServiceLifetime GetValidatorServiceLifetime(ISymbol validator, WellKnownTypes wellKnownTypes)
+    private static int GetValidatorServiceLifetime(ISymbol validator, WellKnownTypes wellKnownTypes)
     {
         INamedTypeSymbol registerValidatorAttribute =
             wellKnownTypes[WellKnownTypes.Type.MinimalApiBuilder_RegisterValidatorAttribute];
@@ -71,10 +70,10 @@ internal class ValidatorToGenerate : IToGenerate
                 continue;
             }
 
-            return (ServiceLifetime)lifetime;
+            return lifetime;
         }
 
-        return ServiceLifetime.Singleton;
+        return 0;
     }
 
     private static bool GetIsAsync(TypeDeclarationSyntax validatorSyntax)

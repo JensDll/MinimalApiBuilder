@@ -46,7 +46,7 @@ internal class DependencyInjectionBuilder : SourceBuilder
     {
         string validatedType = entry.Key;
         ValidatorToGenerate validator = entry.Value;
-        AppendAddService(validator.ServiceLifetime.ToStringEnum(),
+        AppendAddService(validator.ServiceLifetime.ToStringServiceLifetime(),
             $"{Fqn.IValidator}<{validatedType}>, {validator}");
     }
 

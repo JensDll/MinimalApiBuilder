@@ -26,7 +26,7 @@ internal partial class EndpointBuilder : SourceBuilder
         using (endpoint.NamespaceName is null ? Disposable.Empty : OpenBlock($"namespace {endpoint.NamespaceName}"))
         using (OpenBlock(
                    s_generatedCodeAttribute,
-                   $"{endpoint.Accessibility.ToAccessibilityString()} partial class {endpoint.ClassName} : {Fqn.IMinimalApiBuilderEndpoint}"))
+                   $"{endpoint.Accessibility.ToStringEnum()} partial class {endpoint.ClassName} : {Fqn.IMinimalApiBuilderEndpoint}"))
         {
             AddProperties(endpoint);
             AddConfigure(endpoint);
