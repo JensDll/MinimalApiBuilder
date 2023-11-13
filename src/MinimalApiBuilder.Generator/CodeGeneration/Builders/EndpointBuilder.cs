@@ -55,9 +55,9 @@ internal partial class EndpointBuilder : SourceBuilder
                 AppendLine($"{Fqn.WithName}(builder, Name);");
             }
 
-            bool anyAdded = AddValidation(endpoint);
+            AddValidationResult result = AddValidation(endpoint);
 
-            if (!anyAdded && endpoint.Handler.Parameters.Any(static parameter => parameter.HasCustomBinding))
+            if (result is { AnyFilterAdded: false, AnyCustomBinding: true })
             {
                 using IDisposable filterBlock = OpenAddEndpointFilter();
                 AppendLine(GetEndpoint(endpoint.Handler.EndpointParameter));

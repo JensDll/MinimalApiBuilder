@@ -19,14 +19,14 @@ internal partial class EndpointBuilder
     private static string GetValidator(EndpointToGenerateHandlerParameter parameter) =>
         $"{GetRequiredService($"{Fqn.IValidator}<{parameter}>")}";
 
-    private static string GetArgument(EndpointToGenerateHandlerParameter parameter, string varName) =>
-        $"{parameter} {varName} = invocationContext.GetArgument<{parameter}>({parameter.Position});";
+    private static string GetArgument(EndpointToGenerateHandlerParameter parameter, string name) =>
+        $"{parameter} {name} = invocationContext.GetArgument<{parameter}>({parameter.Position});";
 
     private static string GetEndpoint(EndpointToGenerateHandlerParameter endpoint) =>
         GetArgument(endpoint, nameof(endpoint));
 
-    private static string ValidationFailed(string varName, string title = "One or more validation errors occurred.") =>
-        $"{Fqn.ValidationProblem}({Fqn.GetErrors}({varName}), title: \"{title}\")";
+    private static string ValidationFailed(string name, string title = "One or more validation errors occurred.") =>
+        $"{Fqn.ValidationProblem}({Fqn.GetErrors}({name}), title: \"{title}\")";
 
     private static string ModelBindingFailed(string title = "One or more model binding errors occurred.") =>
         $"{Fqn.ValidationProblem}(endpoint.ValidationErrors, title: \"{title}\")";

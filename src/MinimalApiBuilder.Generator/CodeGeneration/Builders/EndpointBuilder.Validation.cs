@@ -6,13 +6,17 @@ namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 
 internal partial class EndpointBuilder
 {
-    private bool AddValidation(EndpointToGenerate endpoint)
+    private AddValidationResult AddValidation(EndpointToGenerate endpoint)
     {
         List<EndpointToGenerateHandlerParameter> parametersToValidateSync = new();
         List<EndpointToGenerateHandlerParameter> parametersToValidateAsync = new();
 
+        bool anyCustomBinding = false;
+
         foreach (var parameter in endpoint.Handler.Parameters)
         {
+            anyCustomBinding |= parameter.HasCustomBinding;
+
             if (!_validators.TryGetValue(parameter.ToString(), out var validator))
             {
                 continue;
@@ -62,7 +66,7 @@ internal partial class EndpointBuilder
                 break;
         }
 
-        return anyFilterAdded;
+        return new AddValidationResult(anyCustomBinding: anyCustomBinding, anyFilterAdded: anyFilterAdded);
     }
 
     private void AddValidationFilter(
@@ -164,5 +168,18 @@ internal partial class EndpointBuilder
 
         AppendLine($"{Fqn.ValidationResult}[] results = await {Fqn.Task}.WhenAll({string.Join(", ", tasks)});");
         AppendLine($"return {isValid} ? await {Next} : {ValidationFailed("results")};");
+    }
+
+    private readonly struct AddValidationResult
+    {
+        public AddValidationResult(bool anyCustomBinding, bool anyFilterAdded)
+        {
+            AnyCustomBinding = anyCustomBinding;
+            AnyFilterAdded = anyFilterAdded;
+        }
+
+        public bool AnyCustomBinding { get; }
+
+        public bool AnyFilterAdded { get; }
     }
 }
