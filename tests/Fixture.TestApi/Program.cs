@@ -2,6 +2,7 @@ using Fixture.TestApi.Extensions;
 using Fixture.TestApi.Features.Multipart;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -36,7 +37,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStatusCodePages();
 
-app.MapValidationFeatures();
-app.MapMultipartFeature();
+RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation");
+validation.MapPost<SyncSingleValidationEndpoint>("/sync/single");
+validation.MapPatch<SyncMultipleValidationEndpoint>("/sync/multiple");
+validation.MapPost<AsyncSingleValidationEndpoint>("/async/single");
+validation.MapPatch<AsyncMultipleValidationEndpoint>("/async/multiple");
+validation.MapPut<CombinedValidationEndpoint>("/combination");
+RouteGroupBuilder multipart = app.MapGroup("/multipart").WithTags("Multipart");
+multipart.MapPost<ZipStreamEndpoint>("/zipstream");
+multipart.MapPost<BufferedFilesEndpoint>("/bufferedfiles");
 
 app.Run();
