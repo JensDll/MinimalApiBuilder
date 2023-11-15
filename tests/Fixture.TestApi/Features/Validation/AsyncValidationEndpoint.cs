@@ -10,7 +10,7 @@ namespace Fixture.TestApi.Features.Validation;
 
 internal partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static async Task<IResult> HandleAsync(
+    public static async Task<IResult> Handle(
         [FromServices] AsyncSingleValidationEndpoint endpoint,
         AsyncValidationRequest request,
         HttpContext context,
@@ -24,7 +24,7 @@ internal partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 
 internal partial class AsyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static async Task<IResult> HandleAsync(
+    public static async Task<IResult> HandleAsync(
         [FromServices] AsyncMultipleValidationEndpoint endpoint,
         [AsParameters] AsyncValidationParameters parameters,
         AsyncValidationRequest request,

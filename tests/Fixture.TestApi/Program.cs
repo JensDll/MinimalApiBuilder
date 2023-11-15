@@ -36,7 +36,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStatusCodePages();
-
 RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation");
 validation.MapPost<SyncSingleValidationEndpoint>("/sync/single");
 validation.MapPatch<SyncMultipleValidationEndpoint>("/sync/multiple");

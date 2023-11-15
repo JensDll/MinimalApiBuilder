@@ -9,7 +9,7 @@ internal sealed class AccessibilityTests : GeneratorUnitTest
         const string source = """
 namespace MyNamespace;
 
-internal sealed partial class E : MinimalApiBuilderEndpoint
+internal partial class E : MinimalApiBuilderEndpoint
 {
     public static int Handle(E e) => 0;
 }

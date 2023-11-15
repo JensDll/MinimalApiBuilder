@@ -7,7 +7,7 @@ namespace Fixture.TestApi.Features.Validation;
 
 internal partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(
+    public static IResult Handle(
         [FromServices] SyncSingleValidationEndpoint endpoint,
         SyncValidationRequest request)
     {
@@ -17,7 +17,7 @@ internal partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 
 internal partial class SyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(
+    public static IResult Handle(
         [FromServices] SyncMultipleValidationEndpoint endpoint,
         [AsParameters] SyncValidationParameters parameters,
         SyncValidationRequest request)

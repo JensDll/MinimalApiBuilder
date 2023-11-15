@@ -12,7 +12,7 @@ namespace Fixture.TestApi.Features.Multipart;
 
 internal partial class BufferedFilesEndpoint : MinimalApiBuilderEndpoint
 {
-    private static Results<Ok<IEnumerable<BufferedFilesResponse>>, BadRequest> Handle(
+    public static Results<Ok<IEnumerable<BufferedFilesResponse>>, BadRequest> Handle(
         BufferedFilesEndpoint endpoint, BufferedFilesRequest request)
     {
         return TypedResults.Ok(request.Files.Select(static file =>

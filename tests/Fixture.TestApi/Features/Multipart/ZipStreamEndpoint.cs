@@ -15,7 +15,7 @@ namespace Fixture.TestApi.Features.Multipart;
 
 internal partial class ZipStreamEndpoint : MinimalApiBuilderEndpoint
 {
-    private static async Task HandleAsync(
+    public static async Task HandleAsync(
         ZipStreamEndpoint endpoint,
         ZipStreamRequest request,
         HttpContext context,

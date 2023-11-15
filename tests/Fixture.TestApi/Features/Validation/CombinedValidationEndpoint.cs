@@ -6,7 +6,7 @@ namespace Fixture.TestApi.Features.Validation;
 
 internal partial class CombinedValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(
+    public static IResult Handle(
         [AsParameters] SyncValidationParameters parameters,
         AsyncValidationRequest request,
         [FromServices] CombinedValidationEndpoint endpoint)

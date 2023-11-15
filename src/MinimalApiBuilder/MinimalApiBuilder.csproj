@@ -3,7 +3,7 @@
   <Import Project=".\MinimalApiBuilder.props"/>
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
@@ -31,19 +31,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-      <Name>Generator</Name>
-    </ProjectReference>
+    <Generators Include="..\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj"></Generators>
   </ItemGroup>
 
-  <Target Name="PackGenerator" BeforeTargets="Build">
-    <MSBuild Projects="@(ProjectReference)" Targets="Build" BuildInParallel="false" Condition="'%(Name)' == 'Generator'">
+  <!-- <Target Name="PackGenerator" BeforeTargets="Build" Condition="'$(TargetFramework)' == ''">
+    <Message Text="Packing generator" Importance="high"/>
+    <MSBuild Projects="@(Generators)" Targets="Build" BuildInParallel="false">
       <Output TaskParameter="TargetOutputs" ItemName="GenerartorAssemblies"/>
     </MSBuild>
     <ItemGroup>
       <None Include="%(GenerartorAssemblies.RelativeDir)\*.dll" Pack="true" PackagePath="analyzers\dotnet\cs" Visible="false"/>
     </ItemGroup>
-  </Target>
+  </Target> -->
 
 </Project>

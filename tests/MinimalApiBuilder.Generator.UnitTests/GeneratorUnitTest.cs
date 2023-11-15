@@ -47,7 +47,8 @@ internal abstract class GeneratorUnitTest
     };
 
     private static readonly ImmutableArray<DiagnosticAnalyzer> s_analyzers =
-        Directory.GetFiles("copied-analyzers", "*.dll")
+        Directory.GetFiles("copied-analyzers", "Microsoft.CodeAnalysis.*.dll")
+            .Where(static path => !path.EndsWith("Fixes.dll", StringComparison.Ordinal))
             .Select(Assembly.LoadFrom)
             .SelectMany(static assembly => assembly.GetTypes())
             .Where(static type => type.GetCustomAttribute<DiagnosticAnalyzerAttribute>() is not null)
@@ -63,7 +64,10 @@ internal abstract class GeneratorUnitTest
             .ToDictionary(static id => id, _ => ReportDiagnostic.Warn)
             .AddAndReturn("CS1701", ReportDiagnostic.Suppress)
             .ChangeAndReturn("CA1050", ReportDiagnostic.Suppress) // Declare types in namespaces
+            .ChangeAndReturn("CA1707", ReportDiagnostic.Suppress) // Identifiers should not contain underscores
             .ChangeAndReturn("CA1812", ReportDiagnostic.Suppress) // Avoid uninstantiated internal classes
+            .ChangeAndReturn("CA1849", ReportDiagnostic.Suppress) // Call async methods when in an async method
+            .ChangeAndReturn("CA1852", ReportDiagnostic.Suppress) // Seal internal types
             .ChangeAndReturn("CA2007", ReportDiagnostic.Suppress); // Do not directly await a Task
 
     private static readonly CSharpCompilationOptions s_compilationOptions =

@@ -31,28 +31,28 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 
     private static void AddSource(
         ImmutableArray<EndpointToGenerate> endpoints,
-        IReadOnlyDictionary<string, ValidatorToGenerate> validators,
+        Dictionary<string, ValidatorToGenerate> validators,
         GeneratorOptions options,
         SourceProductionContext context)
     {
-        EndpointBuilder endpointBuilder = new(options, validators);
-        DependencyInjectionBuilder dependencyInjectionBuilder = new(options);
+        Endpoints endpointsBuilder = new(options, validators);
+        MapEndpointsExtensions mapEndpointsBuilder = new(options);
+        DependencyInjectionExtensions dependencyInjectionExtensionsBuilder = new(options);
 
         foreach (EndpointToGenerate endpoint in endpoints)
         {
-            dependencyInjectionBuilder.AddService(endpoint);
-            endpointBuilder.AddEndpoint(endpoint);
+            endpointsBuilder.Add(endpoint);
+            mapEndpointsBuilder.Add(endpoint);
+            dependencyInjectionExtensionsBuilder.Add(endpoint);
         }
 
         foreach (KeyValuePair<string, ValidatorToGenerate> entry in validators)
         {
-            dependencyInjectionBuilder.AddService(entry);
+            dependencyInjectionExtensionsBuilder.Add(entry);
         }
 
-        dependencyInjectionBuilder.ReportDiagnostics(context);
-        endpointBuilder.ReportDiagnostics(context);
-
-        dependencyInjectionBuilder.AddSource(context);
-        endpointBuilder.AddSource(context);
+        endpointsBuilder.AddSource(context);
+        mapEndpointsBuilder.AddSource(context);
+        dependencyInjectionExtensionsBuilder.AddSource(context);
     }
 }
