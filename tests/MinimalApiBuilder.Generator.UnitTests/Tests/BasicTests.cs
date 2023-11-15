@@ -84,4 +84,35 @@ public class RValidator : AbstractValidator<R>
 
         return VerifyGeneratorAsync(source);
     }
+
+    [Test]
+    public Task Without_Endpoint_Parameter()
+    {
+        // lang=cs
+        const string source = """
+public class R {
+    public int Value { get; set; }
+}
+
+public partial class E : MinimalApiBuilderEndpoint
+{
+    public static int Handle(int a, int b, R r) => a;
+}
+
+public class RValidator : AbstractValidator<R>
+{
+    public RValidator()
+    {
+        RuleFor(static x => x.Value).GreaterThan(0);
+    }
+}
+""";
+
+        // lang=cs
+        const string mapActions = """
+app.MapDelete<E>("/test/{a:int}/{b:int}");
+""";
+
+        return VerifyGeneratorAsync(source, mapActions);
+    }
 }

@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>false</ImplicitUsings>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <!--    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>-->
+    <EnableRequestDelegateGenerator>true</EnableRequestDelegateGenerator>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

@@ -52,10 +52,12 @@ internal partial class Endpoints : SourceBuilder
 
             if (result is { AnyFilterAdded: false, AnyCustomBinding: true })
             {
-                using IDisposable filterBlock = OpenAddEndpointFilter();
-                AppendLine(GetEndpoint(endpoint.Handler.EndpointParameter));
-                AddModelBindingFailed();
-                AppendLine($"return {Next};");
+                using (OpenAddEndpointFilter())
+                {
+                    AppendLine(GetEndpoint(endpoint));
+                    AddModelBindingFailed();
+                    AppendLine($"return {Next};");
+                }
             }
         }
 

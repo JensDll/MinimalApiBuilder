@@ -120,11 +120,6 @@ internal class EndpointToGenerate : IWithSyntaxTree, IToGenerate
             }
         }
 
-        if (endpointParameter is null)
-        {
-            return false;
-        }
-
         handler = new EndpointToGenerateHandler(
             handler: method,
             endpointParameter: endpointParameter,

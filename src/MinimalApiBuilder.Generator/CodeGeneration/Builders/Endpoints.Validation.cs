@@ -45,11 +45,11 @@ internal partial class Endpoints
         switch (parametersToValidateSync.Count)
         {
             case 1:
-                AddValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateSync[0]);
+                AddValidationFilter(endpoint, parametersToValidateSync[0]);
                 anyFilterAdded = true;
                 break;
             case > 1:
-                AddValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateSync);
+                AddValidationFilter(endpoint, parametersToValidateSync);
                 anyFilterAdded = true;
                 break;
         }
@@ -57,11 +57,11 @@ internal partial class Endpoints
         switch (parametersToValidateAsync.Count)
         {
             case 1:
-                AddAsyncValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateAsync[0]);
+                AddAsyncValidationFilter(endpoint, parametersToValidateAsync[0]);
                 anyFilterAdded = true;
                 break;
             case > 1:
-                AddAsyncValidationFilter(endpoint.Handler.EndpointParameter, parametersToValidateAsync);
+                AddAsyncValidationFilter(endpoint, parametersToValidateAsync);
                 anyFilterAdded = true;
                 break;
         }
@@ -70,7 +70,7 @@ internal partial class Endpoints
     }
 
     private void AddValidationFilter(
-        EndpointToGenerateHandlerParameter endpoint,
+        EndpointToGenerate endpoint,
         EndpointToGenerateHandlerParameter parameter)
     {
         using IDisposable filterBlock = OpenAddEndpointFilter();
@@ -89,7 +89,7 @@ internal partial class Endpoints
     }
 
     private void AddValidationFilter(
-        EndpointToGenerateHandlerParameter endpoint,
+        EndpointToGenerate endpoint,
         IReadOnlyList<EndpointToGenerateHandlerParameter> parameters)
     {
         using IDisposable filterBlock = OpenAddEndpointFilter();
@@ -120,7 +120,7 @@ internal partial class Endpoints
     }
 
     private void AddAsyncValidationFilter(
-        EndpointToGenerateHandlerParameter endpoint,
+        EndpointToGenerate endpoint,
         EndpointToGenerateHandlerParameter parameter)
     {
         using IDisposable filterBlock = OpenAddEndpointFilterAsync();
@@ -139,7 +139,7 @@ internal partial class Endpoints
     }
 
     private void AddAsyncValidationFilter(
-        EndpointToGenerateHandlerParameter endpoint,
+        EndpointToGenerate endpoint,
         IReadOnlyList<EndpointToGenerateHandlerParameter> parameters)
     {
         using IDisposable filterBlock = OpenAddEndpointFilterAsync();

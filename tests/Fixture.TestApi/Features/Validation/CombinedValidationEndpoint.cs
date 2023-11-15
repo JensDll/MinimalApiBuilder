@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation;
@@ -9,8 +8,10 @@ internal partial class CombinedValidationEndpoint : MinimalApiBuilderEndpoint
     public static IResult Handle(
         [AsParameters] SyncValidationParameters parameters,
         AsyncValidationRequest request,
-        [FromServices] CombinedValidationEndpoint endpoint)
+        Serilog.ILogger logger)
     {
+        logger.Information("Parameters: {Parameters}", parameters);
+        logger.Information("Request: {Request}", request);
         return TypedResults.Ok();
     }
 }
