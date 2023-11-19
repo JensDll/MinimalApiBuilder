@@ -8,7 +8,7 @@ internal class EndpointToGenerateHandlerParameter : IToGenerate
 {
     private readonly string _identifier;
 
-    public EndpointToGenerateHandlerParameter(IParameterSymbol parameter, int position, WellKnownTypes wellKnownTypes)
+    public EndpointToGenerateHandlerParameter(IParameterSymbol parameter, int position)
     {
         _identifier = parameter.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         Symbol = parameter;
@@ -26,7 +26,7 @@ internal class EndpointToGenerateHandlerParameter : IToGenerate
                 continue;
             }
 
-            if (IsBindAsync(method, wellKnownTypes, out var resultType))
+            if (IsBindAsync(method, out var resultType))
             {
                 HasCustomBinding = true;
                 NeedsCustomBindingNullCheck =
@@ -34,7 +34,7 @@ internal class EndpointToGenerateHandlerParameter : IToGenerate
                 break;
             }
 
-            if (IsTryParse(method, wellKnownTypes, out resultType))
+            if (IsTryParse(method, out resultType))
             {
                 HasCustomBinding = true;
                 NeedsCustomBindingNullCheck =
@@ -58,31 +58,26 @@ internal class EndpointToGenerateHandlerParameter : IToGenerate
 
     public override string ToString() => _identifier;
 
-    private static bool IsBindAsync(IMethodSymbol method, WellKnownTypes wellKnownTypes,
-        out INamedTypeSymbol? resultType)
+    private static bool IsBindAsync(IMethodSymbol method, out INamedTypeSymbol? resultType)
     {
-        INamedTypeSymbol httpContext = wellKnownTypes[WellKnownTypes.Type.Microsoft_AspNetCore_Http_HttpContext];
-        INamedTypeSymbol valueTask = wellKnownTypes[WellKnownTypes.Type.System_Threading_Tasks_ValueTask_1];
-
         switch (method.Parameters.Length)
         {
             case 1:
             {
                 resultType = Unsafe.As<INamedTypeSymbol>(method.ReturnType);
                 return method is { Name: "BindAsync", DeclaredAccessibility: Accessibility.Public, IsStatic: true } &&
-                       SymbolEqualityComparer.Default.Equals(method.Parameters[0].Type, httpContext) &&
+                       method.Parameters[0].Type.IsHttpContext() &&
                        method.ReturnType is INamedTypeSymbol returnType &&
-                       SymbolEqualityComparer.Default.Equals(returnType.ConstructedFrom, valueTask);
+                       returnType.IsValueTask();
             }
             case 2:
             {
-                INamedTypeSymbol parameterInfo = wellKnownTypes[WellKnownTypes.Type.System_Reflection_ParameterInfo];
                 resultType = Unsafe.As<INamedTypeSymbol>(method.ReturnType);
                 return method is { Name: "BindAsync", DeclaredAccessibility: Accessibility.Public, IsStatic: true } &&
-                       SymbolEqualityComparer.Default.Equals(method.Parameters[0].Type, httpContext) &&
+                       method.Parameters[0].Type.IsHttpContext() &&
                        method.ReturnType is INamedTypeSymbol returnType &&
-                       SymbolEqualityComparer.Default.Equals(returnType.ConstructedFrom, valueTask) &&
-                       SymbolEqualityComparer.Default.Equals(method.Parameters[1].Type, parameterInfo);
+                       returnType.IsValueTask() &&
+                       method.Parameters[1].Type.IsParameterInfo();
             }
             default:
                 resultType = null!;
@@ -90,41 +85,37 @@ internal class EndpointToGenerateHandlerParameter : IToGenerate
         }
     }
 
-    private static bool IsTryParse(IMethodSymbol method, WellKnownTypes wellKnownTypes,
-        out INamedTypeSymbol? resultType)
+    private static bool IsTryParse(IMethodSymbol method, out INamedTypeSymbol? resultType)
     {
         switch (method.Parameters.Length)
         {
             case 2:
             {
                 resultType = Unsafe.As<INamedTypeSymbol>(method.Parameters[1].Type);
-#pragma warning disable IDE0055
+
                 return method is
-                       {
-                           Name: "TryParse",
-                           DeclaredAccessibility: Accessibility.Public,
-                           IsStatic: true,
-                           ReturnType.SpecialType: SpecialType.System_Boolean
-                       }
-#pragma warning restore IDE0055
+                {
+                    Name: "TryParse",
+                    DeclaredAccessibility: Accessibility.Public,
+                    IsStatic: true,
+                    ReturnType.SpecialType: SpecialType.System_Boolean
+                }
                        && method.Parameters[0].Type.SpecialType == SpecialType.System_String
                        && method.Parameters[1].RefKind == RefKind.Out;
             }
             case 3:
             {
-                INamedTypeSymbol formatProvider = wellKnownTypes[WellKnownTypes.Type.System_IFormatProvider];
                 resultType = Unsafe.As<INamedTypeSymbol>(method.Parameters[2].Type);
-#pragma warning disable IDE0055
+
                 return method is
-                       {
-                           Name: "TryParse",
-                           DeclaredAccessibility: Accessibility.Public,
-                           IsStatic: true,
-                           ReturnType.SpecialType: SpecialType.System_Boolean
-                       }
-#pragma warning restore IDE0055
+                {
+                    Name: "TryParse",
+                    DeclaredAccessibility: Accessibility.Public,
+                    IsStatic: true,
+                    ReturnType.SpecialType: SpecialType.System_Boolean
+                }
                        && method.Parameters[0].Type.SpecialType == SpecialType.System_String
-                       && SymbolEqualityComparer.Default.Equals(method.Parameters[1].Type, formatProvider)
+                       && method.Parameters[1].Type.IsIFormatProvider()
                        && method.Parameters[2].RefKind == RefKind.Out;
             }
             default:

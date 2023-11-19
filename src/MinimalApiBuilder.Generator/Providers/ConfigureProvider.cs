@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
+using MinimalApiBuilder.Generator.Common;
 using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.Providers;
@@ -21,7 +22,7 @@ internal static class ConfigureProvider
         return node is InvocationExpressionSyntax
         {
             Expression: IdentifierNameSyntax { Identifier.ValueText: "Configure" } or
-                MemberAccessExpressionSyntax { Name.Identifier.ValueText: "Configure" }
+            MemberAccessExpressionSyntax { Name.Identifier.ValueText: "Configure" }
         };
     }
 
@@ -32,9 +33,7 @@ internal static class ConfigureProvider
             return null;
         }
 
-        if (configure.TargetMethod.ContainingNamespace is { Name: "MinimalApiBuilder", ContainingNamespace.IsGlobalNamespace: true } &&
-            configure.Arguments.Length == 1 &&
-            configure.Arguments[0].Value is IArrayCreationOperation { Initializer: IArrayInitializerOperation builders })
+        if (configure.IsConfigure(out var builders))
         {
             return ConfigureToGenerate.Create(configure, builders);
         }

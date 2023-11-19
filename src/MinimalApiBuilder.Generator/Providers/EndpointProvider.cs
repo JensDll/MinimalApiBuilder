@@ -1,7 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using MinimalApiBuilder.Generator.Common;
 using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.Providers;
@@ -34,8 +33,7 @@ internal static class EndpointProvider
         }
 
         ClassDeclarationSyntax endpointSyntax = Unsafe.As<ClassDeclarationSyntax>(context.Node);
-        WellKnownTypes wellKnownTypes = WellKnownTypes.GetOrCreate(context.SemanticModel.Compilation);
 
-        return EndpointToGenerate.Create(endpoint, endpointSyntax, wellKnownTypes, cancellationToken);
+        return EndpointToGenerate.Create(endpoint, endpointSyntax, cancellationToken);
     }
 }

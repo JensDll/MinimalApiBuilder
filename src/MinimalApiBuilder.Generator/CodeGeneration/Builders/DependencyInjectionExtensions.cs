@@ -53,6 +53,7 @@ internal class DependencyInjectionExtensions : SourceBuilder
 
     private void AppendAddService(string lifetime, string generic)
     {
-        AppendLine($"global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.Add{lifetime}<{generic}>(services);");
+        AppendLine(
+            $"global::Microsoft.Extensions.DependencyInjection.ServiceCollectionServiceExtensions.Add{lifetime}<{generic}>(services);");
     }
 }

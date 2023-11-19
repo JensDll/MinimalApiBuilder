@@ -65,18 +65,10 @@ internal class ConfigureToGenerate
                 continue;
             }
 
-            if (endpoint.BaseType is not
-                {
-                    Name: "MinimalApiBuilderEndpoint", ContainingNamespace:
-                    {
-                        Name: "MinimalApiBuilder", ContainingNamespace.IsGlobalNamespace: true
-                    }
-                })
+            if (endpoint.IsMinimalApiBuilderEndpoint())
             {
-                continue;
+                result.Add((i, endpoint.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
             }
-
-            result.Add((i, endpoint.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)));
         }
 
         return result;
@@ -105,7 +97,9 @@ internal class ConfigureToGenerate
             _ => throw new InvalidOperationException()
         };
 
-        string filePath = configureSyntax.SyntaxTree.GetInterceptorFilePath(configure.SemanticModel?.Compilation.Options.SourceReferenceResolver);
+        string filePath =
+            configureSyntax.SyntaxTree.GetInterceptorFilePath(configure.SemanticModel?.Compilation.Options
+                .SourceReferenceResolver);
         int lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
 
         return (filePath, lineNumber);

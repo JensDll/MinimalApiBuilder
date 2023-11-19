@@ -61,12 +61,12 @@ internal class ConfigureEndpoints : SourceBuilder
         string map = $"s_map{_mapCount++}";
 
         using (OpenBlockExtra(";", Sources.GeneratedCodeAttribute,
-            $"private static readonly {Fqn.Dictionary}<(string, int), {Fqn.Action}<{Fqn.RouteHandlerBuilder}[]>> {map} = new()"))
+                   $"private static readonly {Fqn.Dictionary}<(string, int), {Fqn.Action}<{Fqn.RouteHandlerBuilder}[]>> {map} = new()"))
         {
             foreach (var configure in configures)
             {
                 using (OpenBlockExtra(",",
-                    $"[(@\"{configure.FilePath}\", {configure.LineNumber})] = static ({Fqn.RouteHandlerBuilder}[] builders) =>"))
+                           $"[(@\"{configure.FilePath}\", {configure.LineNumber})] = static ({Fqn.RouteHandlerBuilder}[] builders) =>"))
                 {
                     foreach ((int i, string endpoint) in configure.Endpoints)
                     {
@@ -78,7 +78,7 @@ internal class ConfigureEndpoints : SourceBuilder
         }
 
         using (OpenBlock(Sources.GeneratedCodeAttribute,
-            $"public static void Configure({builders}, [{Fqn.CallerFilePath}] string filePath = \"\", [{Fqn.CallerLineNumber}] int lineNumber = 0)"))
+                   $"public static void Configure({builders}, [{Fqn.CallerFilePath}] string filePath = \"\", [{Fqn.CallerLineNumber}] int lineNumber = 0)"))
         {
             AppendLine($"var configure = {map}[(filePath, lineNumber)];");
             string args = string.Join(", ", Enumerable.Range(0, configures[0].Arity).Select(static i => $"b{i}"));

@@ -20,7 +20,8 @@ internal static class Fqn
 
     public const string ValueTask = "global::System.Threading.Tasks.ValueTask";
 
-    public const string GetRequiredService = "global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService";
+    public const string GetRequiredService =
+        "global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService";
 
     public const string IServiceCollection = "global::Microsoft.Extensions.DependencyInjection.IServiceCollection";
 
@@ -28,11 +29,14 @@ internal static class Fqn
 
     public const string ValidationProblem = $"{TypedResults}.ValidationProblem";
 
-    public const string AddEndpointFilter = "global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter";
+    public const string AddEndpointFilter =
+        "global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter";
 
-    public const string WithName = "global::Microsoft.AspNetCore.Builder.RoutingEndpointConventionBuilderExtensions.WithName";
+    public const string WithName =
+        "global::Microsoft.AspNetCore.Builder.RoutingEndpointConventionBuilderExtensions.WithName";
 
-    public const string EndpointRouteBuilderExtensions = "global::Microsoft.AspNetCore.Builder.EndpointRouteBuilderExtensions";
+    public const string EndpointRouteBuilderExtensions =
+        "global::Microsoft.AspNetCore.Builder.EndpointRouteBuilderExtensions";
 
     public const string RouteHandlerBuilder = "global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder";
 
@@ -46,7 +50,8 @@ internal static class Fqn
 
     public const string SuccessValidationResult = "global::MinimalApiBuilder.StaticHelper.SuccessValidationResult";
 
-    public const string SuccessValidationResultTask = "global::MinimalApiBuilder.StaticHelper.SuccessValidationResultTask";
+    public const string SuccessValidationResultTask =
+        "global::MinimalApiBuilder.StaticHelper.SuccessValidationResultTask";
 
     public const string GetErrors = "global::MinimalApiBuilder.StaticHelper.GetErrors";
 }

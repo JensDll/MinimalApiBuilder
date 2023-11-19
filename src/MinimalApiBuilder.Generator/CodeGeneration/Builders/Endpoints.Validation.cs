@@ -85,7 +85,8 @@ internal partial class Endpoints
         AppendLine(parameter.IsNullable
             ? $"{Fqn.ValidationResult} result = a is null ? {Fqn.SuccessValidationResult} : {GetValidator(parameter)}.Validate(a);"
             : $"{Fqn.ValidationResult} result = {GetValidator(parameter)}.Validate(a);");
-        AppendLine($"return result.IsValid ? {Next} : {Fqn.ValueTask}.FromResult<object?>({ValidationFailed("result")});");
+        AppendLine(
+            $"return result.IsValid ? {Next} : {Fqn.ValueTask}.FromResult<object?>({ValidationFailed("result")});");
     }
 
     private void AddValidationFilter(
