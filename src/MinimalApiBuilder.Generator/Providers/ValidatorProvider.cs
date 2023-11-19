@@ -13,7 +13,7 @@ internal static class ValidatorProvider
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsValidator, Transform)
-            .Where(static validator => validator is not null)!
+            .Where(static value => value is not null)!
             .WithComparer(ValidatorToGenerateEqualityComparer.Instance);
     }
 

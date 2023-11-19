@@ -77,16 +77,7 @@ public class R2Validator : AbstractValidator<R2>
 }
 """;
 
-        // lang=cs
-        const string mapActions = """
-app.MapGet<E1>("/test");
-app.MapPost<E2>("/test");
-app.MapDelete<E3>("/test");
-app.MapPut<E4>("/test");
-app.MapPatch<E5>("/test");
-""";
-
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGeneratorAsync(source);
     }
 
     [Test]

@@ -17,7 +17,7 @@ internal partial class E : MinimalApiBuilderEndpoint
 
         // lang=cs
         const string mapActions = """
-app.MapGet<E>("/test");
+app.MapGet("/test", E.Handle);
 """;
 
         return VerifyGeneratorAsync(source, mapActions);

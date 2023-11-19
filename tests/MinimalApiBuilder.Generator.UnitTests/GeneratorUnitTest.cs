@@ -180,6 +180,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using MinimalApiBuilder;
+using static MinimalApiBuilder.ConfigureEndpoints;
 using FluentValidation;
 using System;
 using System.Reflection;

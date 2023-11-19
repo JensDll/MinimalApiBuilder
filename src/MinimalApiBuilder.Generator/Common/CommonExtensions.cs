@@ -43,4 +43,9 @@ internal static class CommonExtensions
 
         return unwrapped ?? type;
     }
+
+    public static string GetInterceptorFilePath(this SyntaxTree tree, SourceReferenceResolver? resolver)
+    {
+        return resolver?.NormalizePath(tree.FilePath, baseFilePath: null) ?? tree.FilePath;
+    }
 }

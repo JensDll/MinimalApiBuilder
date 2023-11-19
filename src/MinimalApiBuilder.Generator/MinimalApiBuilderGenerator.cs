@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using MinimalApiBuilder.Generator.CodeGeneration.Builders;
+using MinimalApiBuilder.Generator.Common;
 using MinimalApiBuilder.Generator.Entities;
 using MinimalApiBuilder.Generator.Providers;
 
@@ -11,14 +12,34 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValueProvider<ImmutableArray<EndpointToGenerate>> endpoints = context.ForEndpoints().Collect();
-        IncrementalValueProvider<ImmutableArray<ValidatorToGenerate>> validators = context.ForValidators().Collect();
-        IncrementalValueProvider<GeneratorOptions> options = context.ForGeneratorOptions();
+        var endpoints = context.ForEndpoints().Collect();
+        var validators = context.ForValidators().Collect();
+        var options = context.ForGeneratorOptions();
+        var configures = context.ForConfigure().Collect();
 
-        var sourceProvider = endpoints.Combine(validators).Combine(options);
+        var endpointsAndValidatorsAndOptions = endpoints.Combine(validators).Combine(options);
 
-        context.RegisterSourceOutput(sourceProvider, static (sourceProductionContext, source) =>
+        context.RegisterSourceOutput(endpointsAndValidatorsAndOptions, static (sourceProductionContext, source) =>
             Execute(source.Left.Left, source.Left.Right, source.Right, sourceProductionContext));
+
+        context.RegisterSourceOutput(configures, static (sourceProductionContext, source) =>
+            Execute(source, sourceProductionContext));
+
+        context.RegisterPostInitializationOutput(static postInitContext =>
+        {
+            postInitContext.AddSource("ConfigureEndpoints.g.cs", $$"""
+                namespace MinimalApiBuilder
+                {
+                    {{Fqn.GeneratedCodeAttribute}}
+                    internal static partial class ConfigureEndpoints
+                    {
+                        {{Fqn.GeneratedCodeAttribute}}
+                        public static void Configure(params {{Fqn.RouteHandlerBuilder}}[] builders)
+                        { }
+                    }
+                }
+                """);
+        });
     }
 
     private static void Execute(ImmutableArray<EndpointToGenerate> endpoints,
@@ -29,6 +50,18 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         AddSource(endpoints, validators.ToDictionary(static validator => validator.ValidatedType), options, context);
     }
 
+    private static void Execute(
+        ImmutableArray<ConfigureToGenerate> configures,
+        SourceProductionContext context)
+    {
+        if (configures.Length == 0)
+        {
+            return;
+        }
+
+        AddSource(configures.GroupBy(static value => value.Arity).ToImmutableArray(), context);
+    }
+
     private static void AddSource(
         ImmutableArray<EndpointToGenerate> endpoints,
         Dictionary<string, ValidatorToGenerate> validators,
@@ -36,13 +69,11 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         SourceProductionContext context)
     {
         Endpoints endpointsBuilder = new(options, validators);
-        MapEndpointsExtensions mapEndpointsBuilder = new(options);
         DependencyInjectionExtensions dependencyInjectionExtensionsBuilder = new(options);
 
         foreach (EndpointToGenerate endpoint in endpoints)
         {
             endpointsBuilder.Add(endpoint);
-            mapEndpointsBuilder.Add(endpoint);
             dependencyInjectionExtensionsBuilder.Add(endpoint);
         }
 
@@ -52,7 +83,20 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         }
 
         endpointsBuilder.AddSource(context);
-        mapEndpointsBuilder.AddSource(context);
         dependencyInjectionExtensionsBuilder.AddSource(context);
+    }
+
+    private static void AddSource(
+        IEnumerable<IGrouping<int, ConfigureToGenerate>> configures,
+        SourceProductionContext context)
+    {
+        ConfigureEndpoints configureEndpointsBuilder = new();
+
+        foreach (var group in configures)
+        {
+            configureEndpointsBuilder.Add(group.ToImmutableArray());
+        }
+
+        configureEndpointsBuilder.AddSource(context);
     }
 }

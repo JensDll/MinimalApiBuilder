@@ -110,7 +110,7 @@ public class RValidator : AbstractValidator<R>
 
         // lang=cs
         const string mapActions = """
-app.MapDelete<E>("/test/{a:int}/{b:int}");
+app.MapDelete("/test/{a:int}/{b:int}", E.Handle);
 """;
 
         return VerifyGeneratorAsync(source, mapActions);

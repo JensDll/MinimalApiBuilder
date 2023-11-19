@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MinimalApiBuilder;
+using static MinimalApiBuilder.ConfigureEndpoints;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -36,14 +36,18 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStatusCodePages();
+
 RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation");
-validation.MapPost<SyncSingleValidationEndpoint>("/sync/single");
-validation.MapPatch<SyncMultipleValidationEndpoint>("/sync/multiple");
-validation.MapPost<AsyncSingleValidationEndpoint>("/async/single");
-validation.MapPatch<AsyncMultipleValidationEndpoint>("/async/multiple");
-validation.MapPut<CombinedValidationEndpoint>("/combination");
+Configure(
+    validation.MapPost("/sync/single", SyncSingleValidationEndpoint.Handle),
+    validation.MapPatch("/sync/multiple", SyncMultipleValidationEndpoint.Handle),
+    validation.MapPost("/async/single", AsyncSingleValidationEndpoint.Handle),
+    validation.MapPatch("/async/multiple", AsyncMultipleValidationEndpoint.HandleAsync),
+    validation.MapPut("/combination", CombinedValidationEndpoint.Handle));
+
 RouteGroupBuilder multipart = app.MapGroup("/multipart").WithTags("Multipart");
-multipart.MapPost<ZipStreamEndpoint>("/zipstream");
-multipart.MapPost<BufferedFilesEndpoint>("/bufferedfiles");
+Configure(
+    multipart.MapPost("/zipstream", ZipStreamEndpoint.HandleAsync),
+    multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 
 app.Run();

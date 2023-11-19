@@ -13,7 +13,7 @@ internal static class EndpointProvider
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsEndpointDeclaration, Transform)
-            .Where(static endpoint => endpoint is not null)!
+            .Where(static value => value is not null)!
             .WithComparer(EndpointToGenerateEqualityComparer.Instance);
     }
 

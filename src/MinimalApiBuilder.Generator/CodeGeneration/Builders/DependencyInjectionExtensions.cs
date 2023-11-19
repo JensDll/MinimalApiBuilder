@@ -17,14 +17,14 @@ internal class DependencyInjectionExtensions : SourceBuilder
             "/// <summary>",
             "/// Minimal API builder dependency injection extension methods.",
             "/// </summary>",
-            s_generatedCodeAttribute,
+            Fqn.GeneratedCodeAttribute,
             $"internal static class {nameof(DependencyInjectionExtensions)}");
         _method = OpenBlock(
             "/// <summary>",
             $"/// Adds the necessary types to the <see cref=\"{Fqn.IServiceCollection}\"/>.",
             "/// </summary>",
             $"/// <param name=\"services\">The <see cref=\"{Fqn.IServiceCollection}\"/>.</param>",
-            s_generatedCodeAttribute,
+            Fqn.GeneratedCodeAttribute,
             $"public static {Fqn.IServiceCollection} AddMinimalApiBuilderEndpoints(this {Fqn.IServiceCollection} services)");
     }
 

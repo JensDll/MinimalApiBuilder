@@ -4,13 +4,23 @@ internal static class Fqn
 {
     public const string Delegate = "global::System.Delegate";
 
+    public const string Action = "global::System.Action";
+
+    public const string Dictionary = "global::System.Collections.Generic.Dictionary";
+
     public const string IEnumerable = "global::System.Collections.Generic.IEnumerable";
+
+    public const string CallerFilePath = "global::System.Runtime.CompilerServices.CallerFilePathAttribute";
+
+    public const string CallerLineNumber = "global::System.Runtime.CompilerServices.CallerLineNumberAttribute";
+
+    public const string StringSyntax = "global::System.Diagnostics.CodeAnalysis.StringSyntaxAttribute";
 
     public const string Task = "global::System.Threading.Tasks.Task";
 
     public const string ValueTask = "global::System.Threading.Tasks.ValueTask";
 
-    public const string StringSyntax = "global::System.Diagnostics.CodeAnalysis.StringSyntaxAttribute";
+    public static readonly string GeneratedCodeAttribute = $@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{typeof(MinimalApiBuilderGenerator).Assembly.GetName().Name}"", ""{typeof(MinimalApiBuilderGenerator).Assembly.GetName().Version}"")]";
 
     public const string GetRequiredService = "global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService";
 
@@ -33,6 +43,8 @@ internal static class Fqn
     public const string IValidator = "global::FluentValidation.IValidator";
 
     public const string ValidationResult = "global::FluentValidation.Results.ValidationResult";
+
+    public const string IMinimalApiBuilderEndpoint = "global::MinimalApiBuilder.IMinimalApiBuilderEndpoint";
 
     public const string SuccessValidationResult = "global::MinimalApiBuilder.StaticHelper.SuccessValidationResult";
 

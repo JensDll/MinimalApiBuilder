@@ -25,14 +25,14 @@ internal partial class Endpoints : SourceBuilder
         Options = Options.GetForTarget(endpoint);
 
         using (endpoint.NamespaceName is null ? Disposable.Empty : OpenBlock($"namespace {endpoint.NamespaceName}"))
-        using (OpenBlock(s_generatedCodeAttribute,
-            $"{endpoint.Accessibility.ToStringEnum()} partial class {endpoint.ClassName}"))
+        using (OpenBlock(Fqn.GeneratedCodeAttribute,
+            $"{endpoint.Accessibility.ToStringEnum()} partial class {endpoint.ClassName} : {Fqn.IMinimalApiBuilderEndpoint}"))
         {
             AddConfigure(endpoint);
 
             if (Options.AssignNameToEndpoint)
             {
-                AppendLine(s_generatedCodeAttribute);
+                AppendLine(Fqn.GeneratedCodeAttribute);
                 AppendLine($"public const string Name = \"{endpoint}\";");
             }
         }
@@ -40,7 +40,7 @@ internal partial class Endpoints : SourceBuilder
 
     private void AddConfigure(EndpointToGenerate endpoint)
     {
-        using (OpenBlock(s_generatedCodeAttribute,
+        using (OpenBlock(Fqn.GeneratedCodeAttribute,
             $"public static void _auto_generated_Configure({Fqn.RouteHandlerBuilder} builder)"))
         {
             if (Options.AssignNameToEndpoint)
@@ -63,7 +63,7 @@ internal partial class Endpoints : SourceBuilder
 
         if (endpoint.NeedsConfigure)
         {
-            OpenBlock(s_generatedCodeAttribute, $"public static void Configure({Fqn.RouteHandlerBuilder} builder)").Dispose();
+            OpenBlock(Fqn.GeneratedCodeAttribute, $"public static void Configure({Fqn.RouteHandlerBuilder} builder)").Dispose();
         }
     }
 
