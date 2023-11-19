@@ -24,7 +24,7 @@ internal partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 
 internal partial class AsyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    public static async Task<IResult> HandleAsync(
+    public static async Task<IResult> Handle(
         [AsParameters] AsyncValidationParameters parameters,
         AsyncValidationRequest request,
         Serilog.ILogger logger)

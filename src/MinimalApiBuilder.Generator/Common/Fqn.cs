@@ -20,8 +20,6 @@ internal static class Fqn
 
     public const string ValueTask = "global::System.Threading.Tasks.ValueTask";
 
-    public static readonly string GeneratedCodeAttribute = $@"[global::System.CodeDom.Compiler.GeneratedCodeAttribute(""{typeof(MinimalApiBuilderGenerator).Assembly.GetName().Name}"", ""{typeof(MinimalApiBuilderGenerator).Assembly.GetName().Version}"")]";
-
     public const string GetRequiredService = "global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService";
 
     public const string IServiceCollection = "global::Microsoft.Extensions.DependencyInjection.IServiceCollection";

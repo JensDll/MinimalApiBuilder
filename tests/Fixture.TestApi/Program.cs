@@ -43,12 +43,12 @@ Configure(
     validation.MapPost("/sync/single", SyncSingleValidationEndpoint.Handle),
     validation.MapPatch("/sync/multiple", SyncMultipleValidationEndpoint.Handle),
     validation.MapPost("/async/single", AsyncSingleValidationEndpoint.Handle),
-    validation.MapPatch("/async/multiple", AsyncMultipleValidationEndpoint.HandleAsync),
+    validation.MapPatch("/async/multiple", AsyncMultipleValidationEndpoint.Handle),
     validation.MapPut("/combination", CombinedValidationEndpoint.Handle));
 
 RouteGroupBuilder multipart = app.MapGroup("/multipart").WithTags("Multipart");
 Configure(
-    multipart.MapPost("/zipstream", ZipStreamEndpoint.HandleAsync),
+    multipart.MapPost("/zipstream", ZipStreamEndpoint.Handle),
     multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 
 app.Run();

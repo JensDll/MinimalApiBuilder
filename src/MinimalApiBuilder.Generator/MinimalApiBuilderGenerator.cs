@@ -27,18 +27,7 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 
         context.RegisterPostInitializationOutput(static postInitContext =>
         {
-            postInitContext.AddSource("ConfigureEndpoints.g.cs", $$"""
-                namespace MinimalApiBuilder
-                {
-                    {{Fqn.GeneratedCodeAttribute}}
-                    internal static partial class ConfigureEndpoints
-                    {
-                        {{Fqn.GeneratedCodeAttribute}}
-                        public static void Configure(params {{Fqn.RouteHandlerBuilder}}[] builders)
-                        { }
-                    }
-                }
-                """);
+            postInitContext.AddSource($"{nameof(Sources.ConfigureEndpoints)}.g.cs", Sources.ConfigureEndpoints);
         });
     }
 

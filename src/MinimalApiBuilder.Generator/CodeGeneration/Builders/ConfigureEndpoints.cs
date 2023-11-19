@@ -46,7 +46,7 @@ internal class ConfigureEndpoints : SourceBuilder
 
     private void AddConfigure(ConfigureToGenerate configure, string builders)
     {
-        using (OpenBlock(Fqn.GeneratedCodeAttribute, $"public static void Configure({builders})"))
+        using (OpenBlock(Sources.GeneratedCodeAttribute, $"public static void Configure({builders})"))
         {
             foreach ((int i, string endpoint) in configure.Endpoints)
             {
@@ -60,7 +60,7 @@ internal class ConfigureEndpoints : SourceBuilder
     {
         string map = $"s_map{_mapCount++}";
 
-        using (OpenBlockExtra(";", Fqn.GeneratedCodeAttribute,
+        using (OpenBlockExtra(";", Sources.GeneratedCodeAttribute,
             $"private static readonly {Fqn.Dictionary}<(string, int), {Fqn.Action}<{Fqn.RouteHandlerBuilder}[]>> {map} = new()"))
         {
             foreach (var configure in configures)
@@ -77,7 +77,7 @@ internal class ConfigureEndpoints : SourceBuilder
             }
         }
 
-        using (OpenBlock(Fqn.GeneratedCodeAttribute,
+        using (OpenBlock(Sources.GeneratedCodeAttribute,
             $"public static void Configure({builders}, [{Fqn.CallerFilePath}] string filePath = \"\", [{Fqn.CallerLineNumber}] int lineNumber = 0)"))
         {
             AppendLine($"var configure = {map}[(filePath, lineNumber)];");

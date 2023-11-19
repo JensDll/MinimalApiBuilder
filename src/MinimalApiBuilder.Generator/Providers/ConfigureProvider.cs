@@ -12,7 +12,8 @@ internal static class ConfigureProvider
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsConfigure, Transform)
-            .Where(static value => value is not null)!;
+            .Where(static value => value is not null)!
+            .WithComparer(ConfigureToGenerateEqualityComparer.Instance);
     }
 
     private static bool IsConfigure(SyntaxNode node, CancellationToken cancellationToken)
