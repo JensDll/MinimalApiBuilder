@@ -38,12 +38,11 @@ jobs:
       matrix:
         configuration: [Debug, Release]
         os: [ubuntu-22.04, windows-2022, macos-12]
-        assign_name: [true, false]
     runs-on: ${{ matrix.os }}
     env:
       MINIMALAPIBUILDER_TEST_TYPE: Published
       MINIMALAPIBUILDER_VERSION: 1.0.0-ci-published
-    name: Published ${{ matrix.os }} (${{ matrix.configuration }}) (assign_name = ${{ matrix.assign_name }})
+    name: Published ${{ matrix.os }} (${{ matrix.configuration }})
     steps:
       - name: Allowing git long paths
         run: git config --global core.longpaths true
@@ -65,7 +64,7 @@ jobs:
         run: dotnet restore MinimalApiBuilder.tests.slnf  --packages packages --configfile NuGet.IntegrationTest.config
 
       - name: Building tests
-        run: dotnet build MinimalApiBuilder.tests.slnf --packages packages --no-restore --configuration ${{ matrix.configuration }} -p:minimalapibuilder_assign_name_to_endpoint=${{ matrix.assign_name }}
+        run: dotnet build MinimalApiBuilder.tests.slnf --packages packages --no-restore --configuration ${{ matrix.configuration }}
 
       - name: Running tests
         run: dotnet test MinimalApiBuilder.tests.slnf --no-build --no-restore --configuration ${{ matrix.configuration }}
