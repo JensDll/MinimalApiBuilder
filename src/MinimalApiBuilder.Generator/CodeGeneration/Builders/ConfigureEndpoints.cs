@@ -5,7 +5,7 @@ using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 
-internal class ConfigureEndpoints : SourceBuilder
+internal sealed class ConfigureEndpoints : SourceBuilder
 {
     private readonly IDisposable _namespace;
     private readonly IDisposable _class;

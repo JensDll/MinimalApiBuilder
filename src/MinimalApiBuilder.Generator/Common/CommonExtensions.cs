@@ -48,4 +48,10 @@ internal static class CommonExtensions
     {
         return resolver?.NormalizePath(tree.FilePath, baseFilePath: null) ?? tree.FilePath;
     }
+
+    public static IncrementalValuesProvider<TSource> WhereNotNull<TSource>(
+        this IncrementalValuesProvider<TSource?> source)
+    {
+        return source.Where(static value => value is not null)!;
+    }
 }

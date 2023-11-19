@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerate : IWithSyntaxTree, IToGenerate
+internal sealed class EndpointToGenerate : IWithSyntaxTree, IToGenerate
 {
     private readonly string _identifier;
 

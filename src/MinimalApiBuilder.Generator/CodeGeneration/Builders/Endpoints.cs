@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 
-internal partial class Endpoints : SourceBuilder
+internal sealed partial class Endpoints : SourceBuilder
 {
     private readonly Dictionary<string, ValidatorToGenerate> _validators;
 
@@ -26,7 +26,7 @@ internal partial class Endpoints : SourceBuilder
 
         using (endpoint.NamespaceName is null ? Disposable.Empty : OpenBlock($"namespace {endpoint.NamespaceName}"))
         using (OpenBlock(Sources.GeneratedCodeAttribute,
-                   $"{endpoint.Accessibility.ToStringEnum()} partial class {endpoint.ClassName} : {Fqn.IMinimalApiBuilderEndpoint}"))
+            $"{endpoint.Accessibility.ToStringEnum()} partial class {endpoint.ClassName} : {Fqn.IMinimalApiBuilderEndpoint}"))
         {
             AddConfigure(endpoint);
 
@@ -41,7 +41,7 @@ internal partial class Endpoints : SourceBuilder
     private void AddConfigure(EndpointToGenerate endpoint)
     {
         using (OpenBlock(Sources.GeneratedCodeAttribute,
-                   $"public static void _auto_generated_Configure({Fqn.RouteHandlerBuilder} builder)"))
+            $"public static void _auto_generated_Configure({Fqn.RouteHandlerBuilder} builder)"))
         {
             if (Options.AssignNameToEndpoint)
             {

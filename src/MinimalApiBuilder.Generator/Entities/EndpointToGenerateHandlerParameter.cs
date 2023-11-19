@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerateHandlerParameter : IToGenerate
+internal sealed class EndpointToGenerateHandlerParameter : IToGenerate
 {
     private readonly string _identifier;
 
@@ -94,12 +94,14 @@ internal class EndpointToGenerateHandlerParameter : IToGenerate
                 resultType = Unsafe.As<INamedTypeSymbol>(method.Parameters[1].Type);
 
                 return method is
-                {
-                    Name: "TryParse",
-                    DeclaredAccessibility: Accessibility.Public,
-                    IsStatic: true,
-                    ReturnType.SpecialType: SpecialType.System_Boolean
-                }
+#pragma warning disable IDE0055
+#pragma warning restore IDE0055
+                       {
+                           Name: "TryParse",
+                           DeclaredAccessibility: Accessibility.Public,
+                           IsStatic: true,
+                           ReturnType.SpecialType: SpecialType.System_Boolean
+                       }
                        && method.Parameters[0].Type.SpecialType == SpecialType.System_String
                        && method.Parameters[1].RefKind == RefKind.Out;
             }
@@ -108,12 +110,14 @@ internal class EndpointToGenerateHandlerParameter : IToGenerate
                 resultType = Unsafe.As<INamedTypeSymbol>(method.Parameters[2].Type);
 
                 return method is
-                {
-                    Name: "TryParse",
-                    DeclaredAccessibility: Accessibility.Public,
-                    IsStatic: true,
-                    ReturnType.SpecialType: SpecialType.System_Boolean
-                }
+#pragma warning disable IDE0055
+#pragma warning restore IDE0055
+                       {
+                           Name: "TryParse",
+                           DeclaredAccessibility: Accessibility.Public,
+                           IsStatic: true,
+                           ReturnType.SpecialType: SpecialType.System_Boolean
+                       }
                        && method.Parameters[0].Type.SpecialType == SpecialType.System_String
                        && method.Parameters[1].Type.IsIFormatProvider()
                        && method.Parameters[2].RefKind == RefKind.Out;

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MinimalApiBuilder.Generator.Common;
 using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.Providers;
@@ -12,7 +13,7 @@ internal static class EndpointProvider
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsEndpointDeclaration, Transform)
-            .Where(static value => value is not null)!
+            .WhereNotNull()
             .WithComparer(EndpointToGenerateEqualityComparer.Instance);
     }
 

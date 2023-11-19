@@ -6,9 +6,9 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class ConfigureToGenerate
+internal sealed class ConfigureToGenerate
 {
-    public ConfigureToGenerate(
+    private ConfigureToGenerate(
         int arity,
         string filePath,
         int lineNumber,
@@ -86,7 +86,7 @@ internal class ConfigureToGenerate
         };
     }
 
-    private static (string, int) GetLocation(IInvocationOperation configure)
+    private static (string, int) GetLocation(IOperation configure)
     {
         InvocationExpressionSyntax configureSyntax = Unsafe.As<InvocationExpressionSyntax>(configure.Syntax);
 
@@ -97,9 +97,8 @@ internal class ConfigureToGenerate
             _ => throw new InvalidOperationException()
         };
 
-        string filePath =
-            configureSyntax.SyntaxTree.GetInterceptorFilePath(configure.SemanticModel?.Compilation.Options
-                .SourceReferenceResolver);
+        string filePath = configureSyntax.SyntaxTree.GetInterceptorFilePath(
+            configure.SemanticModel?.Compilation.Options.SourceReferenceResolver);
         int lineNumber = location.GetLineSpan().StartLinePosition.Line + 1;
 
         return (filePath, lineNumber);

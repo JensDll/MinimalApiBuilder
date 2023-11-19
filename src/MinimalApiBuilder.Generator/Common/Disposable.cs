@@ -1,6 +1,6 @@
 ﻿namespace MinimalApiBuilder.Generator.Common;
 
-internal class Disposable : IDisposable
+internal sealed class Disposable : IDisposable
 {
     private Action? _onDispose;
 

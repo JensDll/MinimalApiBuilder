@@ -31,7 +31,8 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         });
     }
 
-    private static void Execute(ImmutableArray<EndpointToGenerate> endpoints,
+    private static void Execute(
+        ImmutableArray<EndpointToGenerate> endpoints,
         ImmutableArray<ValidatorToGenerate> validators,
         GeneratorOptions options,
         SourceProductionContext context)
@@ -48,7 +49,7 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
             return;
         }
 
-        AddSource(configures.GroupBy(static value => value.Arity).ToImmutableArray(), context);
+        AddSource(configures.GroupBy(static configure => configure.Arity), context);
     }
 
     private static void AddSource(

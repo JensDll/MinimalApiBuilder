@@ -13,7 +13,7 @@ internal static class ConfigureProvider
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsConfigure, Transform)
-            .Where(static value => value is not null)!
+            .WhereNotNull()
             .WithComparer(ConfigureToGenerateEqualityComparer.Instance);
     }
 
@@ -33,11 +33,8 @@ internal static class ConfigureProvider
             return null;
         }
 
-        if (configure.IsConfigure(out var builders))
-        {
-            return ConfigureToGenerate.Create(configure, builders);
-        }
-
-        return null;
+        return configure.IsConfigure(out IArrayInitializerOperation builders)
+            ? ConfigureToGenerate.Create(configure, builders)
+            : null;
     }
 }

@@ -3,7 +3,7 @@ using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 
-internal partial class Endpoints
+internal sealed partial class Endpoints
 {
     private const string Next = "next(invocationContext)";
 

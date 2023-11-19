@@ -3,7 +3,7 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerateHandler : IToGenerate
+internal sealed class EndpointToGenerateHandler : IToGenerate
 {
     public EndpointToGenerateHandler(
         ISymbol handler,

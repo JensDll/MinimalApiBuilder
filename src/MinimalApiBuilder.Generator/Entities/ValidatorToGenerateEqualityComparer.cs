@@ -1,6 +1,6 @@
 ﻿namespace MinimalApiBuilder.Generator.Entities;
 
-internal class ValidatorToGenerateEqualityComparer : IEqualityComparer<ValidatorToGenerate>
+internal sealed class ValidatorToGenerateEqualityComparer : IEqualityComparer<ValidatorToGenerate>
 {
     public static readonly ValidatorToGenerateEqualityComparer Instance = new();
 

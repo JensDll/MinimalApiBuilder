@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class ValidatorToGenerate : IToGenerate
+internal sealed class ValidatorToGenerate : IToGenerate
 {
     private readonly string _identifier;
 

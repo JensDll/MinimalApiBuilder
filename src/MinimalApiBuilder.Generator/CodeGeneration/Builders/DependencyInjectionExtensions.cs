@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Entities;
 
 namespace MinimalApiBuilder.Generator.CodeGeneration.Builders;
 
-internal class DependencyInjectionExtensions : SourceBuilder
+internal sealed class DependencyInjectionExtensions : SourceBuilder
 {
     private readonly IDisposable _namespace;
     private readonly IDisposable _class;

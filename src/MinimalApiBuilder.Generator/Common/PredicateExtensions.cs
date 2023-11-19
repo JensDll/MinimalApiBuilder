@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.Operations;
 
 namespace MinimalApiBuilder.Generator.Common;
+
 internal static class PredicateExtensions
 {
     public static bool IsMinimalApiBuilderEndpoint(this INamedTypeSymbol symbol)

@@ -1,10 +1,10 @@
 ﻿namespace MinimalApiBuilder.Generator.Entities;
 
-internal class ConfigureToGenerateEqualityComparer : IEqualityComparer<ConfigureToGenerate>
+internal sealed class ConfigureToGenerateEqualityComparer : IEqualityComparer<ConfigureToGenerate>
 {
     public static readonly ConfigureToGenerateEqualityComparer Instance = new();
 
-    public bool Equals(ConfigureToGenerate x, ConfigureToGenerate y)
+    public bool Equals(ConfigureToGenerate? x, ConfigureToGenerate? y)
     {
         if (ReferenceEquals(x, y))
         {
