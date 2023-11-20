@@ -61,11 +61,7 @@ internal sealed class ConfigureEndpoints : SourceBuilder
         string map = $"s_map{_mapCount++}";
 
         using (OpenBlockExtra(";", Sources.GeneratedCodeAttribute,
-            "#if NET8_0_OR_GREATER",
-            $"private static readonly {Fqn.FrozenDictionary}<(string, int), {Fqn.Action}<{Fqn.RouteHandlerBuilder}[]>> {map} = new()",
-            "#else",
-            $"private static readonly {Fqn.Dictionary}<(string, int), {Fqn.Action}<{Fqn.RouteHandlerBuilder}[]>> {map} = new()",
-            "#endif"))
+            $"private static readonly {Fqn.Dictionary}<(string, int), {Fqn.Action}<{Fqn.RouteHandlerBuilder}[]>> {map} = new()"))
         {
             foreach (var configure in configures)
             {

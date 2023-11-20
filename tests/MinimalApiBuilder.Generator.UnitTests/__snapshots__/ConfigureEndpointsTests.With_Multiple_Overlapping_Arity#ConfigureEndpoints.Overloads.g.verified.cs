@@ -10,11 +10,7 @@ namespace MinimalApiBuilder
     internal static partial class ConfigureEndpoints
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
-        #if NET8_0_OR_GREATER
-        private static readonly global::System.Collections.Frozen.FrozenDictionary<(string, int), global::System.Action<global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[]>> s_map0 = new()
-        #else
         private static readonly global::System.Collections.Generic.Dictionary<(string, int), global::System.Action<global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[]>> s_map0 = new()
-        #endif
         {
             [(@"", 43)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
             {
@@ -38,11 +34,7 @@ namespace MinimalApiBuilder
             configure(new[] { b0, b1 });
         }
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
-        #if NET8_0_OR_GREATER
-        private static readonly global::System.Collections.Frozen.FrozenDictionary<(string, int), global::System.Action<global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[]>> s_map1 = new()
-        #else
         private static readonly global::System.Collections.Generic.Dictionary<(string, int), global::System.Action<global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[]>> s_map1 = new()
-        #endif
         {
             [(@"", 51)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
             {
