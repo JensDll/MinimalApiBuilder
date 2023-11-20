@@ -10,6 +10,8 @@ internal static class Fqn
 
     public const string IEnumerable = "global::System.Collections.Generic.IEnumerable";
 
+    public const string FrozenDictionary = "global::System.Collections.Frozen.FrozenDictionary";
+
     public const string CallerFilePath = "global::System.Runtime.CompilerServices.CallerFilePathAttribute";
 
     public const string CallerLineNumber = "global::System.Runtime.CompilerServices.CallerLineNumberAttribute";

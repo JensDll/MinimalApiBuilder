@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using MinimalApiBuilder;
 using static MinimalApiBuilder.ConfigureEndpoints;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
 
 builder.Logging.AddSerilogLogger();
 
@@ -21,6 +21,12 @@ builder.Services.AddProblemDetails();
 builder.Services.Configure<RouteHandlerOptions>(static options =>
 {
     options.ThrowOnBadRequest = false;
+});
+
+builder.Services.ConfigureHttpJsonOptions(static options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, MultipartJsonSerializerContext.Default);
+    options.SerializerOptions.TypeInfoResolverChain.Insert(1, ValidationJsonSerializerContext.Default);
 });
 
 WebApplication app = builder.Build();

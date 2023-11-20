@@ -332,6 +332,7 @@ resharper_xmldoc_indent_text = zero_indent
 resharper_xmldoc_wrap_lines = false
 resharper_xmldoc_wrap_tags_and_pi = false
 resharper_align_multiline_binary_expressions_chain = true
+resharper_align_multiline_statement_conditions = false
 ######## RESHARPER ########
 
 [*.{received,verified}.{cs,txt}]

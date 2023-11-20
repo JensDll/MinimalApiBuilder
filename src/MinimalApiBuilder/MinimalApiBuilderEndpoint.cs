@@ -8,7 +8,7 @@ public abstract class MinimalApiBuilderEndpoint
     /// <summary>
     /// The current validation errors of the request.
     /// </summary>
-    protected internal IDictionary<string, string[]> ValidationErrors { get; } = new Dictionary<string, string[]>();
+    protected internal Dictionary<string, string[]> ValidationErrors { get; } = new();
 
     /// <summary>
     /// A <see cref="bool" /> property indicating validation errors.

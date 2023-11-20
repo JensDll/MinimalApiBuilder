@@ -89,7 +89,7 @@ internal abstract class GeneratorUnitTest
 
     protected static Task VerifyGeneratorAsync(
         string source,
-        TestAnalyzerConfigOptionsProvider optionsProvider)
+        AnalyzerConfigOptionsProvider optionsProvider)
     {
         return VerifyGeneratorAsyncImpl(GetSource(source), optionsProvider);
     }

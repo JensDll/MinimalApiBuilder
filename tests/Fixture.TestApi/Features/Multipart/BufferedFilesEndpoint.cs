@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -64,7 +63,3 @@ internal class BufferedFilesResponse
 
     public required byte[] Data { get; init; }
 }
-
-[JsonSerializable(typeof(BufferedFilesResponse))]
-internal partial class BufferedFilesResponseJsonSerializerContext : JsonSerializerContext
-{ }
