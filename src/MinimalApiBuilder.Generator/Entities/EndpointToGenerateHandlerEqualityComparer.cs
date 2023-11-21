@@ -1,6 +1,6 @@
 ﻿namespace MinimalApiBuilder.Generator.Entities;
 
-internal class EndpointToGenerateHandlerEqualityComparer : IEqualityComparer<EndpointToGenerateHandler>
+internal sealed class EndpointToGenerateHandlerEqualityComparer : IEqualityComparer<EndpointToGenerateHandler>
 {
     public static readonly EndpointToGenerateHandlerEqualityComparer Instance = new();
 

@@ -7,21 +7,26 @@ namespace Fixture.TestApi.Features.Validation;
 
 internal partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(
-        [FromServices] SyncSingleValidationEndpoint endpoint,
-        SyncValidationRequest request)
+    public static IResult Handle(
+        SyncValidationRequest request,
+        Serilog.ILogger logger)
     {
+        logger.Information("Request: {Request}", request);
         return TypedResults.Ok();
     }
 }
 
 internal partial class SyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static IResult Handle(
+    public static IResult Handle(
         [FromServices] SyncMultipleValidationEndpoint endpoint,
         [AsParameters] SyncValidationParameters parameters,
-        SyncValidationRequest request)
+        SyncValidationRequest request,
+        Serilog.ILogger logger)
     {
+        logger.Information("Endpoint: {Endpoint}", nameof(SyncMultipleValidationEndpoint));
+        logger.Information("Parameters: {Parameters}", parameters);
+        logger.Information("Request: {Request}", request);
         return TypedResults.Ok();
     }
 }

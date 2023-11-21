@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MinimalApiBuilder;
+using static MinimalApiBuilder.ConfigureEndpoints;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
 
 builder.Logging.AddSerilogLogger();
 
@@ -20,6 +21,12 @@ builder.Services.AddProblemDetails();
 builder.Services.Configure<RouteHandlerOptions>(static options =>
 {
     options.ThrowOnBadRequest = false;
+});
+
+builder.Services.ConfigureHttpJsonOptions(static options =>
+{
+    options.SerializerOptions.TypeInfoResolverChain.Insert(0, MultipartJsonSerializerContext.Default);
+    options.SerializerOptions.TypeInfoResolverChain.Insert(1, ValidationJsonSerializerContext.Default);
 });
 
 WebApplication app = builder.Build();
@@ -38,13 +45,17 @@ if (!app.Environment.IsDevelopment())
 app.UseStatusCodePages();
 
 RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation");
-validation.MapPost<SyncSingleValidationEndpoint>("/sync/single");
-validation.MapPatch<SyncMultipleValidationEndpoint>("/sync/multiple");
-validation.MapPost<AsyncSingleValidationEndpoint>("/async/single");
-validation.MapPatch<AsyncMultipleValidationEndpoint>("/async/multiple");
-validation.MapPut<CombinedValidationEndpoint>("/combination");
+Configure(
+    validation.MapPost("/sync/single", SyncSingleValidationEndpoint.Handle),
+    validation.MapPatch("/sync/multiple", SyncMultipleValidationEndpoint.Handle),
+    validation.MapPost("/async/single", AsyncSingleValidationEndpoint.Handle));
+Configure(
+    validation.MapPatch("/async/multiple", AsyncMultipleValidationEndpoint.Handle),
+    validation.MapPut("/combination", CombinedValidationEndpoint.Handle));
+
 RouteGroupBuilder multipart = app.MapGroup("/multipart").WithTags("Multipart");
-multipart.MapPost<ZipStreamEndpoint>("/zipstream");
-multipart.MapPost<BufferedFilesEndpoint>("/bufferedfiles");
+Configure(
+    multipart.MapPost("/zipstream", ZipStreamEndpoint.Handle),
+    multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 
 app.Run();

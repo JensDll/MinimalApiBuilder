@@ -9,7 +9,7 @@ internal sealed class AccessibilityTests : GeneratorUnitTest
         const string source = """
 namespace MyNamespace;
 
-internal sealed partial class E : MinimalApiBuilderEndpoint
+internal partial class E : MinimalApiBuilderEndpoint
 {
     public static int Handle(E e) => 0;
 }
@@ -17,7 +17,7 @@ internal sealed partial class E : MinimalApiBuilderEndpoint
 
         // lang=cs
         const string mapActions = """
-app.MapGet<E>("/test");
+app.MapGet("/test", E.Handle);
 """;
 
         return VerifyGeneratorAsync(source, mapActions);

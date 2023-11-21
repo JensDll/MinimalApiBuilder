@@ -13,7 +13,7 @@ internal static class EndpointProvider
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsEndpointDeclaration, Transform)
-            .Where(static endpoint => endpoint is not null)!
+            .WhereNotNull()
             .WithComparer(EndpointToGenerateEqualityComparer.Instance);
     }
 
@@ -34,8 +34,7 @@ internal static class EndpointProvider
         }
 
         ClassDeclarationSyntax endpointSyntax = Unsafe.As<ClassDeclarationSyntax>(context.Node);
-        WellKnownTypes wellKnownTypes = WellKnownTypes.GetOrCreate(context.SemanticModel.Compilation);
 
-        return EndpointToGenerate.Create(endpoint, endpointSyntax, wellKnownTypes, cancellationToken);
+        return EndpointToGenerate.Create(endpoint, endpointSyntax, cancellationToken);
     }
 }

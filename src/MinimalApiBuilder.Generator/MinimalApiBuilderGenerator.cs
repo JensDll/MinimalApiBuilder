@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
 using MinimalApiBuilder.Generator.CodeGeneration.Builders;
+using MinimalApiBuilder.Generator.Common;
 using MinimalApiBuilder.Generator.Entities;
 using MinimalApiBuilder.Generator.Providers;
 
@@ -11,17 +12,27 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValueProvider<ImmutableArray<EndpointToGenerate>> endpoints = context.ForEndpoints().Collect();
-        IncrementalValueProvider<ImmutableArray<ValidatorToGenerate>> validators = context.ForValidators().Collect();
-        IncrementalValueProvider<GeneratorOptions> options = context.ForGeneratorOptions();
+        var endpoints = context.ForEndpoints().Collect();
+        var validators = context.ForValidators().Collect();
+        var options = context.ForGeneratorOptions();
+        var configures = context.ForConfigure().Collect();
 
-        var sourceProvider = endpoints.Combine(validators).Combine(options);
+        var endpointsAndValidatorsAndOptions = endpoints.Combine(validators).Combine(options);
 
-        context.RegisterSourceOutput(sourceProvider, static (sourceProductionContext, source) =>
+        context.RegisterSourceOutput(endpointsAndValidatorsAndOptions, static (sourceProductionContext, source) =>
             Execute(source.Left.Left, source.Left.Right, source.Right, sourceProductionContext));
+
+        context.RegisterSourceOutput(configures, static (sourceProductionContext, source) =>
+            Execute(source, sourceProductionContext));
+
+        context.RegisterPostInitializationOutput(static postInitContext =>
+        {
+            postInitContext.AddSource($"{nameof(Sources.ConfigureEndpoints)}.g.cs", Sources.ConfigureEndpoints);
+        });
     }
 
-    private static void Execute(ImmutableArray<EndpointToGenerate> endpoints,
+    private static void Execute(
+        ImmutableArray<EndpointToGenerate> endpoints,
         ImmutableArray<ValidatorToGenerate> validators,
         GeneratorOptions options,
         SourceProductionContext context)
@@ -29,30 +40,53 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         AddSource(endpoints, validators.ToDictionary(static validator => validator.ValidatedType), options, context);
     }
 
+    private static void Execute(
+        ImmutableArray<ConfigureToGenerate> configures,
+        SourceProductionContext context)
+    {
+        if (configures.Length == 0)
+        {
+            return;
+        }
+
+        AddSource(configures.GroupBy(static configure => configure.Arity), context);
+    }
+
     private static void AddSource(
         ImmutableArray<EndpointToGenerate> endpoints,
-        IReadOnlyDictionary<string, ValidatorToGenerate> validators,
+        Dictionary<string, ValidatorToGenerate> validators,
         GeneratorOptions options,
         SourceProductionContext context)
     {
-        EndpointBuilder endpointBuilder = new(options, validators);
-        DependencyInjectionBuilder dependencyInjectionBuilder = new(options);
+        Endpoints endpointsBuilder = new(options, validators);
+        DependencyInjectionExtensions dependencyInjectionExtensionsBuilder = new(options);
 
         foreach (EndpointToGenerate endpoint in endpoints)
         {
-            dependencyInjectionBuilder.AddService(endpoint);
-            endpointBuilder.AddEndpoint(endpoint);
+            endpointsBuilder.Add(endpoint);
+            dependencyInjectionExtensionsBuilder.Add(endpoint);
         }
 
         foreach (KeyValuePair<string, ValidatorToGenerate> entry in validators)
         {
-            dependencyInjectionBuilder.AddService(entry);
+            dependencyInjectionExtensionsBuilder.Add(entry);
         }
 
-        dependencyInjectionBuilder.ReportDiagnostics(context);
-        endpointBuilder.ReportDiagnostics(context);
+        endpointsBuilder.AddSource(context);
+        dependencyInjectionExtensionsBuilder.AddSource(context);
+    }
 
-        dependencyInjectionBuilder.AddSource(context);
-        endpointBuilder.AddSource(context);
+    private static void AddSource(
+        IEnumerable<IGrouping<int, ConfigureToGenerate>> configures,
+        SourceProductionContext context)
+    {
+        ConfigureEndpoints configureEndpointsBuilder = new();
+
+        foreach (var group in configures)
+        {
+            configureEndpointsBuilder.Add(group.ToImmutableArray());
+        }
+
+        configureEndpointsBuilder.AddSource(context);
     }
 }

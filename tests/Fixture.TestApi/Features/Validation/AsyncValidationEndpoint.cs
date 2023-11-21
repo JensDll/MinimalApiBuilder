@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,12 +9,13 @@ namespace Fixture.TestApi.Features.Validation;
 
 internal partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static async Task<IResult> HandleAsync(
+    public static async Task<IResult> Handle(
         [FromServices] AsyncSingleValidationEndpoint endpoint,
+        Serilog.ILogger logger,
         AsyncValidationRequest request,
-        HttpContext context,
-        CancellationToken cancellationToken)
+        HttpContext context)
     {
+        logger.Information("Request: {Request}", request);
         await Task.CompletedTask;
         MultipartReader _ = new(context, endpoint);
         return TypedResults.Ok(endpoint.ValidationErrors);
@@ -24,12 +24,13 @@ internal partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 
 internal partial class AsyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
-    private static async Task<IResult> HandleAsync(
-        [FromServices] AsyncMultipleValidationEndpoint endpoint,
+    public static async Task<IResult> Handle(
         [AsParameters] AsyncValidationParameters parameters,
         AsyncValidationRequest request,
-        CancellationToken cancellationToken)
+        Serilog.ILogger logger)
     {
+        logger.Information("Parameters: {Parameters}", parameters);
+        logger.Information("Request: {Request}", request);
         await Task.CompletedTask;
         return TypedResults.Ok();
     }

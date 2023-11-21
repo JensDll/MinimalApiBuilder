@@ -10,11 +10,6 @@ public interface IMinimalApiBuilderEndpoint
 #pragma warning disable CA1707
 #pragma warning disable IDE1006
     /// <summary>
-    /// The static request handler, which the minimal API builder generator will populate.
-    /// </summary>
-    static abstract Delegate _auto_generated_Handler { get; }
-
-    /// <summary>
     /// The auto generated <see cref="Configure(RouteHandlerBuilder)" />, which the minimal API builder generator will populate.
     /// </summary>
     static abstract void _auto_generated_Configure(RouteHandlerBuilder builder);

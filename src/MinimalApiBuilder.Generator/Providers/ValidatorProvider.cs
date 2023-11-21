@@ -13,7 +13,7 @@ internal static class ValidatorProvider
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsValidator, Transform)
-            .Where(static validator => validator is not null)!
+            .WhereNotNull()
             .WithComparer(ValidatorToGenerateEqualityComparer.Instance);
     }
 
@@ -35,8 +35,7 @@ internal static class ValidatorProvider
         }
 
         ClassDeclarationSyntax validatorSyntax = Unsafe.As<ClassDeclarationSyntax>(context.Node);
-        WellKnownTypes wellKnownTypes = WellKnownTypes.GetOrCreate(context.SemanticModel.Compilation);
 
-        return ValidatorToGenerate.Create(validator, validatorSyntax, wellKnownTypes, cancellationToken);
+        return ValidatorToGenerate.Create(validator, validatorSyntax, cancellationToken);
     }
 }

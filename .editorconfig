@@ -70,7 +70,7 @@ dotnet_style_object_initializer = true
 dotnet_diagnostic.IDE0018.severity = warning
 csharp_style_inlined_variable_declaration = true
 
-dotnet_diagnostic.IDE0028.severity = warning
+dotnet_diagnostic.IDE0028.severity = suggestion
 dotnet_style_collection_initializer = true
 
 dotnet_diagnostic.IDE0032.severity = warning
@@ -331,6 +331,8 @@ resharper_csharp_empty_block_style = together
 resharper_xmldoc_indent_text = zero_indent
 resharper_xmldoc_wrap_lines = false
 resharper_xmldoc_wrap_tags_and_pi = false
+resharper_align_multiline_binary_expressions_chain = true
+resharper_align_multiline_statement_conditions = false
 ######## RESHARPER ########
 
 [*.{received,verified}.{cs,txt}]

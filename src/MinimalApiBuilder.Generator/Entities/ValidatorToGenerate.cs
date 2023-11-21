@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal class ValidatorToGenerate : IToGenerate
+internal sealed class ValidatorToGenerate : IToGenerate
 {
     private readonly string _identifier;
 
@@ -33,18 +33,16 @@ internal class ValidatorToGenerate : IToGenerate
     public static ValidatorToGenerate? Create(
         INamedTypeSymbol validator,
         ClassDeclarationSyntax validatorSyntax,
-        WellKnownTypes wellKnownTypes,
         CancellationToken cancellationToken)
     {
-        INamedTypeSymbol abstractValidator = wellKnownTypes[WellKnownTypes.Type.FluentValidation_AbstractValidator_1];
-
-        if (!SymbolEqualityComparer.Default.Equals(validator.BaseType?.OriginalDefinition, abstractValidator))
+        if (validator.BaseType is null ||
+            !validator.BaseType.IsAbstractValidator())
         {
             return null;
         }
 
         bool isAsync = GetIsAsync(validatorSyntax);
-        int serviceLifetime = GetValidatorServiceLifetime(validator, wellKnownTypes);
+        int serviceLifetime = GetValidatorServiceLifetime(validator);
 
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -56,21 +54,17 @@ internal class ValidatorToGenerate : IToGenerate
         return result;
     }
 
-    private static int GetValidatorServiceLifetime(ISymbol validator, WellKnownTypes wellKnownTypes)
+    private static int GetValidatorServiceLifetime(ISymbol validator)
     {
-        INamedTypeSymbol registerValidatorAttribute =
-            wellKnownTypes[WellKnownTypes.Type.MinimalApiBuilder_RegisterValidatorAttribute];
-
         foreach (AttributeData attribute in validator.GetAttributes())
         {
-            if (!SymbolEqualityComparer.Default.Equals(attribute.AttributeClass, registerValidatorAttribute) ||
-                attribute.ConstructorArguments.Length != 1 ||
-                attribute.ConstructorArguments[0].Value is not int lifetime)
+            if (attribute.AttributeClass is not null &&
+                attribute.AttributeClass.IsRegisterValidatorAttribute() &&
+                attribute.ConstructorArguments.Length == 1 &&
+                attribute.ConstructorArguments[0].Value is int lifetime)
             {
-                continue;
+                return lifetime;
             }
-
-            return lifetime;
         }
 
         return 0;

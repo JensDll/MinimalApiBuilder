@@ -37,27 +37,27 @@ public class R2 {
 
 public partial class E1 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E1 e, R1 r1) => 1;
+    public static int Handle(E1 e, R1 r1) => 1;
 }
 
 public partial class E2 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E2 e, R1? r1) => 1;
+    public static int Handle(E2 e, R1? r1) => 1;
 }
 
 public partial class E3 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E3 e, R1 r1, R2 r2) => 1;
+    public static int Handle(E3 e, R1 r1, R2 r2) => 1;
 }
 
 public partial class E4 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E4 e, R1? r1, R2 r2) => 1;
+    public static int Handle(E4 e, R1? r1, R2 r2) => 1;
 }
 
 public partial class E5 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E5 e, R1? r1, R2? r2) => 1;
+    public static int Handle(E5 e, R1? r1, R2? r2) => 1;
 }
 
 public class R1Validator : AbstractValidator<R1>
@@ -109,27 +109,27 @@ public class R2 {
 
 public partial class E1 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E1 e, R1 r1) => 1;
+    public static int Handle(E1 e, R1 r1) => 1;
 }
 
 public partial class E2 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E2 e, R1? r1) => 1;
+    public static int Handle(E2 e, R1? r1) => 1;
 }
 
 public partial class E3 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E3 e, R1 r1, R2 r2) => 1;
+    public static int Handle(E3 e, R1 r1, R2 r2) => 1;
 }
 
 public partial class E4 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E4 e, R1? r1, R2 r2) => 1;
+    public static int Handle(E4 e, R1? r1, R2 r2) => 1;
 }
 
 public partial class E5 : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E5 e, R1? r1, R2? r2) => 1;
+    public static int Handle(E5 e, R1? r1, R2? r2) => 1;
 }
 
 public class R1Validator : AbstractValidator<R1>
@@ -169,7 +169,7 @@ public class R {
 
 public partial class E : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E e, R r) => 1;
+    public static int Handle(E e, R r) => 1;
 }
 """;
 
@@ -194,7 +194,7 @@ public class R {
 
 public partial class E : MinimalApiBuilderEndpoint
 {
-    private static int Handle(E e, R r) => 1;
+    public static int Handle(E e, R r) => 1;
 }
 """;
 

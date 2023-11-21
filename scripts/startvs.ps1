@@ -1,7 +1,6 @@
-﻿param(
-  [string]$Sln = 'MinimalApiBuilder.sln'
-)
+﻿$env:MINIMALAPIBUILDER_TEST_TYPE = 'Local'
+$env:DOTNET_CLI_USE_MSBUILD_SERVER = 'false'
 
-& $PSScriptRoot\activate.ps1
+$solution = Join-Path $PSScriptRoot .. MinimalApiBuilder.sln
 
-Start-Process -FilePath "$env:VSINSTALLDIR\Common7\IDE\devenv.com" -ArgumentList $Sln
+Start-Process -FilePath "$env:VSINSTALLDIR\Common7\IDE\devenv.com" -ArgumentList $solution
