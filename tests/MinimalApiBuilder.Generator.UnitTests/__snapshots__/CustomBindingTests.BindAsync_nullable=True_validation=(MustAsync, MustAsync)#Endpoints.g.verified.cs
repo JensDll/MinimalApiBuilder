@@ -13,8 +13,8 @@ public partial class E1 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
-            global::E1 endpoint = invocationContext.GetArgument<global::E1>(0);
             global::R1 a = invocationContext.GetArgument<global::R1>(1);
+            global::E1 endpoint = invocationContext.GetArgument<global::E1>(0);
             if (endpoint.HasValidationError)
             {
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
@@ -36,8 +36,8 @@ public partial class E2 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
-            global::E2 endpoint = invocationContext.GetArgument<global::E2>(0);
             global::R1 a = invocationContext.GetArgument<global::R1>(1);
+            global::E2 endpoint = invocationContext.GetArgument<global::E2>(0);
             if (endpoint.HasValidationError)
             {
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
@@ -59,9 +59,9 @@ public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
-            global::E3 endpoint = invocationContext.GetArgument<global::E3>(0);
             global::R1 a0 = invocationContext.GetArgument<global::R1>(1);
             global::R2 a1 = invocationContext.GetArgument<global::R2>(2);
+            global::E3 endpoint = invocationContext.GetArgument<global::E3>(0);
             if (endpoint.HasValidationError)
             {
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
@@ -83,9 +83,9 @@ public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
-            global::E4 endpoint = invocationContext.GetArgument<global::E4>(0);
             global::R1 a0 = invocationContext.GetArgument<global::R1>(1);
             global::R2 a1 = invocationContext.GetArgument<global::R2>(2);
+            global::E4 endpoint = invocationContext.GetArgument<global::E4>(0);
             if (endpoint.HasValidationError)
             {
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");
@@ -107,9 +107,9 @@ public partial class E5 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
-            global::E5 endpoint = invocationContext.GetArgument<global::E5>(0);
             global::R1 a0 = invocationContext.GetArgument<global::R1>(1);
             global::R2 a1 = invocationContext.GetArgument<global::R2>(2);
+            global::E5 endpoint = invocationContext.GetArgument<global::E5>(0);
             if (endpoint.HasValidationError)
             {
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred.");

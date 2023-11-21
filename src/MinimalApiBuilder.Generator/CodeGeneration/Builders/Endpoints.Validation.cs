@@ -74,12 +74,11 @@ internal sealed partial class Endpoints
         EndpointToGenerateHandlerParameter parameter)
     {
         using IDisposable filterBlock = OpenAddEndpointFilter();
-        AppendLine(GetEndpoint(endpoint));
         AppendLine(GetArgument(parameter, "a"));
 
         if (parameter.HasCustomBinding)
         {
-            AddModelBindingFailed();
+            AddModelBindingFailed(endpoint);
         }
 
         AppendLine(parameter.IsNullable
@@ -94,7 +93,6 @@ internal sealed partial class Endpoints
         IReadOnlyList<EndpointToGenerateHandlerParameter> parameters)
     {
         using IDisposable filterBlock = OpenAddEndpointFilter();
-        AppendLine(GetEndpoint(endpoint));
 
         bool anyCustomBinding = false;
 
@@ -106,7 +104,7 @@ internal sealed partial class Endpoints
 
         if (anyCustomBinding)
         {
-            AddModelBindingFailed();
+            AddModelBindingFailed(endpoint);
         }
 
         List<string> results = new(parameters.Count);
@@ -125,12 +123,11 @@ internal sealed partial class Endpoints
         EndpointToGenerateHandlerParameter parameter)
     {
         using IDisposable filterBlock = OpenAddEndpointFilterAsync();
-        AppendLine(GetEndpoint(endpoint));
         AppendLine(GetArgument(parameter, "a"));
 
         if (parameter.HasCustomBinding)
         {
-            AddAsyncModelBindingFailed();
+            AddAsyncModelBindingFailed(endpoint);
         }
 
         AppendLine(parameter.IsNullable
@@ -144,7 +141,6 @@ internal sealed partial class Endpoints
         IReadOnlyList<EndpointToGenerateHandlerParameter> parameters)
     {
         using IDisposable filterBlock = OpenAddEndpointFilterAsync();
-        AppendLine(GetEndpoint(endpoint));
 
         bool anyCustomBinding = false;
 
@@ -156,7 +152,7 @@ internal sealed partial class Endpoints
 
         if (anyCustomBinding)
         {
-            AddAsyncModelBindingFailed();
+            AddAsyncModelBindingFailed(endpoint);
         }
 
         List<string> tasks = new(parameters.Count);

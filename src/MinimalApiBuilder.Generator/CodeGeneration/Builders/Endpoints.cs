@@ -53,8 +53,7 @@ internal sealed partial class Endpoints : SourceBuilder
             {
                 using (OpenAddEndpointFilter())
                 {
-                    AppendLine(GetEndpoint(endpoint));
-                    AddModelBindingFailed();
+                    AddModelBindingFailed(endpoint);
                     AppendLine($"return {Next};");
                 }
             }
@@ -67,14 +66,16 @@ internal sealed partial class Endpoints : SourceBuilder
         }
     }
 
-    private void AddModelBindingFailed()
+    private void AddModelBindingFailed(EndpointToGenerate endpoint)
     {
+        AppendLine(GetEndpoint(endpoint));
         using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
         AppendLine($"return {Fqn.ValueTask}.FromResult<object?>({ModelBindingFailed()});");
     }
 
-    private void AddAsyncModelBindingFailed()
+    private void AddAsyncModelBindingFailed(EndpointToGenerate endpoint)
     {
+        AppendLine(GetEndpoint(endpoint));
         using IDisposable ifBlock = OpenBlock("if (endpoint.HasValidationError)");
         AppendLine($"return {ModelBindingFailed()};");
     }
