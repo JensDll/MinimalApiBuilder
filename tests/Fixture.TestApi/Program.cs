@@ -25,7 +25,7 @@ builder.Services.Configure<RouteHandlerOptions>(static options =>
 
 builder.Services.ConfigureHttpJsonOptions(static options =>
 {
-    options.SerializerOptions.TypeInfoResolverChain.RemoveAt(1);
+    options.SerializerOptions.TypeInfoResolverChain.RemoveAt(1); // Remove DefaultJsonTypeInfoResolver
     options.SerializerOptions.TypeInfoResolverChain.Add(MultipartJsonContext.Default);
     options.SerializerOptions.TypeInfoResolverChain.Add(ValidationJsonContext.Default);
 });

@@ -5,6 +5,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     [Test]
     public Task With_Using_Static()
     {
+        // language=cs
         const string source = """
             public partial class E : MinimalApiBuilderEndpoint
             {
@@ -12,6 +13,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             }
             """;
 
+        // language=cs
         const string mapActions = """
             Configure(app.MapGet("/test", E.Handle));
             """;
@@ -22,6 +24,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     [Test]
     public Task With_Full_Name()
     {
+        // language=cs
         const string source = """
             public partial class E : MinimalApiBuilderEndpoint
             {
@@ -29,6 +32,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             }
             """;
 
+        // language=cs
         const string mapActions = """
             ConfigureEndpoints.Configure(app.MapGet("/test", E.Handle));
             """;
@@ -39,6 +43,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     [Test]
     public Task With_Multiple_Endpoints()
     {
+        // language=cs
         const string source = """
             public partial class E1 : MinimalApiBuilderEndpoint
             {
@@ -51,6 +56,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             }
             """;
 
+        // language=cs
         const string mapActions = """
             Configure(
                 app.MapGet("/test1", E1.Handle),
@@ -63,6 +69,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     [Test]
     public Task With_Non_Endpoints_Between()
     {
+        // language=cs
         const string source = """
             public partial class E1 : MinimalApiBuilderEndpoint
             {
@@ -75,6 +82,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             }
             """;
 
+        // language=cs
         const string mapActions = """
             Configure(
                 app.MapGet("/foo", static () => 0),
@@ -89,6 +97,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     [Test]
     public Task With_Overlapping_Arity()
     {
+        // language=cs
         const string source = """
             namespace MyNamespace.Nested;
 
@@ -103,6 +112,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             }
             """;
 
+        // language=cs
         const string mapActions = """
             Configure(
                 app.MapGet("/test1", E1.Handle),
@@ -119,6 +129,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     [Test]
     public Task With_Overlapping_Arity_And_Non_Endpoints_Between()
     {
+        // language=cs
         const string source = """
             public partial class E1 : MinimalApiBuilderEndpoint
             {
@@ -131,6 +142,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             }
             """;
 
+        // language=cs
         const string mapActions = """
             Configure(
                 app.MapGet("/test1", E1.Handle),
@@ -149,6 +161,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     [Test]
     public Task With_Multiple_Overlapping_Arity()
     {
+        // language=cs
         const string source = """
             public partial class E1 : MinimalApiBuilderEndpoint
             {
@@ -171,6 +184,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             }
             """;
 
+        // language=cs
         const string mapActions = """
             Configure(
                 app.MapGet("/test1", E1.Handle),
@@ -193,6 +207,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     [Test]
     public Task With_Overlapping_And_Non_Overlapping_Arity()
     {
+        // language=cs
         const string source = """
             public partial class E : MinimalApiBuilderEndpoint
             {
@@ -200,6 +215,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             }
             """;
 
+        // language=cs
         const string mapActions = """
             Configure(
                 app.MapGet("/test1", E.Handle));

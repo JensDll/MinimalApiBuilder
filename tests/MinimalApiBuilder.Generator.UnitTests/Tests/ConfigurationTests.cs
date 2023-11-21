@@ -47,18 +47,18 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
     }
 
     [Test]
-    public async Task With_Assign_Name(
+    public Task With_Assign_Name(
         [ValueSource(nameof(AssignNameProviders))]
         TestAnalyzerConfigOptionsProvider provider)
     {
-        // lang=cs
+        // language=cs
         const string source = """
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle(E e) => 0;
-}
-""";
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(E e) => 0;
+            }
+            """;
 
-        await VerifyGeneratorAsync(source, provider);
+        return VerifyGeneratorAsync(source, provider);
     }
 }

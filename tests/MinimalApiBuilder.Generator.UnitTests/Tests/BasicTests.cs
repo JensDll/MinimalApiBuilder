@@ -5,16 +5,16 @@ internal sealed class BasicTests : GeneratorUnitTest
     [Test]
     public Task With_Configure()
     {
-        // lang=cs
+        // language=cs
         const string source = """
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle(E e) => 0;
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(E e) => 0;
 
-    public static void Configure(RouteHandlerBuilder builder)
-    { }
-}
-""";
+                public static void Configure(RouteHandlerBuilder builder)
+                { }
+            }
+            """;
 
         return VerifyGeneratorAsync(source);
     }
@@ -22,13 +22,13 @@ public partial class E : MinimalApiBuilderEndpoint
     [Test]
     public Task Without_Configure()
     {
-        // lang=cs
+        // language=cs
         const string source = """
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle(E e) => 0;
-}
-""";
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(E e) => 0;
+            }
+            """;
 
         return VerifyGeneratorAsync(source);
     }
@@ -36,15 +36,15 @@ public partial class E : MinimalApiBuilderEndpoint
     [Test]
     public Task In_Namespace()
     {
-        // lang=cs
+        // language=cs
         const string source = """
-namespace MyNamespace;
+            namespace MyNamespace;
 
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle(E e) => 0;
-}
-""";
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(E e) => 0;
+            }
+            """;
 
         return VerifyGeneratorAsync(source);
     }
@@ -56,29 +56,29 @@ public partial class E : MinimalApiBuilderEndpoint
         parameters.Insert(location, "E e");
         string parametersString = string.Join(", ", parameters);
 
-        // lang=cs
+        // language=cs
         string source = $$"""
-public class R {
-    public int Value { get; set; }
-    public static ValueTask<R> BindAsync(HttpContext context)
-    {
-        return ValueTask.FromResult<R>(new R());
-    }
-}
+            public class R {
+                public int Value { get; set; }
+                public static ValueTask<R> BindAsync(HttpContext context)
+                {
+                    return ValueTask.FromResult<R>(new R());
+                }
+            }
 
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle({{parametersString}}) => 0;
-}
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle({{parametersString}}) => 0;
+            }
 
-public class RValidator : AbstractValidator<R>
-{
-    public RValidator()
-    {
-        RuleFor(static x => x.Value).GreaterThan(0);
-    }
-}
-""";
+            public class RValidator : AbstractValidator<R>
+            {
+                public RValidator()
+                {
+                    RuleFor(static x => x.Value).GreaterThan(0);
+                }
+            }
+            """;
 
         return VerifyGeneratorAsync(source);
     }
@@ -86,30 +86,30 @@ public class RValidator : AbstractValidator<R>
     [Test]
     public Task Without_Endpoint_Parameter()
     {
-        // lang=cs
+        // language=cs
         const string source = """
-public class R {
-    public int Value { get; set; }
-}
+            public class R {
+                public int Value { get; set; }
+            }
 
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle(int a, int b, R r) => a;
-}
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(int a, int b, R r) => a;
+            }
 
-public class RValidator : AbstractValidator<R>
-{
-    public RValidator()
-    {
-        RuleFor(static x => x.Value).GreaterThan(0);
-    }
-}
-""";
+            public class RValidator : AbstractValidator<R>
+            {
+                public RValidator()
+                {
+                    RuleFor(static x => x.Value).GreaterThan(0);
+                }
+            }
+            """;
 
-        // lang=cs
+        // language=cs
         const string mapActions = """
-app.MapDelete("/test/{a:int}/{b:int}", E.Handle);
-""";
+            app.MapDelete("/test/{a:int}/{b:int}", E.Handle);
+            """;
 
         return VerifyGeneratorAsync(source, mapActions);
     }
@@ -117,29 +117,29 @@ app.MapDelete("/test/{a:int}/{b:int}", E.Handle);
     [Test]
     public Task Without_Endpoint_Parameter_And_Custom_Binding()
     {
-        // lang=cs
+        // language=cs
         const string source = """
-public class R {
-    public int Value { get; set; }
-    public static ValueTask<R> BindAsync(HttpContext context)
-    {
-        return ValueTask.FromResult<R>(new R());
-    }
-}
+            public class R {
+                public int Value { get; set; }
+                public static ValueTask<R> BindAsync(HttpContext context)
+                {
+                    return ValueTask.FromResult<R>(new R());
+                }
+            }
 
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle(int a, int b, R r) => a;
-}
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(int a, int b, R r) => a;
+            }
 
-public class RValidator : AbstractValidator<R>
-{
-    public RValidator()
-    {
-        RuleFor(static x => x.Value).GreaterThan(0);
-    }
-}
-""";
+            public class RValidator : AbstractValidator<R>
+            {
+                public RValidator()
+                {
+                    RuleFor(static x => x.Value).GreaterThan(0);
+                }
+            }
+            """;
 
         return VerifyGeneratorAsync(source);
     }

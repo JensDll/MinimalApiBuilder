@@ -11,24 +11,25 @@ internal sealed class ValidatorServiceLifetimeTests : GeneratorUnitTest
             nameof(ServiceLifetime.Transient))]
         string lifetime)
     {
-        // lang=cs
+        // language=cs
         string source = $$"""
-public class R {
-    public int Value { get; set; }
-}
+            public class R {
+                public int Value { get; set; }
+            }
 
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle(E e) => 0;
-}
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(E e) => 0;
+            }
 
-[RegisterValidator(ServiceLifetime.{{lifetime}})]
-public class RValidator : AbstractValidator<R>
-{
-    public RValidator()
-    { }
-}
-""";
+            [RegisterValidator(ServiceLifetime.{{lifetime}})]
+            public class RValidator : AbstractValidator<R>
+            {
+                public RValidator()
+                { }
+            }
+            """;
+
         return VerifyGeneratorAsync(source);
     }
 
@@ -39,25 +40,26 @@ public class RValidator : AbstractValidator<R>
             nameof(ServiceLifetime.Transient))]
         string lifetime)
     {
-        // lang=cs
+        // language=cs
         string source = $$"""
-public class R {
-    public int Value { get; set; }
-}
+            public class R {
+                public int Value { get; set; }
+            }
 
-public partial class E : MinimalApiBuilderEndpoint
-{
-    public static int Handle(E e) => 0;
-}
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(E e) => 0;
+            }
 
-[Route("Some Attribute")]
-[Route("Some Other Attribute"), RegisterValidator(ServiceLifetime.{{lifetime}})]
-public class RValidator : AbstractValidator<R>
-{
-    public RValidator()
-    { }
-}
-""";
+            [Route("Some Attribute")]
+            [Route("Some Other Attribute"), RegisterValidator(ServiceLifetime.{{lifetime}})]
+            public class RValidator : AbstractValidator<R>
+            {
+                public RValidator()
+                { }
+            }
+            """;
+
         return VerifyGeneratorAsync(source);
     }
 }
