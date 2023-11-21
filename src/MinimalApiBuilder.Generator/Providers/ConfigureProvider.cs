@@ -34,7 +34,7 @@ internal static class ConfigureProvider
         }
 
         return configure.IsConfigure(out IArrayInitializerOperation builders)
-            ? ConfigureToGenerate.Create(configure, builders)
+            ? ConfigureToGenerate.Create(configure, builders, cancellationToken)
             : null;
     }
 }

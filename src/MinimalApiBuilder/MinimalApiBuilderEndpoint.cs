@@ -1,4 +1,6 @@
-﻿namespace MinimalApiBuilder;
+﻿using System.Runtime.InteropServices;
+
+namespace MinimalApiBuilder;
 
 /// <summary>
 /// The base class of all minimal API builder endpoints.
@@ -32,9 +34,9 @@ public abstract class MinimalApiBuilderEndpoint
     /// <param name="message">The error message.</param>
     public void AddValidationError(string group, string message)
     {
-        bool contained = ValidationErrors.TryGetValue(group, out string[]? errors);
+        ref string[]? errors =
+            ref CollectionsMarshal.GetValueRefOrAddDefault(ValidationErrors, group, out bool contained);
         Array.Resize(ref errors, contained ? errors!.Length + 1 : 1);
         errors[^1] = message;
-        ValidationErrors[group] = errors;
     }
 }

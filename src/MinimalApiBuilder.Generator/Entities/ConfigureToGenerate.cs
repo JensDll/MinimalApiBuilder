@@ -28,7 +28,10 @@ internal sealed class ConfigureToGenerate
 
     public List<(int, string)> Endpoints { get; }
 
-    public static ConfigureToGenerate? Create(IInvocationOperation configure, IArrayInitializerOperation builders)
+    public static ConfigureToGenerate? Create(
+        IInvocationOperation configure,
+        IArrayInitializerOperation builders,
+        CancellationToken cancellationToken)
     {
         int arity = builders.ElementValues.Length;
 
@@ -39,6 +42,8 @@ internal sealed class ConfigureToGenerate
 
         (string filePath, int lineNumber) = GetLocation(configure);
         List<(int, string)> endpoints = GetEndpoints(builders);
+
+        cancellationToken.ThrowIfCancellationRequested();
 
         if (endpoints.Count == 0)
         {
