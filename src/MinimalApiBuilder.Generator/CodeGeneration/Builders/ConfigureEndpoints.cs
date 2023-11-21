@@ -21,8 +21,7 @@ internal sealed class ConfigureEndpoints : SourceBuilder
     {
         _class.Dispose();
         _namespace.Dispose();
-        context.AddSource($"{nameof(ConfigureEndpoints)}.Overloads.g.cs", ToString());
-        base.AddSource(context);
+        base.AddSource(context, $"{nameof(ConfigureEndpoints)}.Specialization");
     }
 
     public void Add(ImmutableArray<ConfigureToGenerate> configures)

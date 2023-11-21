@@ -24,15 +24,18 @@ internal abstract class SourceBuilder
 
     protected ICollection<Diagnostic> Diagnostics { get; } = new List<Diagnostic>();
 
-    public virtual void AddSource(SourceProductionContext context)
+    public sealed override string ToString() => _builder.ToString();
+
+    public abstract void AddSource(SourceProductionContext context);
+
+    protected void AddSource(SourceProductionContext context, string hintName)
     {
+        context.AddSource($"{hintName}.g.cs", ToString());
         foreach (Diagnostic diagnostic in Diagnostics)
         {
             context.ReportDiagnostic(diagnostic);
         }
     }
-
-    public sealed override string ToString() => _builder.ToString();
 
     protected IDisposable OpenBlock(string value)
     {

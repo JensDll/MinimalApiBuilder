@@ -34,8 +34,7 @@ internal sealed class DependencyInjectionExtensions : SourceBuilder
         _method.Dispose();
         _class.Dispose();
         _namespace.Dispose();
-        context.AddSource($"{nameof(DependencyInjectionExtensions)}.g.cs", ToString());
-        base.AddSource(context);
+        base.AddSource(context, nameof(DependencyInjectionExtensions));
     }
 
     public void Add(EndpointToGenerate endpoint)

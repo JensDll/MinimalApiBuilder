@@ -90,6 +90,8 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
     public Task With_Overlapping_Arity()
     {
         const string source = """
+            namespace MyNamespace.Nested;
+
             public partial class E1 : MinimalApiBuilderEndpoint
             {
                 public static int Handle() => 0;
@@ -162,7 +164,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             {
                 public static int Handle() => 0;
             }
-            
+
             public partial class E4 : MinimalApiBuilderEndpoint
             {
                 public static int Handle() => 0;
@@ -180,7 +182,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
 
             Configure(
                 app.MapGet("/test5", E3.Handle));
-            
+
             Configure(
                 app.MapGet("/test6", E4.Handle));
             """;

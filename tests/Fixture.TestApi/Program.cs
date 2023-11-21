@@ -48,7 +48,8 @@ RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation"
 Configure(
     validation.MapPost("/sync/single", SyncSingleValidationEndpoint.Handle),
     validation.MapPatch("/sync/multiple", SyncMultipleValidationEndpoint.Handle),
-    validation.MapPost("/async/single", AsyncSingleValidationEndpoint.Handle),
+    validation.MapPost("/async/single", AsyncSingleValidationEndpoint.Handle));
+Configure(
     validation.MapPatch("/async/multiple", AsyncMultipleValidationEndpoint.Handle),
     validation.MapPut("/combination", CombinedValidationEndpoint.Handle));
 

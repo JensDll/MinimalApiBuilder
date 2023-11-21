@@ -16,8 +16,7 @@ internal sealed partial class Endpoints : SourceBuilder
 
     public override void AddSource(SourceProductionContext context)
     {
-        context.AddSource($"{nameof(Endpoints)}.g.cs", ToString());
-        base.AddSource(context);
+        base.AddSource(context, nameof(Endpoints));
     }
 
     public void Add(EndpointToGenerate endpoint)
