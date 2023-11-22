@@ -10,7 +10,7 @@ internal sealed partial class Endpoints
     private IDisposable OpenAddEndpointFilter() =>
         OpenBlockExtra(");", $"{Fqn.AddEndpointFilter}(builder, static (invocationContext, next) =>");
 
-    private IDisposable OpenAddEndpointFilterAsync() =>
+    private IDisposable OpenAddAsyncEndpointFilter() =>
         OpenBlockExtra(");", $"{Fqn.AddEndpointFilter}(builder, static async (invocationContext, next) =>");
 
     private static string GetRequiredService<T>(T type) =>
@@ -22,12 +22,12 @@ internal sealed partial class Endpoints
         $"{parameter} {name} = invocationContext.GetArgument<{parameter}>({parameter.Position});";
 
     private static string GetEndpoint(EndpointToGenerate endpoint) => endpoint.Handler.EndpointParameter is null
-        ? $"{endpoint} endpoint = {GetRequiredService(endpoint)};"
-        : GetArgument(endpoint.Handler.EndpointParameter, "endpoint");
+        ? $"{endpoint} {nameof(endpoint)} = {GetRequiredService(endpoint)};"
+        : GetArgument(endpoint.Handler.EndpointParameter, nameof(endpoint));
 
-    private static string ValidationFailed(string name, string title = "One or more validation errors occurred.") =>
-        $"{Fqn.ValidationProblem}({Fqn.GetErrors}({name}), title: \"{title}\")";
+    private string ValidationFailed(string name) =>
+        $"{Fqn.ValidationProblem}({Fqn.GetErrors}({name}), title: \"{Options.ValidationProblemTitle}\")";
 
-    private static string ModelBindingFailed(string title = "One or more model binding errors occurred.") =>
-        $"{Fqn.ValidationProblem}(endpoint.ValidationErrors, title: \"{title}\")";
+    private string ModelBindingFailed() =>
+        $"{Fqn.ValidationProblem}(endpoint.ValidationErrors, title: \"{Options.ModelBindingProblemTitle}\")";
 }

@@ -73,7 +73,7 @@ internal sealed partial class Endpoints
         EndpointToGenerate endpoint,
         EndpointToGenerateHandlerParameter parameter)
     {
-        using IDisposable filterBlock = OpenAddEndpointFilter();
+        using IDisposable _ = OpenAddEndpointFilter();
         AppendLine(GetArgument(parameter, "a"));
 
         if (parameter.HasCustomBinding)
@@ -92,7 +92,7 @@ internal sealed partial class Endpoints
         EndpointToGenerate endpoint,
         IReadOnlyList<EndpointToGenerateHandlerParameter> parameters)
     {
-        using IDisposable filterBlock = OpenAddEndpointFilter();
+        using IDisposable _ = OpenAddEndpointFilter();
 
         bool anyCustomBinding = false;
 
@@ -122,7 +122,7 @@ internal sealed partial class Endpoints
         EndpointToGenerate endpoint,
         EndpointToGenerateHandlerParameter parameter)
     {
-        using IDisposable filterBlock = OpenAddEndpointFilterAsync();
+        using IDisposable _ = OpenAddAsyncEndpointFilter();
         AppendLine(GetArgument(parameter, "a"));
 
         if (parameter.HasCustomBinding)
@@ -140,7 +140,7 @@ internal sealed partial class Endpoints
         EndpointToGenerate endpoint,
         IReadOnlyList<EndpointToGenerateHandlerParameter> parameters)
     {
-        using IDisposable filterBlock = OpenAddEndpointFilterAsync();
+        using IDisposable _ = OpenAddAsyncEndpointFilter();
 
         bool anyCustomBinding = false;
 
