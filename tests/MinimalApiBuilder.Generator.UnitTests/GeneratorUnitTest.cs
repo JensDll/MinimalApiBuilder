@@ -64,6 +64,7 @@ internal abstract class GeneratorUnitTest
             .ToDictionary(static id => id, _ => ReportDiagnostic.Warn)
             .AddAndReturn("CS1701", ReportDiagnostic.Suppress)
             .ChangeAndReturn("CA1050", ReportDiagnostic.Suppress) // Declare types in namespaces
+            .ChangeAndReturn("CA1062", ReportDiagnostic.Suppress) // Validate arguments of public methods
             .ChangeAndReturn("CA1707", ReportDiagnostic.Suppress) // Identifiers should not contain underscores
             .ChangeAndReturn("CA1812", ReportDiagnostic.Suppress) // Avoid uninstantiated internal classes
             .ChangeAndReturn("CA1849", ReportDiagnostic.Suppress) // Call async methods when in an async method

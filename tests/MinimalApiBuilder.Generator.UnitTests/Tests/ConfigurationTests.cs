@@ -4,6 +4,54 @@ namespace MinimalApiBuilder.Generator.UnitTests.Tests;
 
 internal sealed class ConfigurationTests : GeneratorUnitTest
 {
+    [Test]
+    public Task Assign_Name(
+        [ValueSource(nameof(AssignNameProviders))]
+        TestAnalyzerConfigOptionsProvider provider)
+    {
+        // language=cs
+        const string source = """
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(E e) => 0;
+            }
+            """;
+
+        return VerifyGeneratorAsync(source, provider);
+    }
+
+    [Test]
+    public Task Validation_Problem_Title(
+        [ValueSource(nameof(ValidationProblemTitleProviders))]
+        TestAnalyzerConfigOptionsProvider provider)
+    {
+        // language=cs
+        const string source = """
+            public class R {
+                public int Value { get; set; }
+                public static ValueTask<R> BindAsync(HttpContext context)
+                {
+                    return ValueTask.FromResult<R>(new R());
+                }
+            }
+
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(R r) => r.Value;
+            }
+
+            public class RValidator : AbstractValidator<R>
+            {
+                public RValidator()
+                {
+                    RuleFor(static x => x.Value).GreaterThan(0);
+                }
+            }
+            """;
+
+        return VerifyGeneratorAsync(source, provider);
+    }
+
     private static IEnumerable<TestAnalyzerConfigOptionsProvider> AssignNameProviders()
     {
         yield return new TestAnalyzerConfigOptionsProvider(
@@ -46,19 +94,51 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
             friendlyName: "assign_name_global_true_local_false");
     }
 
-    [Test]
-    public Task With_Assign_Name(
-        [ValueSource(nameof(AssignNameProviders))]
-        TestAnalyzerConfigOptionsProvider provider)
+    private static IEnumerable<TestAnalyzerConfigOptionsProvider> ValidationProblemTitleProviders()
     {
-        // language=cs
-        const string source = """
-            public partial class E : MinimalApiBuilderEndpoint
+        yield return new TestAnalyzerConfigOptionsProvider(
+            globalOptions: new TestAnalyzerConfigOptions
             {
-                public static int Handle(E e) => 0;
-            }
-            """;
+                Options =
+                {
+                    [GeneratorOptions.Keys.ValidationProblemTitleBuildProperty] = "validation_problem_title_global"
+                }
+            },
+            localOptions: new TestAnalyzerConfigOptions(),
+            friendlyName: "validation_problem_title_global");
 
-        return VerifyGeneratorAsync(source, provider);
+        yield return new TestAnalyzerConfigOptionsProvider(
+            globalOptions: new TestAnalyzerConfigOptions(),
+            localOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.ValidationProblemTitle] = "validation_problem_title_local"
+                }
+            },
+            friendlyName: "validation_problem_title_local");
+
+        yield return new TestAnalyzerConfigOptionsProvider(
+            globalOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.ModelBindingProblemTitleBuildProperty] =
+                        "model_binding_problem_title_global"
+                }
+            },
+            localOptions: new TestAnalyzerConfigOptions(),
+            friendlyName: "model_binding_problem_title_global");
+
+        yield return new TestAnalyzerConfigOptionsProvider(
+            globalOptions: new TestAnalyzerConfigOptions(),
+            localOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.ModelBindingProblemTitle] = "model_binding_problem_title_local"
+                }
+            },
+            friendlyName: "model_binding_problem_title_local");
     }
 }
