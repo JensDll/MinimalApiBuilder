@@ -25,12 +25,14 @@ internal readonly struct GeneratorOptions
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
 
-        if (options.TryGetValue(Keys.ValidationProblemTitleBuildProperty, out string? validationProblemTitle))
+        if (options.TryGetValue(Keys.ValidationProblemTitleBuildProperty, out string? validationProblemTitle)
+            && !string.IsNullOrEmpty(validationProblemTitle))
         {
             ValidationProblemTitle = validationProblemTitle;
         }
 
-        if (options.TryGetValue(Keys.ModelBindingProblemTitleBuildProperty, out string? modelBindingProblemTitle))
+        if (options.TryGetValue(Keys.ModelBindingProblemTitleBuildProperty, out string? modelBindingProblemTitle)
+            && !string.IsNullOrEmpty(modelBindingProblemTitle))
         {
             ModelBindingProblemTitle = modelBindingProblemTitle;
         }
@@ -50,12 +52,14 @@ internal readonly struct GeneratorOptions
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
 
-        if (options.TryGetValue(Keys.ValidationProblemTitle, out string? validationProblemTitle))
+        if (options.TryGetValue(Keys.ValidationProblemTitle, out string? validationProblemTitle)
+            && !string.IsNullOrEmpty(validationProblemTitle))
         {
             ValidationProblemTitle = validationProblemTitle;
         }
 
-        if (options.TryGetValue(Keys.ModelBindingProblemTitle, out string? modelBindingProblemTitle))
+        if (options.TryGetValue(Keys.ModelBindingProblemTitle, out string? modelBindingProblemTitle)
+            && !string.IsNullOrEmpty(modelBindingProblemTitle))
         {
             ModelBindingProblemTitle = modelBindingProblemTitle;
         }
