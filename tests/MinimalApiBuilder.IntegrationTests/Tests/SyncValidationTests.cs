@@ -46,28 +46,28 @@ internal sealed class SyncValidationTests
     }
 
     public static readonly object[] InvalidSingle =
-    {
+    [
         new SyncValidationRequest("a"),
         new SyncValidationRequest("b"),
         new SyncValidationRequest("c")
-    };
+    ];
 
     public static readonly object[] InvalidMultiple =
-    {
+    [
         new object[] { new SyncValidationRequest("a"), new SyncValidationParameters(2) },
         new object[] { new SyncValidationRequest("b"), new SyncValidationParameters(2) },
         new object[] { new SyncValidationRequest("c"), new SyncValidationParameters(2) },
         new object[] { new SyncValidationRequest("true"), new SyncValidationParameters(3) }
-    };
+    ];
 
     public static readonly object[] ValidSingle =
-    {
+    [
         new SyncValidationRequest("true")
-    };
+    ];
 
     public static readonly object[] ValidMultiple =
-    {
+    [
         new object[] { new SyncValidationRequest("true"), new SyncValidationParameters(2) },
         new object[] { new SyncValidationRequest("true"), new SyncValidationParameters(4) }
-    };
+    ];
 }

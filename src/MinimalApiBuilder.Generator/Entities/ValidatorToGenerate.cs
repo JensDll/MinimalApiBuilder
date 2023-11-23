@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal sealed class ValidatorToGenerate : IToGenerate
+internal sealed class ValidatorToGenerate
 {
     private readonly string _identifier;
 
@@ -14,13 +14,10 @@ internal sealed class ValidatorToGenerate : IToGenerate
         int serviceLifetime)
     {
         _identifier = validator.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        Symbol = validator;
         ValidatedType = validator.BaseType!.TypeArguments[0].ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         IsAsync = isAsync;
         ServiceLifetime = serviceLifetime;
     }
-
-    public ISymbol Symbol { get; }
 
     public string ValidatedType { get; }
 

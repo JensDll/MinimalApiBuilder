@@ -49,7 +49,7 @@ internal abstract class SourceBuilder
 
     protected IDisposable OpenBlock(params string[] values)
     {
-        for (int i = 0; i < values.Length - 1; i++)
+        for (int i = 0; i < values.Length - 1; ++i)
         {
             AppendLine(values[i]);
         }
@@ -69,7 +69,7 @@ internal abstract class SourceBuilder
 
     protected IDisposable OpenBlockExtra(string afterClose, params string[] values)
     {
-        for (int i = 0; i < values.Length - 1; i++)
+        for (int i = 0; i < values.Length - 1; ++i)
         {
             AppendLine(values[i]);
         }

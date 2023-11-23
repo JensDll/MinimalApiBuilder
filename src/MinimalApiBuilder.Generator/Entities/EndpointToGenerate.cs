@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal sealed class EndpointToGenerate : IWithSyntaxTree, IToGenerate
+internal sealed class EndpointToGenerate : IWithSyntaxTree
 {
     private readonly string _identifier;
 
@@ -15,7 +15,6 @@ internal sealed class EndpointToGenerate : IWithSyntaxTree, IToGenerate
         bool needsConfigure)
     {
         _identifier = endpoint.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        Symbol = endpoint;
         ClassName = endpoint.Name;
         NamespaceName = endpoint.ContainingNamespace.IsGlobalNamespace
             ? null
@@ -25,8 +24,6 @@ internal sealed class EndpointToGenerate : IWithSyntaxTree, IToGenerate
         SyntaxTree = syntaxTree;
         Accessibility = endpoint.DeclaredAccessibility;
     }
-
-    public ISymbol Symbol { get; }
 
     public string ClassName { get; }
 

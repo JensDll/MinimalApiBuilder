@@ -25,9 +25,9 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(configures, static (sourceProductionContext, source) =>
             Execute(source, sourceProductionContext));
 
-        context.RegisterPostInitializationOutput(static postInitContext =>
+        context.RegisterPostInitializationOutput(static postContext =>
         {
-            postInitContext.AddSource($"{nameof(Sources.ConfigureEndpoints)}.g.cs", Sources.ConfigureEndpoints);
+            postContext.AddSource($"{nameof(Sources.ConfigureEndpoints)}.g.cs", Sources.ConfigureEndpoints);
         });
     }
 

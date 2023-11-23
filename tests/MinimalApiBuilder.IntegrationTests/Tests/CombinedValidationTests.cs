@@ -30,16 +30,16 @@ internal sealed class CombinedValidationTests
     }
 
     public static readonly object[] Invalid =
-    {
+    [
         new object[] { new AsyncValidationRequest("a"), new SyncValidationParameters(2) },
         new object[] { new AsyncValidationRequest("b"), new SyncValidationParameters(2) },
         new object[] { new AsyncValidationRequest("c"), new SyncValidationParameters(2) },
         new object[] { new AsyncValidationRequest("true"), new SyncValidationParameters(3) }
-    };
+    ];
 
     public static readonly object[] Valid =
-    {
+    [
         new object[] { new AsyncValidationRequest("true"), new SyncValidationParameters(2) },
         new object[] { new AsyncValidationRequest("true"), new SyncValidationParameters(4) }
-    };
+    ];
 }
