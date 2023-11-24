@@ -20,7 +20,8 @@ internal readonly struct GeneratorOptions
 
         AnalyzerConfigOptions options = optionsProvider.GlobalOptions;
 
-        if (options.TryGetValue(Keys.AssignNameToEndpointBuildProperty, out string? assignNameToEndpoint))
+        if (options.TryGetValue(Keys.AssignNameToEndpointBuildProperty, out string? assignNameToEndpoint)
+            && !string.IsNullOrEmpty(assignNameToEndpoint))
         {
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
@@ -47,7 +48,8 @@ internal readonly struct GeneratorOptions
 
         AnalyzerConfigOptions options = _provider.GetOptions(syntaxTree);
 
-        if (options.TryGetValue(Keys.AssignNameToEndpoint, out string? assignNameToEndpoint))
+        if (options.TryGetValue(Keys.AssignNameToEndpoint, out string? assignNameToEndpoint)
+            && !string.IsNullOrEmpty(assignNameToEndpoint))
         {
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }

@@ -52,6 +52,56 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
         return VerifyGeneratorAsync(source, provider);
     }
 
+    [Test]
+    public Task With_Empty_Options_Should_Keep_Default_Values()
+    {
+        TestAnalyzerConfigOptionsProvider provider = new(
+            globalOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "",
+                    [GeneratorOptions.Keys.ValidationProblemTitleBuildProperty] = "",
+                    [GeneratorOptions.Keys.ModelBindingProblemTitleBuildProperty] = ""
+                }
+            },
+            localOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.AssignNameToEndpoint] = "",
+                    [GeneratorOptions.Keys.ValidationProblemTitle] = "",
+                    [GeneratorOptions.Keys.ModelBindingProblemTitle] = ""
+                }
+            });
+
+        // language=cs
+        const string source = """
+            public class R {
+                public int Value { get; set; }
+                public static ValueTask<R> BindAsync(HttpContext context)
+                {
+                    return ValueTask.FromResult<R>(new R());
+                }
+            }
+
+            public partial class E : MinimalApiBuilderEndpoint
+            {
+                public static int Handle(R r) => r.Value;
+            }
+
+            public class RValidator : AbstractValidator<R>
+            {
+                public RValidator()
+                {
+                    RuleFor(static x => x.Value).GreaterThan(0);
+                }
+            }
+            """;
+
+        return VerifyGeneratorAsync(source, provider);
+    }
+
     private static IEnumerable<TestAnalyzerConfigOptionsProvider> AssignNameProviders()
     {
         yield return new TestAnalyzerConfigOptionsProvider(

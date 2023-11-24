@@ -146,6 +146,10 @@ csharp_prefer_braces = true
 # Place `using` directives outside of namespace
 dotnet_diagnostic.IDE0065.severity = warning
 csharp_using_directive_placement = outside_namespace
+
+# Avoid primary constructors
+dotnet_diagnostic.IDE0290.severity = warning
+csharp_style_prefer_primary_constructors = false
 ######## LANGUAGE RULES ########
 
 ######## UNNECESSARY CODE RULES ########
@@ -333,6 +337,7 @@ resharper_xmldoc_wrap_lines = false
 resharper_xmldoc_wrap_tags_and_pi = false
 resharper_align_multiline_binary_expressions_chain = true
 resharper_align_multiline_statement_conditions = false
+resharper_convert_to_primary_constructor_highlighting = none
 ######## RESHARPER ########
 
 [*.{received,verified}.{cs,txt}]

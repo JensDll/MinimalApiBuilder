@@ -34,7 +34,7 @@ internal sealed class TestAnalyzerConfigOptionsProvider : AnalyzerConfigOptionsP
         throw new NotImplementedException();
     }
 
-    public sealed override string ToString()
+    public override string ToString()
     {
         return _friendlyName;
     }
