@@ -105,7 +105,7 @@ internal abstract class GeneratorUnitTest
 
     private static Task VerifyGeneratorAsyncImpl(string source, AnalyzerConfigOptionsProvider optionsProvider)
     {
-        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
+        SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source, options: s_parseOptions);
 
         var compilation = CSharpCompilation.Create(
             assemblyName: nameof(GeneratorUnitTest) + "Assembly",
@@ -162,9 +162,11 @@ internal abstract class GeneratorUnitTest
             }
 
             CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot().WithoutLeadingTrivia();
-            SyntaxNode newSource = rewriter.Visit(root);
 
-            compilation = compilation.ReplaceSyntaxTree(syntaxTree, newSource.SyntaxTree);
+            SyntaxNode newSource = rewriter.Visit(root);
+            SyntaxTree newSyntaxTree = newSource.SyntaxTree.WithRootAndOptions(newSource, s_parseOptions);
+
+            compilation = compilation.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
         }
 
         return compilation;
