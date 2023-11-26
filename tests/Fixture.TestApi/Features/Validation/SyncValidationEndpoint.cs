@@ -1,6 +1,8 @@
-﻿using FluentValidation;
+﻿using System;
+using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation;
@@ -8,10 +10,10 @@ namespace Fixture.TestApi.Features.Validation;
 internal partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     public static IResult Handle(
-        SyncValidationRequest request,
-        Serilog.ILogger logger)
+        [FromServices] ILogger<SyncSingleValidationEndpoint> logger,
+        SyncValidationRequest request)
     {
-        logger.Information("Request: {Request}", request);
+        logger.SyncValidationRequest(request);
         return TypedResults.Ok();
     }
 }
@@ -19,14 +21,12 @@ internal partial class SyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 internal partial class SyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     public static IResult Handle(
-        [FromServices] SyncMultipleValidationEndpoint endpoint,
+        [FromServices] ILogger<SyncMultipleValidationEndpoint> logger,
         [AsParameters] SyncValidationParameters parameters,
-        SyncValidationRequest request,
-        Serilog.ILogger logger)
+        SyncValidationRequest request)
     {
-        logger.Information("Endpoint: {Endpoint}", nameof(SyncMultipleValidationEndpoint));
-        logger.Information("Parameters: {Parameters}", parameters);
-        logger.Information("Request: {Request}", request);
+        logger.SyncValidationParameters(parameters);
+        logger.SyncValidationRequest(request);
         return TypedResults.Ok();
     }
 }
@@ -52,5 +52,26 @@ internal class SyncValidationParametersValidator : AbstractValidator<SyncValidat
         RuleFor(static parameters => parameters.Value)
             .Must(static value => value % 2 == 0)
             .WithMessage("Parameter '{PropertyName}' with value '{PropertyValue}' must be even.");
+    }
+}
+
+internal static class SyncValidationLoggingExtensions
+{
+    private static readonly Action<ILogger, SyncValidationParameters, Exception?> s_parameters =
+        LoggerMessage.Define<SyncValidationParameters>(LogLevel.Information,
+            new EventId(1, nameof(SyncValidationParameters)), "Parameters: {Parameters}");
+
+    private static readonly Action<ILogger, SyncValidationRequest, Exception?> s_request =
+        LoggerMessage.Define<SyncValidationRequest>(LogLevel.Information,
+            new EventId(2, nameof(SyncValidationRequest)), "Request: {Request}");
+
+    internal static void SyncValidationParameters(this ILogger logger, SyncValidationParameters parameters)
+    {
+        s_parameters(logger, parameters, null);
+    }
+
+    internal static void SyncValidationRequest(this ILogger logger, SyncValidationRequest request)
+    {
+        s_request(logger, request, null);
     }
 }

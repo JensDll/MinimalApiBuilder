@@ -1,17 +1,23 @@
-using Fixture.TestApi.Extensions;
+using System.IO;
 using Fixture.TestApi.Features.Multipart;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MinimalApiBuilder;
 using static MinimalApiBuilder.ConfigureEndpoints;
 
 WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
 
-builder.Logging.AddSerilogLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
+builder.Configuration.Sources.Clear();
+builder.Configuration.AddJsonFile(Path.Join("Properties", "appSettings.json"), optional: false, reloadOnChange: false);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

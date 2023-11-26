@@ -103,7 +103,7 @@ internal abstract class GeneratorUnitTest
         return VerifyGeneratorAsyncImpl(GetSource(source, mapActions), optionsProvider);
     }
 
-    private static async Task VerifyGeneratorAsyncImpl(string source, AnalyzerConfigOptionsProvider optionsProvider)
+    private static Task VerifyGeneratorAsyncImpl(string source, AnalyzerConfigOptionsProvider optionsProvider)
     {
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source);
 
@@ -120,7 +120,7 @@ internal abstract class GeneratorUnitTest
             .Create(generators, optionsProvider: optionsProvider, parseOptions: s_parseOptions)
             .RunGeneratorsAndUpdateCompilation(compilation, out var newCompilation, out _);
 
-        await Task.WhenAll(
+        return Task.WhenAll(
             Task.Run(() => AssertCompilation(newCompilation)),
             AssertCompilationWithAnalyzersAsync(newCompilation),
             Verify(driver).DisableDiff());
@@ -172,44 +172,44 @@ internal abstract class GeneratorUnitTest
 
     private static string GetSource(string source)
     {
-        // lang=cs
+        // language=cs
         return $"""
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.DependencyInjection;
-using MinimalApiBuilder;
-using static MinimalApiBuilder.ConfigureEndpoints;
-using FluentValidation;
-using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
+            using Microsoft.AspNetCore.Builder;
+            using Microsoft.AspNetCore.Http;
+            using Microsoft.AspNetCore.Http.HttpResults;
+            using Microsoft.AspNetCore.Mvc;
+            using Microsoft.AspNetCore.Routing;
+            using Microsoft.Extensions.DependencyInjection;
+            using MinimalApiBuilder;
+            using static MinimalApiBuilder.ConfigureEndpoints;
+            using FluentValidation;
+            using System;
+            using System.Reflection;
+            using System.Runtime.InteropServices;
+            using System.Threading.Tasks;
 
-[assembly: AssemblyVersion("1.0")]
-[assembly: CLSCompliant(false)]
-[assembly: ComVisible(false)]
+            [assembly: AssemblyVersion("1.0")]
+            [assembly: CLSCompliant(false)]
+            [assembly: ComVisible(false)]
 
-{source}
-""";
+            {source}
+            """;
     }
 
     private static string GetSource(string source, string mapActions)
     {
-        // lang=cs
+        // language=cs
         return $$"""
-{{GetSource(source)}}
+            {{GetSource(source)}}
 
-public static class TestMapActions
-{
-    public static IEndpointRouteBuilder MapTestEndpoints(this IEndpointRouteBuilder app)
-    {
-        {{mapActions}}
-        return app;
-    }
-}
-""";
+            public static class TestMapActions
+            {
+                public static IEndpointRouteBuilder MapTestEndpoints(this IEndpointRouteBuilder app)
+                {
+                    {{mapActions}}
+                    return app;
+                }
+            }
+            """;
     }
 }

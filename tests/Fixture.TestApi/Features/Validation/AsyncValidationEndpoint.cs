@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using MinimalApiBuilder;
 
 namespace Fixture.TestApi.Features.Validation;
@@ -11,11 +13,11 @@ internal partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     public static async Task<IResult> Handle(
         [FromServices] AsyncSingleValidationEndpoint endpoint,
-        Serilog.ILogger logger,
+        [FromServices] ILogger<AsyncSingleValidationEndpoint> logger,
         AsyncValidationRequest request,
         HttpContext context)
     {
-        logger.Information("Request: {Request}", request);
+        logger.AsyncValidationRequest(request);
         await Task.CompletedTask;
         MultipartReader _ = new(context, endpoint);
         return TypedResults.Ok(endpoint.ValidationErrors);
@@ -25,12 +27,12 @@ internal partial class AsyncSingleValidationEndpoint : MinimalApiBuilderEndpoint
 internal partial class AsyncMultipleValidationEndpoint : MinimalApiBuilderEndpoint
 {
     public static async Task<IResult> Handle(
+        [FromServices] ILogger<AsyncMultipleValidationEndpoint> logger,
         [AsParameters] AsyncValidationParameters parameters,
-        AsyncValidationRequest request,
-        Serilog.ILogger logger)
+        AsyncValidationRequest request)
     {
-        logger.Information("Parameters: {Parameters}", parameters);
-        logger.Information("Request: {Request}", request);
+        logger.AsyncValidationParameters(parameters);
+        logger.AsyncValidationRequest(request);
         await Task.CompletedTask;
         return TypedResults.Ok();
     }
@@ -62,5 +64,26 @@ internal class AsyncValidationParametersValidator : AbstractValidator<AsyncValid
             await Task.CompletedTask;
             return value % 2 == 0;
         }).WithMessage("Parameter '{PropertyName}' with value '{PropertyValue}' must be even.");
+    }
+}
+
+internal static class AsyncValidationLoggingExtensions
+{
+    private static readonly Action<ILogger, AsyncValidationParameters, Exception?> s_parameters =
+        LoggerMessage.Define<AsyncValidationParameters>(LogLevel.Information,
+            new EventId(1, nameof(AsyncValidationRequest)), "Parameters: {Request}");
+
+    private static readonly Action<ILogger, AsyncValidationRequest, Exception?> s_request =
+        LoggerMessage.Define<AsyncValidationRequest>(LogLevel.Information,
+            new EventId(2, nameof(AsyncValidationRequest)), "Request: {Request}");
+
+    public static void AsyncValidationParameters(this ILogger logger, AsyncValidationParameters parameters)
+    {
+        s_parameters(logger, parameters, null);
+    }
+
+    public static void AsyncValidationRequest(this ILogger logger, AsyncValidationRequest request)
+    {
+        s_request(logger, request, null);
     }
 }
