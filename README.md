@@ -72,11 +72,11 @@ Configure(app.MapGet("/hello/{name}", BasicRequestEndpoint.Handle));
 ```
 
 Validation in [custom binding](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding#custom-binding)
-scenarios is also supported. For example, adapting the
-[Microsoft `BindAsync` sample](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#bindasync):
+scenarios is also supported. For example, adapting the Microsoft
+[`BindAsync` sample](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#bindasync):
 
 <details>
-<summary>Expand</summary>
+<summary>Show example</summary>
 
 ```csharp
 public record PagingData(string? SortBy, SortDirection SortDirection, int CurrentPage)
@@ -87,12 +87,14 @@ public record PagingData(string? SortBy, SortDirection SortDirection, int Curren
 
     public static ValueTask<PagingData?> BindAsync(HttpContext httpContext)
     {
-        ProductsEndpoint endpoint = httpContext.RequestServices.GetRequiredService<ProductsEndpoint>();
+        ProductsEndpoint endpoint =
+            httpContext.RequestServices.GetRequiredService<ProductsEndpoint>();
 
         SortDirection sortDirection = default;
         int page = default;
 
-        if (httpContext.Request.Query.TryGetValue(SortDirectionKey, out StringValues sortDirectionValues))
+        if (httpContext.Request.Query.TryGetValue(SortDirectionKey,
+            out StringValues sortDirectionValues))
         {
             if (!Enum.TryParse(sortDirectionValues, ignoreCase: true, out sortDirection))
             {
@@ -150,8 +152,21 @@ Configure(app.MapGet("/products", ProductsEndpoint.Handle));
 
 </details>
 
-Endpoints and validators need to be registered with dependency injection.
-The following method adds them:
+Unfortunately, [`TryParse`](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding#tryparse)
+cannot be validated this way as there is no easy way to access the
+`IServiceProvider` right now. To not short-circuit execution by
+throwing an exception when returning `null`, [`ThrowOnBadRequest`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.routing.routehandleroptions.throwonbadrequest)
+needs to be disabled:
+
+```csharp
+builder.Services.Configure<RouteHandlerOptions>(static options =>
+{
+    options.ThrowOnBadRequest = false;
+});
+```
+
+Endpoints and validators need to be registered
+with dependency injection. The following method adds them:
 
 ```csharp
 builder.Services.AddMinimalApiBuilderEndpoints();
@@ -161,7 +176,8 @@ builder.Services.AddMinimalApiBuilderEndpoints();
 
 Users can add configuration through entries in `.editorconfig` or with
 [MSBuild properties](https://learn.microsoft.com/en-us/visualstudio/msbuild/msbuild-properties).
-The following options are available, with code samples showing the default values:
+The following options are available,
+with configuration snippets showing the default values:
 
 ### `minimalapibuilder_assign_name_to_endpoint` (`true` | `false`)
 
