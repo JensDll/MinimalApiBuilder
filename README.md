@@ -103,6 +103,21 @@ minimalapibuilder_assign_name_to_endpoint = true
 </PropertyGroup>
 ```
 
+### `minimalapibuilder_validation_problem_type` (`string`)
+
+The type of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem) validation error result.
+The configuration below is the default.
+
+```.editorconfig
+minimalapibuilder_validation_problem_type = "https://tools.ietf.org/html/rfc9110#section-15.5.1"
+```
+
+```xml
+<PropertyGroup>
+  <minimalapibuilder_validation_problem_type>https://tools.ietf.org/html/rfc9110#section-15.5.1</minimalapibuilder_validation_problem_type>
+</PropertyGroup>
+```
+
 ### `minimalapibuilder_validation_problem_title` (`string`)
 
 The title of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem) validation error result.
@@ -115,6 +130,21 @@ minimalapibuilder_validation_problem_title = "One or more validation errors occu
 ```xml
 <PropertyGroup>
   <minimalapibuilder_validation_problem_title>One or more validation errors occurred.</minimalapibuilder_validation_problem_title>
+</PropertyGroup>
+```
+
+### `minimalapibuilder_model_binding_problem_type` (`string`)
+
+The type of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem) model binding error result.
+The configuration below is the default.
+
+```.editorconfig
+minimalapibuilder_model_binding_problem_type = "https://tools.ietf.org/html/rfc9110#section-15.5.1"
+```
+
+```xml
+<PropertyGroup>
+  <minimalapibuilder_model_binding_problem_type>https://tools.ietf.org/html/rfc9110#section-15.5.1</minimalapibuilder_model_binding_problem_type>
 </PropertyGroup>
 ```
 

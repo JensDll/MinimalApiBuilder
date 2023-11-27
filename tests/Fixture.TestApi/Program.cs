@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Fixture.TestApi.Features.Multipart;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using MinimalApiBuilder;
 using static MinimalApiBuilder.ConfigureEndpoints;
 
@@ -66,27 +68,70 @@ Configure(
     multipart.MapPost("/zipstream", ZipStreamEndpoint.Handle),
     multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 
-Configure(app.MapGet("/map", TestEndpoint.Handle));
+Configure(app.MapGet("/products", ProductsEndpoint.Handle));
 
 app.Run();
 
-internal partial class TestEndpoint : MinimalApiBuilderEndpoint
+internal partial class ProductsEndpoint : MinimalApiBuilderEndpoint
 {
-    public static string Handle(Point p, HttpContext context)
+    public static string Handle(PagingData pageData)
     {
-        return $"({p.X}, {p.Y})";
+        return pageData.ToString();
     }
 }
 
-internal class Point
+internal record PagingData(string? SortBy, SortDirection SortDirection, int CurrentPage)
 {
-    public double X { get; init; }
+    private const string SortByKey = "sortby";
+    private const string SortDirectionKey = "sortdir";
+    private const string PageKey = "page";
 
-    public double Y { get; init; }
-
-    public static bool TryParse(string? value, IFormatProvider? provider, out Point? point)
+    public static ValueTask<PagingData?> BindAsync(HttpContext httpContext)
     {
-        point = null;
-        return false;
+        ProductsEndpoint endpoint = httpContext.RequestServices.GetRequiredService<ProductsEndpoint>();
+
+        SortDirection sortDirection = default;
+        int page = default;
+
+        if (httpContext.Request.Query.TryGetValue(SortDirectionKey, out StringValues sortDirectionValues))
+        {
+            if (!Enum.TryParse(sortDirectionValues, ignoreCase: true, out sortDirection))
+            {
+                endpoint.AddValidationError(SortDirectionKey,
+                    "Invalid sort direction. Valid values are 'default', 'asc', or 'desc'.");
+            }
+        }
+        else
+        {
+            endpoint.AddValidationError(SortDirectionKey, "Missing sort direction.");
+        }
+
+        if (httpContext.Request.Query.TryGetValue(PageKey, out StringValues pageValues))
+        {
+            if (!int.TryParse(pageValues, out page))
+            {
+                endpoint.AddValidationError(PageKey, "Invalid page number.");
+            }
+        }
+        else
+        {
+            endpoint.AddValidationError(PageKey, "Missing page number.");
+        }
+
+        if (endpoint.HasValidationError)
+        {
+            return ValueTask.FromResult<PagingData?>(null);
+        }
+
+        PagingData result = new(httpContext.Request.Query[SortByKey], sortDirection, page);
+
+        return ValueTask.FromResult<PagingData?>(result);
     }
+}
+
+internal enum SortDirection
+{
+    Default,
+    Asc,
+    Desc
 }

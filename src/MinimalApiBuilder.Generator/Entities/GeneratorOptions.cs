@@ -6,11 +6,17 @@ namespace MinimalApiBuilder.Generator.Entities;
 
 internal readonly struct GeneratorOptions
 {
+    private const string DefaultProblemType = "https://tools.ietf.org/html/rfc9110#section-15.5.1";
+
     private readonly AnalyzerConfigOptionsProvider _provider;
 
     public bool AssignNameToEndpoint { get; } = false;
 
+    public string ValidationProblemType { get; } = DefaultProblemType;
+
     public string ValidationProblemTitle { get; } = "One or more validation errors occurred.";
+
+    public string ModelBindingProblemType { get; } = DefaultProblemType;
 
     public string ModelBindingProblemTitle { get; } = "One or more model binding errors occurred.";
 
@@ -26,10 +32,22 @@ internal readonly struct GeneratorOptions
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
 
+        if (options.TryGetValue(Keys.ValidationProblemTypeBuildProperty, out string? validationProblemType)
+            && !string.IsNullOrEmpty(validationProblemType))
+        {
+            ValidationProblemType = validationProblemType;
+        }
+
         if (options.TryGetValue(Keys.ValidationProblemTitleBuildProperty, out string? validationProblemTitle)
             && !string.IsNullOrEmpty(validationProblemTitle))
         {
             ValidationProblemTitle = validationProblemTitle;
+        }
+
+        if (options.TryGetValue(Keys.ModelBindingProblemTypeBuildProperty, out string? modelBindingProblemType)
+            && !string.IsNullOrEmpty(modelBindingProblemType))
+        {
+            ModelBindingProblemType = modelBindingProblemType;
         }
 
         if (options.TryGetValue(Keys.ModelBindingProblemTitleBuildProperty, out string? modelBindingProblemTitle)
@@ -43,7 +61,9 @@ internal readonly struct GeneratorOptions
     {
         _provider = other._provider;
         AssignNameToEndpoint = other.AssignNameToEndpoint;
+        ValidationProblemType = other.ValidationProblemType;
         ValidationProblemTitle = other.ValidationProblemTitle;
+        ModelBindingProblemType = other.ModelBindingProblemType;
         ModelBindingProblemTitle = other.ModelBindingProblemTitle;
 
         AnalyzerConfigOptions options = _provider.GetOptions(syntaxTree);
@@ -54,10 +74,22 @@ internal readonly struct GeneratorOptions
             AssignNameToEndpoint = assignNameToEndpoint.Equals("true", StringComparison.OrdinalIgnoreCase);
         }
 
+        if (options.TryGetValue(Keys.ValidationProblemType, out string? validationProblemType)
+            && !string.IsNullOrEmpty(validationProblemType))
+        {
+            ValidationProblemType = validationProblemType;
+        }
+
         if (options.TryGetValue(Keys.ValidationProblemTitle, out string? validationProblemTitle)
             && !string.IsNullOrEmpty(validationProblemTitle))
         {
             ValidationProblemTitle = validationProblemTitle;
+        }
+
+        if (options.TryGetValue(Keys.ModelBindingProblemType, out string? modelBindingProblemType)
+            && !string.IsNullOrEmpty(modelBindingProblemType))
+        {
+            ModelBindingProblemType = modelBindingProblemType;
         }
 
         if (options.TryGetValue(Keys.ModelBindingProblemTitle, out string? modelBindingProblemTitle)
@@ -83,7 +115,13 @@ internal readonly struct GeneratorOptions
         public const string ValidationProblemTitle = Prefix + "validation_problem_title";
         public const string ValidationProblemTitleBuildProperty = BuildProperty + ValidationProblemTitle;
 
+        public const string ValidationProblemType = Prefix + "validation_problem_type";
+        public const string ValidationProblemTypeBuildProperty = BuildProperty + ValidationProblemType;
+
         public const string ModelBindingProblemTitle = Prefix + "model_binding_problem_title";
         public const string ModelBindingProblemTitleBuildProperty = BuildProperty + ModelBindingProblemTitle;
+
+        public const string ModelBindingProblemType = Prefix + "model_binding_problem_type";
+        public const string ModelBindingProblemTypeBuildProperty = BuildProperty + ModelBindingProblemType;
     }
 }

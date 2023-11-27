@@ -26,8 +26,8 @@ internal sealed partial class Endpoints
         : GetArgument(endpoint.Handler.EndpointParameter, nameof(endpoint));
 
     private string ValidationFailed(string name) =>
-        $"{Fqn.ValidationProblem}({Fqn.GetErrors}({name}), title: \"{Options.ValidationProblemTitle}\")";
+        $"{Fqn.ValidationProblem}({Fqn.GetErrors}({name}), type: \"{Options.ValidationProblemType}\", title: \"{Options.ValidationProblemTitle}\")";
 
     private string ModelBindingFailed() =>
-        $"{Fqn.ValidationProblem}(endpoint.ValidationErrors, title: \"{Options.ModelBindingProblemTitle}\")";
+        $"{Fqn.ValidationProblem}(endpoint.ValidationErrors, type: \"{Options.ModelBindingProblemType}\", title: \"{Options.ModelBindingProblemTitle}\")";
 }
