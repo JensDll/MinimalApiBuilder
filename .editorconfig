@@ -341,7 +341,7 @@ resharper_convert_to_primary_constructor_highlighting = none
 ######## RESHARPER ########
 
 [*.{received,verified}.{cs,txt}]
-charset = "utf-8-bom"
+charset = utf-8-bom
 indent_size = unset
 indent_style = unset
 insert_final_newline = false

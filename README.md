@@ -203,7 +203,7 @@ The [type](https://datatracker.ietf.org/doc/html/rfc7807#section-3.1) of the
 validation error result.
 
 ```.editorconfig
-minimalapibuilder_validation_problem_type = "https://tools.ietf.org/html/rfc9110#section-15.5.1"
+minimalapibuilder_validation_problem_type = https://tools.ietf.org/html/rfc9110#section-15.5.1
 ```
 
 ```xml
@@ -219,7 +219,7 @@ of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/micros
 validation error result.
 
 ```.editorconfig
-minimalapibuilder_validation_problem_title = "One or more validation errors occurred."
+minimalapibuilder_validation_problem_title = One or more validation errors occurred.
 ```
 
 ```xml
@@ -235,7 +235,7 @@ of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/micros
 model binding error result.
 
 ```.editorconfig
-minimalapibuilder_model_binding_problem_type = "https://tools.ietf.org/html/rfc9110#section-15.5.1"
+minimalapibuilder_model_binding_problem_type = https://tools.ietf.org/html/rfc9110#section-15.5.1
 ```
 
 ```xml
@@ -251,7 +251,7 @@ of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/micros
 model binding error result.
 
 ```.editorconfig
-minimalapibuilder_model_binding_problem_title = "One or more model binding errors occurred."
+minimalapibuilder_model_binding_problem_title = One or more model binding errors occurred.
 ```
 
 ```xml
