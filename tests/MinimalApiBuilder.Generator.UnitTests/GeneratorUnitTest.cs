@@ -156,15 +156,14 @@ internal abstract class GeneratorUnitTest
 
         foreach (SyntaxTree syntaxTree in compilation.SyntaxTrees)
         {
-            if (!syntaxTree.FilePath.EndsWith(".g.cs", StringComparison.OrdinalIgnoreCase))
+            if (!syntaxTree.FilePath.EndsWith(".g.cs", StringComparison.Ordinal))
             {
                 continue;
             }
 
             CompilationUnitSyntax root = syntaxTree.GetCompilationUnitRoot().WithoutLeadingTrivia();
-
-            SyntaxNode newSource = rewriter.Visit(root);
-            SyntaxTree newSyntaxTree = newSource.SyntaxTree.WithRootAndOptions(newSource, s_parseOptions);
+            SyntaxNode newRoot = rewriter.Visit(root);
+            SyntaxTree newSyntaxTree = newRoot.SyntaxTree.WithRootAndOptions(newRoot, s_parseOptions);
 
             compilation = compilation.ReplaceSyntaxTree(syntaxTree, newSyntaxTree);
         }

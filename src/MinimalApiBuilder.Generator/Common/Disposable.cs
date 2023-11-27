@@ -2,21 +2,18 @@
 
 internal sealed class Disposable : IDisposable
 {
-    private Action? _onDispose;
+    private readonly Action _onDispose;
 
     public Disposable(Action onDispose)
     {
         _onDispose = onDispose;
     }
 
-    private Disposable()
-    { }
-
-    public static readonly Disposable Empty = new();
+    public static readonly Disposable Empty = new(static () =>
+        { });
 
     public void Dispose()
     {
-        _onDispose?.Invoke();
-        _onDispose = null;
+        _onDispose.Invoke();
     }
 }

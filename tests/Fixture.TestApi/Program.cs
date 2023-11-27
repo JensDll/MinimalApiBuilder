@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Fixture.TestApi.Features.Multipart;
 using Fixture.TestApi.Features.Validation;
@@ -65,4 +66,27 @@ Configure(
     multipart.MapPost("/zipstream", ZipStreamEndpoint.Handle),
     multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 
+Configure(app.MapGet("/map", TestEndpoint.Handle));
+
 app.Run();
+
+internal partial class TestEndpoint : MinimalApiBuilderEndpoint
+{
+    public static string Handle(Point p, HttpContext context)
+    {
+        return $"({p.X}, {p.Y})";
+    }
+}
+
+internal class Point
+{
+    public double X { get; init; }
+
+    public double Y { get; init; }
+
+    public static bool TryParse(string? value, IFormatProvider? provider, out Point? point)
+    {
+        point = null;
+        return false;
+    }
+}

@@ -17,7 +17,7 @@ using MinimalApiBuilder;
 
 public partial class BasicEndpoint : MinimalApiBuilderEndpoint
 {
-    private static string Handle([FromServices] BasicEndpoint endpoint)
+    public static string Handle()
     {
         return "Hello, World!";
     }
@@ -25,22 +25,14 @@ public partial class BasicEndpoint : MinimalApiBuilderEndpoint
 ```
 
 The endpoint class must be `partial`, inherit from `MinimalApiBuilderEndpoint`,
-and have a `static` `Handle` or `HandleAsync` method with the containing type passed
-from dependency injection.
+and have a `static` `Handle` or `HandleAsync` method.
 The endpoint is mapped through the typical `IEndpointRouteBuilder` `Map<Verb>` extension methods:
 
 ```csharp
-app.MapGet<BasicEndpoint>("/hello");
+app.MapGet("/hello", BasicEndpoint.Handle);
 ```
 
-The above is functionally equivalent to:
-
-```csharp
-app.MapGet("/hello", static () => "Hello, World!");
-```
-
-This library depends on [`FluentValidation >= 11`](https://github.com/FluentValidation/FluentValidation). An endpoint
-can have a validated request object:
+This library depends on [`FluentValidation >= 11`](https://github.com/FluentValidation/FluentValidation). An endpoint can have a validated request object:
 
 ```csharp
 public struct BasicRequest
@@ -50,8 +42,7 @@ public struct BasicRequest
 
 public partial class BasicRequestEndpoint : MinimalApiBuilderEndpoint
 {
-    private static string Handle([FromServices] BasicRequestEndpoint endpoint,
-        [AsParameters] BasicRequest request)
+    public static string Handle([AsParameters] BasicRequest request)
     {
         return $"Hello, {request.Name}!";
     }
@@ -66,12 +57,23 @@ public class BasicRequestValidator : AbstractValidator<BasicRequest>
 }
 ```
 
+The incremental generator will generate code to validate the request object before the handler is called and return a
+[`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
+validation error result if the validation fails. To wire up the validation filters and to support the
+[Request Delegate Generator](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/aot/request-delegate-generator/rdg),
+the `Map` methods need to be wrapped by the `ConfigureEndpoints.Configure` helper, which expects a comma-separated list of
+[`RouteHandlerBuilder`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routehandlerbuilder):
+
 ```csharp
-app.MapGet<BasicRequestEndpoint>("/hello/{name}");
+using static MinimalApiBuilder.ConfigureEndpoints;
+
+Configure(app.MapGet("/hello/{name}", BasicRequestEndpoint.Handle));
 ```
 
-The incremental generator will generate code to validate the request object before the handler is called and return
-a `400 Bad Request` response if the validation fails. In `Program.cs` the below
+Validation in [custom binding](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding#custom-binding)
+scenarios is also supported.
+
+In `Program.cs` the below
 
 ```csharp
 builder.Services.AddMinimalApiBuilderEndpoints();
@@ -98,5 +100,35 @@ minimalapibuilder_assign_name_to_endpoint = true
 ```xml
 <PropertyGroup>
   <minimalapibuilder_assign_name_to_endpoint>true</minimalapibuilder_assign_name_to_endpoint>
+</PropertyGroup>
+```
+
+### `minimalapibuilder_validation_problem_title` (`string`)
+
+The title of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem) validation error result.
+The configuration below is the default.
+
+```.editorconfig
+minimalapibuilder_validation_problem_title = "One or more validation errors occurred."
+```
+
+```xml
+<PropertyGroup>
+  <minimalapibuilder_validation_problem_title>One or more validation errors occurred.</minimalapibuilder_validation_problem_title>
+</PropertyGroup>
+```
+
+### `minimalapibuilder_model_binding_problem_title` (`string`)
+
+The title of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem) model binding error result.
+The configuration below is the default.
+
+```.editorconfig
+minimalapibuilder_model_binding_problem_title = "One or more model binding errors occurred."
+```
+
+```xml
+<PropertyGroup>
+  <minimalapibuilder_model_binding_problem_title>One or more model binding errors occurred.</minimalapibuilder_model_binding_problem_title>
 </PropertyGroup>
 ```
