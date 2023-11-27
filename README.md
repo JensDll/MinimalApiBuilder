@@ -2,8 +2,8 @@
 
 [![nuget](https://badgen.net/nuget/v/MinimalApiBuilder)](https://www.nuget.org/packages/MinimalApiBuilder)
 
-Reflectionless, source-generated, thin abstraction layer over
-the [ASP.NET Core Minimal APIs](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/overview)
+Reflectionless, source-generated, thin abstraction layer over the
+[ASP.NET Core Minimal APIs](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/overview)
 interface.
 
 ## How to Use
@@ -25,14 +25,15 @@ public partial class BasicEndpoint : MinimalApiBuilderEndpoint
 ```
 
 The endpoint class must be `partial`, inherit from `MinimalApiBuilderEndpoint`,
-and have a `static` `Handle` or `HandleAsync` method.
-The endpoint is mapped through the typical `IEndpointRouteBuilder` `Map<Verb>` extension methods:
+and have a `static` `Handle` or `HandleAsync` method. The endpoint is mapped
+through the typical `IEndpointRouteBuilder` `Map<Verb>` extension methods:
 
 ```csharp
 app.MapGet("/hello", BasicEndpoint.Handle);
 ```
 
-This library depends on [`FluentValidation >= 11`](https://github.com/FluentValidation/FluentValidation). An endpoint can have a validated request object:
+This library depends on [`FluentValidation >= 11`](https://github.com/FluentValidation/FluentValidation).
+An endpoint can have a validated request object:
 
 ```csharp
 public struct BasicRequest
@@ -57,12 +58,12 @@ public class BasicRequestValidator : AbstractValidator<BasicRequest>
 }
 ```
 
-The incremental generator will generate code to validate the request object before the handler is called and return a
-[`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
-validation error result if the validation fails. To wire up the validation filters and to support the
-[Request Delegate Generator](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/aot/request-delegate-generator/rdg),
-the `Map` methods need to be wrapped by the `ConfigureEndpoints.Configure` helper, which expects a comma-separated list of
-[`RouteHandlerBuilder`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routehandlerbuilder):
+The incremental generator will generate code to validate the request object before
+the handler is called and return a [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
+validation problem result if the validation fails. To wire up the validation filters
+and to support the [Request Delegate Generator](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/aot/request-delegate-generator/rdg),
+the `Map` methods need to be wrapped by the `ConfigureEndpoints.Configure` helper,
+which expects a comma-separated list of [`RouteHandlerBuilder`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routehandlerbuilder):
 
 ```csharp
 using static MinimalApiBuilder.ConfigureEndpoints;
@@ -75,16 +76,9 @@ scenarios is also supported. For example, adapting the
 [Microsoft `BindAsync` sample](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#bindasync):
 
 <details>
+<summary>Expand</summary>
 
 ```csharp
-public partial class ProductsEndpoint : MinimalApiBuilderEndpoint
-{
-    public static string Handle(PagingData pageData)
-    {
-        return pageData.ToString();
-    }
-}
-
 public record PagingData(string? SortBy, SortDirection SortDirection, int CurrentPage)
 {
     private const string SortByKey = "sortby";
@@ -140,9 +134,28 @@ public enum SortDirection
     Asc,
     Desc
 }
+
+public partial class ProductsEndpoint : MinimalApiBuilderEndpoint
+{
+    public static string Handle(PagingData pageData)
+    {
+        return pageData.ToString();
+    }
+}
+```
+
+```csharp
+Configure(app.MapGet("/products", ProductsEndpoint.Handle));
 ```
 
 </details>
+
+Endpoints and validators need to be registered with dependency injection.
+The following method adds them:
+
+```csharp
+builder.Services.AddMinimalApiBuilderEndpoints();
+```
 
 ## Configuration
 
@@ -152,8 +165,8 @@ The following options are available, with code samples showing the default value
 
 ### `minimalapibuilder_assign_name_to_endpoint` (`true` | `false`)
 
-If `true`, the generator will add a unique `public const string Name` field to the endpoint classes and call the
-[`WithName`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routingendpointconventionbuilderextensions.withname)
+If `true`, the generator will add a unique `public const string Name` field to
+the endpoint classes and call the [`WithName`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routingendpointconventionbuilderextensions.withname)
 extension method when mapping them.
 
 ```.editorconfig
