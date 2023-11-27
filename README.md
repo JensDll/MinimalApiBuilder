@@ -60,7 +60,7 @@ public class BasicRequestValidator : AbstractValidator<BasicRequest>
 
 The incremental generator will generate code to validate the request object before
 the handler is called and return a [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
-validation problem result if the validation fails. To wire up the validation filters
+validation error result if the validation fails. To wire up the validation filters
 and to support the [Request Delegate Generator](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/aot/request-delegate-generator/rdg),
 the `Map` methods need to be wrapped by the `ConfigureEndpoints.Configure` helper,
 which expects a comma-separated list of [`RouteHandlerBuilder`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routehandlerbuilder):
@@ -155,7 +155,8 @@ Configure(app.MapGet("/products", ProductsEndpoint.Handle));
 Unfortunately, [`TryParse`](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding#tryparse)
 cannot be validated this way as there is no easy way to access the
 `IServiceProvider` right now. To not short-circuit execution by
-throwing an exception when returning `null`, [`ThrowOnBadRequest`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.routing.routehandleroptions.throwonbadrequest)
+throwing an exception when returning `null` from `BindAsync`,
+[`ThrowOnBadRequest`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.routing.routehandleroptions.throwonbadrequest)
 needs to be disabled:
 
 ```csharp
@@ -213,7 +214,7 @@ minimalapibuilder_validation_problem_type = "https://tools.ietf.org/html/rfc9110
 
 ### `minimalapibuilder_validation_problem_title` (`string`)
 
-The [title]((https://datatracker.ietf.org/doc/html/rfc7807#section-3.1))
+The [title](https://datatracker.ietf.org/doc/html/rfc7807#section-3.1)
 of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
 validation error result.
 
@@ -229,7 +230,7 @@ minimalapibuilder_validation_problem_title = "One or more validation errors occu
 
 ### `minimalapibuilder_model_binding_problem_type` (`string`)
 
-The [type]((https://datatracker.ietf.org/doc/html/rfc7807#section-3.1))
+The [type](https://datatracker.ietf.org/doc/html/rfc7807#section-3.1)
 of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
 model binding error result.
 
@@ -245,7 +246,7 @@ minimalapibuilder_model_binding_problem_type = "https://tools.ietf.org/html/rfc9
 
 ### `minimalapibuilder_model_binding_problem_title` (`string`)
 
-The [title]((https://datatracker.ietf.org/doc/html/rfc7807#section-3.1))
+The [title](https://datatracker.ietf.org/doc/html/rfc7807#section-3.1)
 of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
 model binding error result.
 
