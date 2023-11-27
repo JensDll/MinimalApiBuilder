@@ -13,7 +13,12 @@ public partial class E : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     {
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static (invocationContext, next) =>
         {
-            global::R a = invocationContext.GetArgument<global::R>(2);
+            global::R a = invocationContext.GetArgument<global::R>(0);
+            global::E endpoint = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::E>(invocationContext.HttpContext.RequestServices);
+            if (endpoint.HasValidationError)
+            {
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "global", title: "One or more model binding errors occurred."));
+            }
             global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R>>(invocationContext.HttpContext.RequestServices).Validate(a);
             return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred."));
         });

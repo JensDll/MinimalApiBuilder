@@ -1,7 +1,9 @@
 <Project>
   <ItemGroup>
     <CompilerVisibleProperty Include="minimalapibuilder_assign_name_to_endpoint"/>
+    <CompilerVisibleProperty Include="minimalapibuilder_validation_problem_type"/>
     <CompilerVisibleProperty Include="minimalapibuilder_validation_problem_title"/>
+    <CompilerVisibleProperty Include="minimalapibuilder_model_binding_problem_type"/>
     <CompilerVisibleProperty Include="minimalapibuilder_model_binding_problem_title"/>
   </ItemGroup>
 </Project>

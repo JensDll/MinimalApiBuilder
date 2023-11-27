@@ -77,11 +77,6 @@ internal abstract class SourceBuilder
         return OpenBlockExtra(afterClose, values[values.Length - 1]);
     }
 
-    protected void AppendLine()
-    {
-        _builder.AppendLine();
-    }
-
     protected void AppendLine(string value)
     {
         _builder.Append(' ', _indent);

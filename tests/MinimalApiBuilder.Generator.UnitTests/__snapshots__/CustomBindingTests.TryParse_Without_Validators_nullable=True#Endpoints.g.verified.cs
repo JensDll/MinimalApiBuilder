@@ -16,7 +16,7 @@ public partial class E : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             global::E endpoint = invocationContext.GetArgument<global::E>(0);
             if (endpoint.HasValidationError)
             {
-                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, title: "One or more model binding errors occurred."));
+                return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred."));
             }
             return next(invocationContext);
         });

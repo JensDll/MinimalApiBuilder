@@ -1,0 +1,7 @@
+{
+  "default": true,
+  "no-inline-html": false,
+  "line-length": {
+    "code_blocks": false
+  }
+}

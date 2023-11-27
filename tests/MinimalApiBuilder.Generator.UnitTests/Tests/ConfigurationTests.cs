@@ -21,8 +21,8 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
     }
 
     [Test]
-    public Task Validation_Problem_Title(
-        [ValueSource(nameof(ValidationProblemTitleProviders))]
+    public Task Validation_Problem(
+        [ValueSource(nameof(ValidationProblemProviders))]
         TestAnalyzerConfigOptionsProvider provider)
     {
         // language=cs
@@ -61,7 +61,9 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
                 Options =
                 {
                     [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "",
+                    [GeneratorOptions.Keys.ValidationProblemTypeBuildProperty] = "",
                     [GeneratorOptions.Keys.ValidationProblemTitleBuildProperty] = "",
+                    [GeneratorOptions.Keys.ModelBindingProblemTypeBuildProperty] = "",
                     [GeneratorOptions.Keys.ModelBindingProblemTitleBuildProperty] = ""
                 }
             },
@@ -70,7 +72,9 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
                 Options =
                 {
                     [GeneratorOptions.Keys.AssignNameToEndpoint] = "",
+                    [GeneratorOptions.Keys.ValidationProblemType] = "",
                     [GeneratorOptions.Keys.ValidationProblemTitle] = "",
+                    [GeneratorOptions.Keys.ModelBindingProblemType] = "",
                     [GeneratorOptions.Keys.ModelBindingProblemTitle] = ""
                 }
             });
@@ -144,18 +148,19 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
             friendlyName: "assign_name_global_true_local_false");
     }
 
-    private static IEnumerable<TestAnalyzerConfigOptionsProvider> ValidationProblemTitleProviders()
+    private static IEnumerable<TestAnalyzerConfigOptionsProvider> ValidationProblemProviders()
     {
+        // Validation problem type
         yield return new TestAnalyzerConfigOptionsProvider(
             globalOptions: new TestAnalyzerConfigOptions
             {
                 Options =
                 {
-                    [GeneratorOptions.Keys.ValidationProblemTitleBuildProperty] = "validation_problem_title_global"
+                    [GeneratorOptions.Keys.ValidationProblemTypeBuildProperty] = "global"
                 }
             },
             localOptions: new TestAnalyzerConfigOptions(),
-            friendlyName: "validation_problem_title_global");
+            friendlyName: "validation_type_global");
 
         yield return new TestAnalyzerConfigOptionsProvider(
             globalOptions: new TestAnalyzerConfigOptions(),
@@ -163,22 +168,22 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
             {
                 Options =
                 {
-                    [GeneratorOptions.Keys.ValidationProblemTitle] = "validation_problem_title_local"
+                    [GeneratorOptions.Keys.ValidationProblemType] = "local"
                 }
             },
-            friendlyName: "validation_problem_title_local");
+            friendlyName: "validation_type_local");
 
+        // Validation problem title
         yield return new TestAnalyzerConfigOptionsProvider(
             globalOptions: new TestAnalyzerConfigOptions
             {
                 Options =
                 {
-                    [GeneratorOptions.Keys.ModelBindingProblemTitleBuildProperty] =
-                        "model_binding_problem_title_global"
+                    [GeneratorOptions.Keys.ValidationProblemTitleBuildProperty] = "global"
                 }
             },
             localOptions: new TestAnalyzerConfigOptions(),
-            friendlyName: "model_binding_problem_title_global");
+            friendlyName: "validation_title_global");
 
         yield return new TestAnalyzerConfigOptionsProvider(
             globalOptions: new TestAnalyzerConfigOptions(),
@@ -186,9 +191,55 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
             {
                 Options =
                 {
-                    [GeneratorOptions.Keys.ModelBindingProblemTitle] = "model_binding_problem_title_local"
+                    [GeneratorOptions.Keys.ValidationProblemTitle] = "local"
                 }
             },
-            friendlyName: "model_binding_problem_title_local");
+            friendlyName: "validation_title_local");
+
+        // Model binding problem type
+        yield return new TestAnalyzerConfigOptionsProvider(
+            globalOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.ModelBindingProblemTypeBuildProperty] = "global"
+                }
+            },
+            localOptions: new TestAnalyzerConfigOptions(),
+            friendlyName: "model_binding_type_global");
+
+        yield return new TestAnalyzerConfigOptionsProvider(
+            globalOptions: new TestAnalyzerConfigOptions(),
+            localOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.ModelBindingProblemType] = "local"
+                }
+            },
+            friendlyName: "model_binding_type_local");
+
+        // Model binding problem title
+        yield return new TestAnalyzerConfigOptionsProvider(
+            globalOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.ModelBindingProblemTitleBuildProperty] = "global"
+                }
+            },
+            localOptions: new TestAnalyzerConfigOptions(),
+            friendlyName: "model_binding_title_global");
+
+        yield return new TestAnalyzerConfigOptionsProvider(
+            globalOptions: new TestAnalyzerConfigOptions(),
+            localOptions: new TestAnalyzerConfigOptions
+            {
+                Options =
+                {
+                    [GeneratorOptions.Keys.ModelBindingProblemTitle] = "local"
+                }
+            },
+            friendlyName: "model_binding_title_local");
     }
 }
