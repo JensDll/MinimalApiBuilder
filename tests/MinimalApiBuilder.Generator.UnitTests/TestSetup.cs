@@ -9,7 +9,7 @@ internal static class TestSetup
     {
         VerifySourceGenerators.Initialize();
 
-        DerivePathInfo(static (sourceFile, projectDirectory, type, method) => new PathInfo(
+        DerivePathInfo(static (_, projectDirectory, type, method) => new PathInfo(
             directory: Path.Combine(projectDirectory, "__snapshots__"), typeName: type.Name, methodName: method.Name));
     }
 }

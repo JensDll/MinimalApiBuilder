@@ -55,14 +55,12 @@ RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation"
 Configure(
     validation.MapPost("/sync/single", SyncSingleValidationEndpoint.Handle),
     validation.MapPatch("/sync/multiple", SyncMultipleValidationEndpoint.Handle),
-    validation.MapPost("/async/single", AsyncSingleValidationEndpoint.Handle));
-Configure(
+    validation.MapPost("/async/single", AsyncSingleValidationEndpoint.Handle),
     validation.MapPatch("/async/multiple", AsyncMultipleValidationEndpoint.Handle),
     validation.MapPut("/combination", CombinedValidationEndpoint.Handle));
 
 RouteGroupBuilder multipart = app.MapGroup("/multipart").WithTags("Multipart");
-Configure(
-    multipart.MapPost("/zipstream", ZipStreamEndpoint.Handle),
-    multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
+Configure(multipart.MapPost("/zipstream", ZipStreamEndpoint.Handle));
+Configure(multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 
 app.Run();
