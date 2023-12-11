@@ -71,7 +71,7 @@ internal static class AsyncValidationLoggingExtensions
 {
     private static readonly Action<ILogger, AsyncValidationParameters, Exception?> s_parameters =
         LoggerMessage.Define<AsyncValidationParameters>(LogLevel.Information,
-            new EventId(1, nameof(AsyncValidationRequest)), "Parameters: {Request}");
+            new EventId(1, nameof(AsyncValidationRequest)), "Parameters: {Parameters}");
 
     private static readonly Action<ILogger, AsyncValidationRequest, Exception?> s_request =
         LoggerMessage.Define<AsyncValidationRequest>(LogLevel.Information,

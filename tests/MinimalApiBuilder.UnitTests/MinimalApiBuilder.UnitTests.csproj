@@ -9,12 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.8.0"/>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.8.0"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0"/>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
-    <PackageReference Include="Verify" Version="22.8.0"/>
-    <PackageReference Include="Verify.SourceGenerators" Version="2.2.0"/>
-    <PackageReference Include="Verify.NUnit" Version="22.8.0"/>
     <PackageReference Include="NUnit" Version="4.0.1"/>
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0"/>
     <PackageReference Include="NUnit.Analyzers" Version="3.10.0"/>
@@ -23,12 +19,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\MinimalApiBuilder\MinimalApiBuilder.csproj"/>
-    <ProjectReference Include="..\..\src\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj"/>
-    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
   </ItemGroup>
 
-  <Target Name="CopyAnalyzers" BeforeTargets="Build">
-    <Copy SourceFiles="@(Analyzer)" DestinationFolder="$(OutputPath)\copied-analyzers" SkipUnchangedFiles="true"/>
-  </Target>
+  <ItemGroup>
+    <Content Include="static\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 
 </Project>

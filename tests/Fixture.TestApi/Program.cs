@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MinimalApiBuilder;
+using MinimalApiBuilder.Middleware;
 using static MinimalApiBuilder.ConfigureEndpoints;
 
 WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
@@ -36,6 +37,13 @@ builder.Services.ConfigureHttpJsonOptions(static options =>
     options.SerializerOptions.TypeInfoResolverChain.Add(ValidationJsonContext.Default);
 });
 
+builder.Services.AddCompressedStaticFileMiddleware();
+
+DefaultFilesOptions defaultFilesOptions = new()
+{
+    DefaultFileNames = ["index.html"]
+};
+
 WebApplication app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -44,10 +52,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseDefaultFiles(defaultFilesOptions);
+app.UseCompressedStaticFiles();
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler();
 }
+
+CompressedStaticFileOptions options = new()
+{
+    ContentEncodingOrder = null
+};
 
 app.UseStatusCodePages();
 

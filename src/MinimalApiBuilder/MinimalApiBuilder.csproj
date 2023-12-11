@@ -38,4 +38,8 @@
     </ItemGroup>
   </Target>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="MinimalApiBuilder.UnitTests"/>
+  </ItemGroup>
+
 </Project>

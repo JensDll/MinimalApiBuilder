@@ -30,8 +30,11 @@ internal sealed class MultipartTests
         using ZipArchive archive = new(responseStream, ZipArchiveMode.Read);
 
         Assert.That(archive.Entries, Has.Count.EqualTo(2));
-        Assert.That(archive.Entries[0].Name, Is.EqualTo("some_text"));
-        Assert.That(archive.Entries[1].Name, Is.EqualTo("some_file.txt"));
+        Assert.Multiple(() =>
+        {
+            Assert.That(archive.Entries[0].Name, Is.EqualTo("some_text"));
+            Assert.That(archive.Entries[1].Name, Is.EqualTo("some_file.txt"));
+        });
 
         using StreamReader textReader = new(archive.Entries[0].Open(), Encoding.UTF8);
         string text = await textReader.ReadToEndAsync();

@@ -1,0 +1,3 @@
+﻿GET http://localhost:5000/index.html
+Range: bytes=40-80
+Accept-Encoding: br;q=0.2, deflate;q=0.8, gzip;q=0.8
