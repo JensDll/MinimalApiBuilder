@@ -1,4 +1,6 @@
-﻿namespace MinimalApiBuilder.Generator.UnitTests.Tests;
+﻿using MinimalApiBuilder.Generator.UnitTests.Infrastructure;
+
+namespace MinimalApiBuilder.Generator.UnitTests;
 
 internal sealed class DiagnosticTests : GeneratorUnitTest
 {

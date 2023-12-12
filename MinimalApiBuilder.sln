@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fixture.TestApi", "tests\Fi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.Generator.UnitTests", "tests\MinimalApiBuilder.Generator.UnitTests\MinimalApiBuilder.Generator.UnitTests.csproj", "{514C7DD2-0FAD-4F5B-8874-B9336EB817FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.IntegrationTests", "tests\MinimalApiBuilder.IntegrationTests\MinimalApiBuilder.IntegrationTests.csproj", "{9C4BCB5F-F9EC-4C55-9CC0-131A119C1392}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.TestApiTests", "tests\MinimalApiBuilder.TestApiTests\MinimalApiBuilder.TestApiTests.csproj", "{9C4BCB5F-F9EC-4C55-9CC0-131A119C1392}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalApiBuilder.UnitTests", "tests\MinimalApiBuilder.UnitTests\MinimalApiBuilder.UnitTests.csproj", "{C490BA92-A38A-4FA6-81D2-C2CFEBD75A5B}"
 EndProject

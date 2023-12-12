@@ -15,7 +15,7 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MinimalApiBuilder.Generator.UnitTests;
+namespace MinimalApiBuilder.Generator.UnitTests.Infrastructure;
 
 internal abstract class GeneratorUnitTest
 {

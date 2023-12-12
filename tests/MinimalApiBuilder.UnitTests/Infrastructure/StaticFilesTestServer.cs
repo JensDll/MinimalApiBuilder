@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MinimalApiBuilder.Middleware;
 
-namespace MinimalApiBuilder.UnitTests;
+namespace MinimalApiBuilder.UnitTests.Infrastructure;
 
 internal static class StaticFilesTestServer
 {
@@ -37,10 +37,11 @@ internal static class StaticFilesTestServer
         Action<IServiceCollection> configureServices)
     {
         IConfigurationRoot configuration = new ConfigurationBuilder()
-            .AddInMemoryCollection([new KeyValuePair<string, string?>("webroot", "static")])
+            .AddInMemoryCollection([new KeyValuePair<string, string?>(WebHostDefaults.WebRootKey, "static")])
             .Build();
 
-        IHost host = new HostBuilder().ConfigureWebHost(builder => builder
+        IHost host = new HostBuilder()
+            .ConfigureWebHost(builder => builder
                 .UseTestServer()
                 .UseConfiguration(configuration)
                 .Configure(configureApp)

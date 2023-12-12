@@ -1,9 +1,10 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation;
+using MinimalApiBuilder.TestApiTests.Infrastructure;
 using NUnit.Framework;
 
-namespace MinimalApiBuilder.IntegrationTests.Tests;
+namespace MinimalApiBuilder.TestApiTests;
 
 internal sealed class CombinedValidationTests
 {

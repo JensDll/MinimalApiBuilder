@@ -83,7 +83,6 @@ public static class CompressedStaticFileMiddlewareExtensions
                         logger.WebRootPathNotFound(Path.GetFullPath(
                             Path.Combine(environment.ContentRootPath, environment.WebRootPath ?? "wwwroot")));
                     }
-                })
-            .ValidateOnStart();
+                });
     }
 }

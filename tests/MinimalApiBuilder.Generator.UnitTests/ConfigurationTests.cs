@@ -1,6 +1,7 @@
 ﻿using MinimalApiBuilder.Generator.Entities;
+using MinimalApiBuilder.Generator.UnitTests.Infrastructure;
 
-namespace MinimalApiBuilder.Generator.UnitTests.Tests;
+namespace MinimalApiBuilder.Generator.UnitTests;
 
 internal sealed class ConfigurationTests : GeneratorUnitTest
 {

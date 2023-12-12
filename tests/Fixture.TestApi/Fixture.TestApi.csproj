@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="MinimalApiBuilder.IntegrationTests"/>
+    <InternalsVisibleTo Include="MinimalApiBuilder.TestApiTests"/>
   </ItemGroup>
 
   <ItemGroup>

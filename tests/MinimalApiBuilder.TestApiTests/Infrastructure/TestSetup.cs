@@ -1,23 +1,24 @@
-﻿using NUnit.Framework;
+﻿using MinimalApiBuilder.TestApiTests.Infrastructure;
+using NUnit.Framework;
 
-namespace MinimalApiBuilder.IntegrationTests;
+// ReSharper disable CheckNamespace
 
 [SetUpFixture]
-internal sealed class TestSetup
+internal static class TestSetup
 {
     private static TestWebApplicationFactory<Program> s_factory = null!;
 
-    internal static HttpClient Client = null!;
+    internal static HttpClient Client { get; private set; } = null!;
 
     [OneTimeSetUp]
-    public void RunBeforeAnyTests()
+    public static void RunBeforeAnyTests()
     {
         s_factory = new TestWebApplicationFactory<Program>();
         Client = s_factory.CreateClient();
     }
 
     [OneTimeTearDown]
-    public void RunAfterAnyTests()
+    public static void RunAfterAnyTests()
     {
         s_factory.Dispose();
         Client.Dispose();

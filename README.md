@@ -58,11 +58,14 @@ public class BasicRequestValidator : AbstractValidator<BasicRequest>
 ```
 
 The incremental generator will generate code to validate the request object before
-the handler is called and return a [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
+the handler is called and return
+a [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
 validation error result if the validation fails. To wire up the validation filters
-and to support the [Request Delegate Generator](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/aot/request-delegate-generator/rdg),
+and to support
+the [Request Delegate Generator](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/aot/request-delegate-generator/rdg),
 the `Map` methods need to be wrapped by the `ConfigureEndpoints.Configure` helper,
-which expects a comma-separated list of [`RouteHandlerBuilder`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routehandlerbuilder):
+which expects a comma-separated list
+of [`RouteHandlerBuilder`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routehandlerbuilder):
 
 ```csharp
 using static MinimalApiBuilder.ConfigureEndpoints;
@@ -70,7 +73,8 @@ using static MinimalApiBuilder.ConfigureEndpoints;
 Configure(app.MapGet("/hello/{name}", BasicRequestEndpoint.Handle));
 ```
 
-Validation in [custom binding](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding#custom-binding)
+Validation
+in [custom binding](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding#custom-binding)
 scenarios is also supported. For example, adapting the Microsoft
 [`BindAsync` sample](https://learn.microsoft.com/en-gb/aspnet/core/fundamentals/minimal-apis/parameter-binding?view=aspnetcore-8.0#bindasync):
 
@@ -182,7 +186,8 @@ with configuration snippets showing the default values:
 ### `minimalapibuilder_assign_name_to_endpoint` (`true` | `false`)
 
 If `true`, the generator will add a unique `public const string Name` field to
-the endpoint classes and call the [`WithName`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routingendpointconventionbuilderextensions.withname)
+the endpoint classes and call
+the [`WithName`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routingendpointconventionbuilderextensions.withname)
 extension method when mapping them.
 
 ```.editorconfig
@@ -214,7 +219,8 @@ minimalapibuilder_validation_problem_type = https://tools.ietf.org/html/rfc9110#
 ### `minimalapibuilder_validation_problem_title` (`string`)
 
 The [title](https://datatracker.ietf.org/doc/html/rfc7807#section-3.1)
-of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
+of
+the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
 validation error result.
 
 ```.editorconfig
@@ -230,7 +236,8 @@ minimalapibuilder_validation_problem_title = One or more validation errors occur
 ### `minimalapibuilder_model_binding_problem_type` (`string`)
 
 The [type](https://datatracker.ietf.org/doc/html/rfc7807#section-3.1)
-of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
+of
+the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
 model binding error result.
 
 ```.editorconfig
@@ -246,7 +253,8 @@ minimalapibuilder_model_binding_problem_type = https://tools.ietf.org/html/rfc91
 ### `minimalapibuilder_model_binding_problem_title` (`string`)
 
 The [title](https://datatracker.ietf.org/doc/html/rfc7807#section-3.1)
-of the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
+of
+the [`ValidationProblem`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.http.results.validationproblem)
 model binding error result.
 
 ```.editorconfig

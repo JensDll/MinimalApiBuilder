@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace MinimalApiBuilder.Generator.UnitTests;
+namespace MinimalApiBuilder.Generator.UnitTests.Infrastructure;
 
 internal sealed class GeneratedCodeRewriter : CSharpSyntaxRewriter
 {

@@ -117,12 +117,12 @@ public class CompressedStaticFileMiddleware : IMiddleware
                     PreconditionHelper.EvaluateIfRange(requestHeaders, etag, lastModified) == (true, false))
                 {
                     _logger.IfRangePreconditionFailed(subPath);
-                    return SendFileAsync(staticFileResponseContext, subPath);
+                    return SendFileAsync(staticFileResponseContext, next, subPath);
                 }
 
                 if (!RangeHelper.TryParseRange(context, requestHeaders, fileInfo.Length, out (long, long)? range))
                 {
-                    return SendFileAsync(staticFileResponseContext, subPath);
+                    return SendFileAsync(staticFileResponseContext, next, subPath);
                 }
 
                 if (range is null)
@@ -140,7 +140,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 context.Response.StatusCode = StatusCodes.Status206PartialContent;
                 context.Response.ContentLength = count;
                 _logger.SendingRange(start, end, subPath);
-                return SendFileAsync(staticFileResponseContext, start, count);
+                return SendFileAsync(staticFileResponseContext, next, start, count);
             case PreconditionState.NotModified:
                 responseHeaders.LastModified = lastModified;
                 responseHeaders.ETag = etag;
@@ -193,7 +193,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
         return fileInfo;
     }
 
-    private async Task SendFileAsync(StaticFileResponseContext context, long offset, long count)
+    private async Task SendFileAsync(StaticFileResponseContext context, RequestDelegate next, long offset, long count)
     {
         SetCompressionMode(context.Context);
 
@@ -210,13 +210,18 @@ public class CompressedStaticFileMiddleware : IMiddleware
         {
             _logger.SendFileCancelled(e);
         }
+        catch (FileNotFoundException)
+        {
+            context.Context.Response.Clear();
+            await next(context.Context);
+        }
     }
 
-    private Task SendFileAsync(StaticFileResponseContext context, string subPath)
+    private Task SendFileAsync(StaticFileResponseContext context, RequestDelegate next, string subPath)
     {
         context.Context.Response.ContentLength = context.File.Length;
         _logger.SendingFile(subPath);
-        return SendFileAsync(context, 0, context.File.Length);
+        return SendFileAsync(context, next, 0, context.File.Length);
     }
 
     private bool TryGetContentEncoding(RequestHeaders requestHeaders, out StringSegment contentEncoding)

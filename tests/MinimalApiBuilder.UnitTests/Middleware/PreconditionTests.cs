@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Net.Http.Headers;
+using MinimalApiBuilder.UnitTests.Infrastructure;
 using NUnit.Framework;
 
 namespace MinimalApiBuilder.UnitTests.Middleware;

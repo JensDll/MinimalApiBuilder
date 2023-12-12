@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace MinimalApiBuilder.Generator.UnitTests;
+namespace MinimalApiBuilder.Generator.UnitTests.Infrastructure;
 
 internal static class TestSetup
 {

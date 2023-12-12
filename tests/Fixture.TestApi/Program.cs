@@ -60,11 +60,6 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler();
 }
 
-CompressedStaticFileOptions options = new()
-{
-    ContentEncodingOrder = null
-};
-
 app.UseStatusCodePages();
 
 RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation");

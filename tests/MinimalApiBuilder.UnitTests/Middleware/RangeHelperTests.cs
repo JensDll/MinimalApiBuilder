@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace MinimalApiBuilder.UnitTests.Middleware;
 
-internal class RangeHelperTests
+internal sealed class RangeHelperTests
 {
     [Test]
     public void HasRangeHeaderField_False_Without_Range_Header()

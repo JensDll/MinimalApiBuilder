@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace MinimalApiBuilder.Generator.UnitTests;
+namespace MinimalApiBuilder.Generator.UnitTests.Infrastructure;
 
 internal static class TestExtensions
 {

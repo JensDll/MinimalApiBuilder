@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Net.Http.Headers;
+using MinimalApiBuilder.UnitTests.Infrastructure;
 using NUnit.Framework;
 using ContentRangeHeaderValue = System.Net.Http.Headers.ContentRangeHeaderValue;
 using EntityTagHeaderValue = System.Net.Http.Headers.EntityTagHeaderValue;
@@ -9,19 +10,19 @@ namespace MinimalApiBuilder.UnitTests.Middleware;
 
 internal sealed class RangeTests
 {
-    private static readonly Uri s_rangeUri = new("/range.txt", UriKind.Relative);
+    private static readonly Uri s_uri = new("/range.txt", UriKind.Relative);
 
     [Test]
-    public async Task IfRange_With_Current_ETag_Serves_Partial_Content()
+    public async Task IfRange_207_With_Current_ETag()
     {
         using var host = await StaticFilesTestServer.Create();
         using var server = host.GetTestServer();
         using var client = server.CreateClient();
 
-        using HttpResponseMessage original = await client.GetAsync(s_rangeUri);
+        using HttpResponseMessage original = await client.GetAsync(s_uri);
         EntityTagHeaderValue originalEtag = original.Headers.ETag!;
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_rangeUri);
+        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange, originalEtag.Tag);
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
@@ -31,15 +32,15 @@ internal sealed class RangeTests
     }
 
     [Test]
-    public async Task IfRange_With_Current_Date_Serves_Partial_Content()
+    public async Task IfRange_207_With_Current_Date()
     {
         using var host = await StaticFilesTestServer.Create();
         using var server = host.GetTestServer();
         using var client = server.CreateClient();
 
-        using HttpResponseMessage original = await client.GetAsync(s_rangeUri);
+        using HttpResponseMessage original = await client.GetAsync(s_uri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_rangeUri);
+        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange, original.Content.Headers.LastModified!.Value.ToString("R"));
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
@@ -49,15 +50,15 @@ internal sealed class RangeTests
     }
 
     [Test]
-    public async Task IfRange_With_Outdated_Etag_Serves_Full_Content()
+    public async Task IfRange_200_With_Outdated_ETag()
     {
         using var host = await StaticFilesTestServer.Create();
         using var server = host.GetTestServer();
         using var client = server.CreateClient();
 
-        using HttpResponseMessage original = await client.GetAsync(s_rangeUri);
+        using HttpResponseMessage original = await client.GetAsync(s_uri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_rangeUri);
+        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange, "\"outdated\"");
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
@@ -67,15 +68,15 @@ internal sealed class RangeTests
     }
 
     [Test]
-    public async Task IfRange_With_Unequal_Date_Serves_Full_Content([Values(-1, 1)] double hours)
+    public async Task IfRange_200_With_Unequal_Date([Values(-1, 1)] double hours)
     {
         using var host = await StaticFilesTestServer.Create();
         using var server = host.GetTestServer();
         using var client = server.CreateClient();
 
-        using HttpResponseMessage original = await client.GetAsync(s_rangeUri);
+        using HttpResponseMessage original = await client.GetAsync(s_uri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_rangeUri);
+        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange,
             original.Content.Headers.LastModified!.Value.AddHours(hours).ToString("R"));
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
@@ -92,10 +93,10 @@ internal sealed class RangeTests
         using var server = host.GetTestServer();
         using var client = server.CreateClient();
 
-        using HttpResponseMessage original = await client.GetAsync(s_rangeUri);
+        using HttpResponseMessage original = await client.GetAsync(s_uri);
         EntityTagHeaderValue originalEtag = original.Headers.ETag!;
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_rangeUri);
+        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange, originalEtag.Tag);
 
         using HttpResponseMessage response = await client.SendAsync(request);
@@ -114,7 +115,7 @@ internal sealed class RangeTests
         using var server = host.GetTestServer();
         using var client = server.CreateClient();
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_rangeUri);
+        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.Range, rangeHeader);
 
         using HttpResponseMessage response = await client.SendAsync(request);
@@ -137,7 +138,7 @@ internal sealed class RangeTests
         using var server = host.GetTestServer();
         using var client = server.CreateClient();
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_rangeUri);
+        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.Range, rangeHeader);
 
         using HttpResponseMessage response = await client.SendAsync(request);

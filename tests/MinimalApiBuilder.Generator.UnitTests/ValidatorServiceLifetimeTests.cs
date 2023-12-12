@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using MinimalApiBuilder.Generator.UnitTests.Infrastructure;
 
-namespace MinimalApiBuilder.Generator.UnitTests.Tests;
+namespace MinimalApiBuilder.Generator.UnitTests;
 
 internal sealed class ValidatorServiceLifetimeTests : GeneratorUnitTest
 {

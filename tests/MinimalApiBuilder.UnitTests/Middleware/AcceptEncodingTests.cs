@@ -4,13 +4,14 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using MinimalApiBuilder.Middleware;
+using MinimalApiBuilder.UnitTests.Infrastructure;
 using NUnit.Framework;
 
 namespace MinimalApiBuilder.UnitTests.Middleware;
 
 internal sealed class AcceptEncodingTests
 {
-    private static readonly Uri s_dataUri = new("/data.txt", UriKind.Relative);
+    private static readonly Uri s_uri = new("/data.txt", UriKind.Relative);
 
     [Test]
     public async Task Without_Quality_Chooses_Based_On_Configured_Order()
@@ -28,19 +29,19 @@ internal sealed class AcceptEncodingTests
     [Test]
     public async Task Unconfigured_Content_Encoding_Is_Ignored()
     {
-        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage responseA = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
         {
             new("br", 0)
         }, "br, gzip, deflate");
 
-        using HttpResponseMessage otherResponse = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage responseB = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
         {
             new("gzip", 0)
         }, "br, gzip, deflate");
 
         await Assert.MultipleAsync(() => Task.WhenAll(
-            AssertResponseAsync(response, "br"),
-            AssertResponseAsync(otherResponse, "gzip")));
+            AssertResponseAsync(responseA, "br"),
+            AssertResponseAsync(responseB, "gzip")));
     }
 
     [Test]
@@ -72,14 +73,14 @@ internal sealed class AcceptEncodingTests
     [Test]
     public async Task Default_Quality_Is_One()
     {
-        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage responseA = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
         {
             new("br", 1),
             new("gzip", 2),
             new("deflate", 3)
         }, "br;q=1, gzip, deflate");
 
-        using HttpResponseMessage otherResponse = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage responseB = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
         {
             new("br", 3),
             new("gzip", 2),
@@ -87,8 +88,8 @@ internal sealed class AcceptEncodingTests
         }, "br;q=1, gzip, deflate");
 
         await Assert.MultipleAsync(() => Task.WhenAll(
-            AssertResponseAsync(response, "deflate"),
-            AssertResponseAsync(otherResponse, "br")));
+            AssertResponseAsync(responseA, "deflate"),
+            AssertResponseAsync(responseB, "br")));
     }
 
     private static async Task<HttpResponseMessage> MakeRequestAsync(
@@ -101,8 +102,10 @@ internal sealed class AcceptEncodingTests
         });
         using var server = host.GetTestServer();
         using var client = server.CreateClient();
-        using HttpRequestMessage request = new(HttpMethod.Get, s_dataUri);
+
+        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.AcceptEncoding, acceptEncoding);
+
         return await client.SendAsync(request);
     }
 
