@@ -12,7 +12,6 @@ Based on the Vertical Slice Architecture with `Feature` folder.
 There is one class for every API endpoint. A basic example looks like the following:
 
 ```csharp
-using Microsoft.AspNetCore.Mvc;
 using MinimalApiBuilder;
 
 public partial class BasicEndpoint : MinimalApiBuilderEndpoint

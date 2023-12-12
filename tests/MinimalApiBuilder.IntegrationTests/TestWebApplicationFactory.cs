@@ -8,7 +8,7 @@ internal sealed class TestWebApplicationFactory<TProgram>
 {
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        builder.ConfigureServices(static services =>
+        builder.ConfigureServices(static _ =>
             { });
         return base.CreateHost(builder);
     }

@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Setting up dotnet
-        uses: actions/setup-dotnet@v3.2.0
+        uses: actions/setup-dotnet@v4.0.0
 
       - name: Restoring the solution
         run: dotnet restore
@@ -51,7 +51,7 @@ jobs:
         uses: actions/checkout@v4.1.1
 
       - name: Setting up dotnet
-        uses: actions/setup-dotnet@v3.2.0
+        uses: actions/setup-dotnet@v4.0.0
 
       - name: Restoring src
         run: dotnet restore MinimalApiBuilder.src.slnf
