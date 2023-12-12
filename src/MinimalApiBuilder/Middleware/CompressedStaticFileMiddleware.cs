@@ -43,8 +43,6 @@ public class CompressedStaticFileMiddleware : IMiddleware
     public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         PathString requestPath = context.Request.Path;
-        RequestHeaders requestHeaders = context.Request.GetTypedHeaders();
-        ResponseHeaders responseHeaders = context.Response.GetTypedHeaders();
 
         using IDisposable? scope = _logger.CompressedStaticFileMiddleware(requestPath);
 
@@ -74,6 +72,9 @@ public class CompressedStaticFileMiddleware : IMiddleware
             return next(context);
         }
 
+        RequestHeaders requestHeaders = context.Request.GetTypedHeaders();
+        ResponseHeaders responseHeaders = context.Response.GetTypedHeaders();
+
         IFileInfo fileInfo = GetFileInfo(requestHeaders, subPath, out StringSegment contentEncoding);
 
         if (!fileInfo.Exists)
@@ -94,7 +95,11 @@ public class CompressedStaticFileMiddleware : IMiddleware
             context.Response.ContentType = contentType;
             context.Response.ContentLength = fileInfo.Length;
             _options.OnPrepareResponse(staticFileResponseContext);
+#if NET8_0_OR_GREATER
+            return _options.OnPrepareResponseAsync(staticFileResponseContext);
+#else
             return Task.CompletedTask;
+#endif
         }
 
         PreconditionState precondition = PreconditionHelper.EvaluatePreconditions(requestHeaders, etag, lastModified);
@@ -161,7 +166,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 return Task.CompletedTask;
 #endif
             default:
-                NotImplementedException exception = new($"Unexpected precondition state value: {precondition}");
+                InvalidOperationException exception = new($"Unexpected precondition state value: {precondition}");
                 Debug.Fail(exception.ToString());
                 throw exception;
         }

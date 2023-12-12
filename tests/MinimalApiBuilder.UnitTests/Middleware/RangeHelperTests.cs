@@ -93,11 +93,11 @@ internal class RangeHelperTests
     }
 
     // https://www.rfc-editor.org/rfc/rfc9110.html#section-14.1.2-10
-    [TestCase("bytes=20-30")] // int-range
-    [TestCase("bytes=20-")] // int-range without last-pos
-    [TestCase("bytes=10-20")] // int-range & firs-pos equals length
-    [TestCase("bytes=10-")] // int-range without last-pos & firs-pos equals length
-    [TestCase("bytes=-0")] // suffix-range with zero suffix-length
+    [TestCase("bytes=11-30")] // int-range, first-pos greater than length
+    [TestCase("bytes=11-")] // int-range, first-pos greater than length, without last-pos
+    [TestCase("bytes=10-20")] // int-range, first-pos equals length
+    [TestCase("bytes=10-")] // int-range, first-pos equals length, without last-pos
+    [TestCase("bytes=-0")] // suffix-range, zero suffix-length
     public void TryParseRange_Not_Satisfiable(string rangeHeader)
     {
         DefaultHttpContext context = new();

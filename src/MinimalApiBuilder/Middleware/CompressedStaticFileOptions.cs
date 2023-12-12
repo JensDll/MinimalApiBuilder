@@ -1,16 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Primitives;
-#if NET8_0_OR_GREATER
+﻿#if NET8_0_OR_GREATER
 using System.Collections.Frozen;
-
 #else
 using System.Collections.ObjectModel;
 #endif
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Primitives;
 
 namespace MinimalApiBuilder.Middleware;
 
 /// <summary>
-/// Options for server static files.
+/// Options for serving static files.
 /// </summary>
 public class CompressedStaticFileOptions : StaticFileOptions
 {
