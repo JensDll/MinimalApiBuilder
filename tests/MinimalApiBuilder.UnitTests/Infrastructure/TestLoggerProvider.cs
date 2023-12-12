@@ -2,7 +2,7 @@
 
 namespace MinimalApiBuilder.UnitTests.Infrastructure;
 
-internal class TestLoggerProvider : ILoggerProvider
+internal sealed class TestLoggerProvider : ILoggerProvider
 {
     private readonly ILogger _logger;
 
