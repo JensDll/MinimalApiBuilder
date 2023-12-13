@@ -4,7 +4,7 @@ using System.Text;
 using Fixture.TestApi.Features.Multipart;
 using NUnit.Framework;
 
-namespace MinimalApiBuilder.TestApiTests;
+namespace MinimalApiBuilder.IntegrationTests;
 
 internal sealed class MultipartTests
 {

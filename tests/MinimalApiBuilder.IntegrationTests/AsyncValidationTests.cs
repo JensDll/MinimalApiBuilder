@@ -4,7 +4,7 @@ using Fixture.TestApi.Features.Validation;
 using MinimalApiBuilder.TestApiTests.Infrastructure;
 using NUnit.Framework;
 
-namespace MinimalApiBuilder.TestApiTests;
+namespace MinimalApiBuilder.IntegrationTests;
 
 internal sealed class AsyncValidationTests
 {
@@ -14,7 +14,8 @@ internal sealed class AsyncValidationTests
     [TestCaseSource(nameof(InvalidSingle))]
     public async Task Invalid_Single_Parameter(AsyncValidationRequest request)
     {
-        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/validation/async/single", request);
+        HttpResponseMessage response =
+            await TestSetup.Client.PostAsJsonAsync<AsyncValidationRequest>("/validation/async/single", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }

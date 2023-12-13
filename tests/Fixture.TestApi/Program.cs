@@ -12,7 +12,11 @@ using MinimalApiBuilder;
 using MinimalApiBuilder.Middleware;
 using static MinimalApiBuilder.ConfigureEndpoints;
 
+#if NET8_0_OR_GREATER
 WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
+#else
+WebApplicationBuilder builder = WebApplication.CreateBuilder();
+#endif
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -30,12 +34,14 @@ builder.Services.Configure<RouteHandlerOptions>(static options =>
     options.ThrowOnBadRequest = false;
 });
 
+#if NET8_0_OR_GREATER
 builder.Services.ConfigureHttpJsonOptions(static options =>
 {
     options.SerializerOptions.TypeInfoResolverChain.RemoveAt(1); // Remove DefaultJsonTypeInfoResolver
     options.SerializerOptions.TypeInfoResolverChain.Add(MultipartJsonContext.Default);
     options.SerializerOptions.TypeInfoResolverChain.Add(ValidationJsonContext.Default);
 });
+#endif
 
 builder.Services.AddCompressedStaticFileMiddleware();
 

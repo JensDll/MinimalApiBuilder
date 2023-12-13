@@ -4,7 +4,7 @@ using Fixture.TestApi.Features.Validation;
 using MinimalApiBuilder.TestApiTests.Infrastructure;
 using NUnit.Framework;
 
-namespace MinimalApiBuilder.TestApiTests;
+namespace MinimalApiBuilder.IntegrationTests;
 
 internal sealed class CombinedValidationTests
 {
