@@ -1,5 +1,4 @@
 ﻿using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Net.Http.Headers;
 using MinimalApiBuilder.UnitTests.Infrastructure;
 using NUnit.Framework;
@@ -15,18 +14,16 @@ internal sealed class RangeTests
     [Test]
     public async Task IfRange_207_With_Current_ETag()
     {
-        using var host = await StaticFilesTestServer.Create();
-        using var server = host.GetTestServer();
-        using var client = server.CreateClient();
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
         EntityTagHeaderValue originalEtag = original.Headers.ETag!;
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange, originalEtag.Tag);
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
-        using HttpResponseMessage response = await client.SendAsync(request);
+        using HttpResponseMessage response = await server.Client.SendAsync(request);
 
         await Assert207Async(response, new ContentRangeHeaderValue(0, 10, 62), "0123456789a");
     }
@@ -34,17 +31,15 @@ internal sealed class RangeTests
     [Test]
     public async Task IfRange_207_With_Current_Date()
     {
-        using var host = await StaticFilesTestServer.Create();
-        using var server = host.GetTestServer();
-        using var client = server.CreateClient();
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange, original.Content.Headers.LastModified!.Value.ToString("R"));
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
-        using HttpResponseMessage response = await client.SendAsync(request);
+        using HttpResponseMessage response = await server.Client.SendAsync(request);
 
         await Assert207Async(response, new ContentRangeHeaderValue(0, 10, 62), "0123456789a");
     }
@@ -52,17 +47,15 @@ internal sealed class RangeTests
     [Test]
     public async Task IfRange_200_With_Outdated_ETag()
     {
-        using var host = await StaticFilesTestServer.Create();
-        using var server = host.GetTestServer();
-        using var client = server.CreateClient();
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange, "\"outdated\"");
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
-        using HttpResponseMessage response = await client.SendAsync(request);
+        using HttpResponseMessage response = await server.Client.SendAsync(request);
 
         await Assert200Async(response, await original.Content.ReadAsStringAsync());
     }
@@ -70,18 +63,16 @@ internal sealed class RangeTests
     [Test]
     public async Task IfRange_200_With_Unequal_Date([Values(-1, 1)] double hours)
     {
-        using var host = await StaticFilesTestServer.Create();
-        using var server = host.GetTestServer();
-        using var client = server.CreateClient();
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange,
             original.Content.Headers.LastModified!.Value.AddHours(hours).ToString("R"));
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
-        using HttpResponseMessage response = await client.SendAsync(request);
+        using HttpResponseMessage response = await server.Client.SendAsync(request);
 
         await Assert200Async(response, await original.Content.ReadAsStringAsync());
     }
@@ -89,17 +80,15 @@ internal sealed class RangeTests
     [Test]
     public async Task IfRange_Ignored_Without_Range()
     {
-        using var host = await StaticFilesTestServer.Create();
-        using var server = host.GetTestServer();
-        using var client = server.CreateClient();
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
         EntityTagHeaderValue originalEtag = original.Headers.ETag!;
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.IfRange, originalEtag.Tag);
 
-        using HttpResponseMessage response = await client.SendAsync(request);
+        using HttpResponseMessage response = await server.Client.SendAsync(request);
 
         await Assert200Async(response, await original.Content.ReadAsStringAsync());
     }
@@ -111,14 +100,12 @@ internal sealed class RangeTests
     [TestCase("bytes=-0")] // suffix-range, zero suffix-length
     public async Task Range_Not_Satisfiable(string rangeHeader)
     {
-        using var host = await StaticFilesTestServer.Create();
-        using var server = host.GetTestServer();
-        using var client = server.CreateClient();
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.Range, rangeHeader);
 
-        using HttpResponseMessage response = await client.SendAsync(request);
+        using HttpResponseMessage response = await server.Client.SendAsync(request);
 
         await Assert416Async(response, 62);
     }
@@ -134,14 +121,12 @@ internal sealed class RangeTests
     public async Task Serves_Partial_Content(string rangeHeader, long expectedStart, long expectedEnd,
         string expectedContent)
     {
-        using var host = await StaticFilesTestServer.Create();
-        using var server = host.GetTestServer();
-        using var client = server.CreateClient();
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.Range, rangeHeader);
 
-        using HttpResponseMessage response = await client.SendAsync(request);
+        using HttpResponseMessage response = await server.Client.SendAsync(request);
 
         await Assert207Async(response, new ContentRangeHeaderValue(expectedStart, expectedEnd, 62), expectedContent);
     }

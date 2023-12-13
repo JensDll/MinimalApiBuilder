@@ -1,6 +1,5 @@
 ﻿using System.Collections.Frozen;
 using System.Net;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using MinimalApiBuilder.Middleware;
@@ -23,25 +22,19 @@ internal sealed class AcceptEncodingTests
             new("deflate", 1)
         }, "br, gzip, deflate");
 
-        await AssertResponseAsync(response, "br");
+        await AssertResponseAsync(response, ContentCodingNames.Br);
     }
 
-    [Test]
-    public async Task Unconfigured_Content_Encoding_Is_Ignored()
+    [TestCase("br")]
+    [TestCase("gzip")]
+    public async Task Unconfigured_Content_Encoding_Is_Ignored(string expectedEncoding)
     {
-        using HttpResponseMessage responseA = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
         {
-            new("br", 0)
+            new(expectedEncoding, 0)
         }, "br, gzip, deflate");
 
-        using HttpResponseMessage responseB = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
-        {
-            new("gzip", 0)
-        }, "br, gzip, deflate");
-
-        await Assert.MultipleAsync(() => Task.WhenAll(
-            AssertResponseAsync(responseA, "br"),
-            AssertResponseAsync(responseB, "gzip")));
+        await AssertResponseAsync(response, expectedEncoding);
     }
 
     [Test]
@@ -57,65 +50,86 @@ internal sealed class AcceptEncodingTests
         await AssertResponseAsync(response, "deflate");
     }
 
+    [TestCase(2, 1, "gzip")]
+    [TestCase(1, 2, "deflate")]
+    public async Task Order_Decides_When_Quality_Is_The_Same(int gzipOrder, int deflateOrder, string expectedEncoding)
+    {
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        {
+            new("br", 3),
+            new("gzip", gzipOrder),
+            new("deflate", deflateOrder)
+        }, "br;q=0.7, gzip;q=0.8, deflate;q=0.8");
+
+        await AssertResponseAsync(response, expectedEncoding);
+    }
+
+    [TestCase(1, 2, 3, "deflate")]
+    [TestCase(3, 2, 1, "br")]
+    public async Task Default_Quality_Is_One(int brOrder, int gzipOrder, int deflateOrder, string expectedEncoding)
+    {
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        {
+            new("br", brOrder),
+            new("gzip", gzipOrder),
+            new("deflate", deflateOrder)
+        }, "br;q=1, gzip, deflate");
+
+        await AssertResponseAsync(response, expectedEncoding);
+    }
+
     [Test]
-    public async Task Order_Decides_When_Quality_Is_The_Same()
+    public async Task Quality_Zero_Means_Not_Acceptable_And_Serves_Without_Content_Negotiation()
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
         {
             new("br", 3),
             new("gzip", 2),
             new("deflate", 1)
-        }, "br;q=0.7, gzip;q=0.8, deflate;q=0.8");
+        }, "br;q=0, gzip;q=0, deflate;q=0");
 
-        await AssertResponseAsync(response, "gzip");
-    }
-
-    [Test]
-    public async Task Default_Quality_Is_One()
-    {
-        using HttpResponseMessage responseA = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
-        {
-            new("br", 1),
-            new("gzip", 2),
-            new("deflate", 3)
-        }, "br;q=1, gzip, deflate");
-
-        using HttpResponseMessage responseB = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
-        {
-            new("br", 3),
-            new("gzip", 2),
-            new("deflate", 1)
-        }, "br;q=1, gzip, deflate");
-
-        await Assert.MultipleAsync(() => Task.WhenAll(
-            AssertResponseAsync(responseA, "deflate"),
-            AssertResponseAsync(responseB, "br")));
+        await AssertResponseAsync(response);
     }
 
     private static async Task<HttpResponseMessage> MakeRequestAsync(
         IEnumerable<KeyValuePair<StringSegment, int>> contentEncodingOrder,
         string acceptEncoding)
     {
-        using var host = await StaticFilesTestServer.Create(new CompressedStaticFileOptions
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
         {
             ContentEncodingOrder = contentEncodingOrder.ToFrozenDictionary()
         });
-        using var server = host.GetTestServer();
-        using var client = server.CreateClient();
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
         request.Headers.Add(HeaderNames.AcceptEncoding, acceptEncoding);
 
-        return await client.SendAsync(request);
+        return await server.Client.SendAsync(request);
     }
 
     private static async Task AssertResponseAsync(HttpResponseMessage response, string expectedEncoding)
     {
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         ICollection<string> contentEncoding = response.Content.Headers.ContentEncoding;
-        Assert.That(contentEncoding, Has.Count.EqualTo(1));
-        Assert.That(contentEncoding.Single(), Is.EqualTo(expectedEncoding));
         string content = await response.Content.ReadAsStringAsync();
-        Assert.That(content, Is.EqualTo($"{expectedEncoding} data"));
+
+        Assert.That(contentEncoding, Has.Count.EqualTo(1));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(contentEncoding.Single(), Is.EqualTo(expectedEncoding));
+            Assert.That(content, Is.EqualTo($"{expectedEncoding} data"));
+        });
+    }
+
+    private static async Task AssertResponseAsync(HttpResponseMessage response)
+    {
+        string content = await response.Content.ReadAsStringAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Content.Headers.ContentEncoding, Is.Empty);
+            Assert.That(content, Is.EqualTo("data"));
+        });
     }
 }

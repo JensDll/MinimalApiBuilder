@@ -127,17 +127,21 @@ public class CompressedStaticFileMiddleware : IMiddleware
 
                 if (range is null)
                 {
-                    context.Response.StatusCode = StatusCodes.Status416RangeNotSatisfiable;
+                    SetStatusCode(context, StatusCodes.Status416RangeNotSatisfiable);
                     responseHeaders.ContentRange = new ContentRangeHeaderValue(fileInfo.Length);
                     _logger.RangeNotSatisfiable(context.Request.Headers.Range, subPath);
+#if NET8_0_OR_GREATER
+                    return _options.OnPrepareResponseAsync(staticFileResponseContext);
+#else
                     return Task.CompletedTask;
+#endif
                 }
 
                 (long start, long end) = range.Value;
                 long count = end - start + 1;
 
                 responseHeaders.ContentRange = new ContentRangeHeaderValue(start, end, fileInfo.Length);
-                context.Response.StatusCode = StatusCodes.Status206PartialContent;
+                SetStatusCode(context, StatusCodes.Status206PartialContent);
                 context.Response.ContentLength = count;
                 _logger.SendingRange(start, end, subPath);
                 return SendFileAsync(staticFileResponseContext, next, start, count);
@@ -146,7 +150,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 responseHeaders.ETag = etag;
                 responseHeaders.Headers.AcceptRanges = "bytes";
                 SetContentEncoding(responseHeaders, contentEncoding);
-                context.Response.StatusCode = StatusCodes.Status304NotModified;
+                SetStatusCode(context, StatusCodes.Status304NotModified);
                 context.Response.ContentType = contentType;
                 context.Response.ContentLength = fileInfo.Length;
                 _logger.NotModified(subPath);
@@ -157,7 +161,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 return Task.CompletedTask;
 #endif
             case PreconditionState.PreconditionFailed:
-                context.Response.StatusCode = StatusCodes.Status412PreconditionFailed;
+                SetStatusCode(context, StatusCodes.Status412PreconditionFailed);
                 _logger.PreconditionFailed(subPath);
                 _options.OnPrepareResponse(staticFileResponseContext);
 #if NET8_0_OR_GREATER
@@ -317,5 +321,12 @@ public class CompressedStaticFileMiddleware : IMiddleware
         {
             responseHeaders.Headers.ContentEncoding = contentEncoding.Value;
         }
+    }
+
+    private static void SetStatusCode(HttpContext context, int statusCode)
+    {
+        context.Response.StatusCode = context.Response.StatusCode == StatusCodes.Status200OK
+            ? statusCode
+            : context.Response.StatusCode;
     }
 }
