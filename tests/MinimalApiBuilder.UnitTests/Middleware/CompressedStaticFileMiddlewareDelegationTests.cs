@@ -166,7 +166,7 @@ internal sealed class CompressedStaticFileMiddlewareDelegationTests
         });
     }
 
-    private class FalseContentTypeProvider : IContentTypeProvider
+    private sealed class FalseContentTypeProvider : IContentTypeProvider
     {
         public static readonly FalseContentTypeProvider Instance = new();
 

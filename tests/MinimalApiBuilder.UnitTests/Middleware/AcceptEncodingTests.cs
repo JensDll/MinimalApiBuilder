@@ -1,4 +1,6 @@
-﻿using System.Collections.Frozen;
+﻿#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#endif
 using System.Net;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
@@ -97,7 +99,11 @@ internal sealed class AcceptEncodingTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
         {
+#if NET8_0_OR_GREATER
             ContentEncodingOrder = contentEncodingOrder.ToFrozenDictionary()
+#else
+            ContentEncodingOrder = new Dictionary<StringSegment, int>(contentEncodingOrder).AsReadOnly()
+#endif
         });
 
         using HttpRequestMessage request = new(HttpMethod.Get, s_uri);

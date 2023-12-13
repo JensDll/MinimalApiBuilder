@@ -207,6 +207,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
         Assert.That(called, Is.True);
     }
 
+#if NET8_0_OR_GREATER
     [Test]
     public async Task OnPrepareResponseAsync_Is_Called()
     {
@@ -225,7 +226,9 @@ internal sealed class CompressedStaticFileMiddlewareTests
 
         Assert.That(called, Is.True);
     }
+#endif
 
+#if NET8_0_OR_GREATER
     [Test]
     public async Task OnPrepareResponse_Is_Called_Before_OnPrepareResponseAsync()
     {
@@ -263,4 +266,5 @@ internal sealed class CompressedStaticFileMiddlewareTests
             Assert.That(asyncCalled, Is.True);
         });
     }
+#endif
 }
