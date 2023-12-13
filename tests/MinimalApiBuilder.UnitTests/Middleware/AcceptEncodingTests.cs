@@ -1,12 +1,12 @@
-﻿#if NET8_0_OR_GREATER
-using System.Collections.Frozen;
-#endif
-using System.Net;
+﻿using System.Net;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using MinimalApiBuilder.Middleware;
 using MinimalApiBuilder.UnitTests.Infrastructure;
 using NUnit.Framework;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#endif
 
 namespace MinimalApiBuilder.UnitTests.Middleware;
 
@@ -100,9 +100,10 @@ internal sealed class AcceptEncodingTests
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
         {
 #if NET8_0_OR_GREATER
-            ContentEncodingOrder = contentEncodingOrder.ToFrozenDictionary()
+            ContentEncodingOrder = contentEncodingOrder.ToFrozenDictionary(StringSegmentComparer.OrdinalIgnoreCase)
 #else
-            ContentEncodingOrder = new Dictionary<StringSegment, int>(contentEncodingOrder).AsReadOnly()
+            ContentEncodingOrder =
+                new Dictionary<StringSegment, int>(contentEncodingOrder, StringSegmentComparer.OrdinalIgnoreCase)
 #endif
         });
 

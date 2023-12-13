@@ -1,0 +1,36 @@
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+
+namespace MinimalApiBuilder.Middleware;
+
+internal sealed class CompressedStaticFileOptionsValidator : AbstractValidator<CompressedStaticFileOptions>
+{
+    public CompressedStaticFileOptionsValidator(ILogger<CompressedStaticFileMiddleware> logger,
+        IWebHostEnvironment environment)
+    {
+        RuleFor(static options => options.FileProvider)
+            .Must(fileProvider =>
+            {
+                if (fileProvider is not NullFileProvider)
+                {
+                    return true;
+                }
+
+                logger.WebRootPathNotFound(Path.GetFullPath(
+                    Path.Combine(environment.ContentRootPath, environment.WebRootPath ?? "wwwroot")));
+
+                return false;
+            })
+            .WithSeverity(Severity.Warning);
+
+        RuleFor(static options => options.ContentEncodingOrder)
+            .Must(contentEncodingOrder => contentEncodingOrder.Values.All(static value => value >= 0))
+            .WithMessage("{PropertyName} values must not be negative")
+            .Must(contentEncodingOrder =>
+                contentEncodingOrder.Comparer.Equals(StringSegmentComparer.OrdinalIgnoreCase))
+            .WithMessage("{PropertyName} keys must use case-insensitive ordinal comparison");
+    }
+}

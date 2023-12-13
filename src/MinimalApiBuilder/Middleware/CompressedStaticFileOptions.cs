@@ -1,15 +1,11 @@
-﻿#if NET8_0_OR_GREATER
-using System.Collections.Frozen;
-#else
-using System.Collections.ObjectModel;
-#endif
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Primitives;
+#if NET8_0_OR_GREATER
+using System.Collections.Frozen;
+#endif
 
 namespace MinimalApiBuilder.Middleware;
 
-// False positive. Frozen collections need to be excluded from the rule, see:
-// https://github.com/Evangelink/roslyn-analyzers/blob/master/src/NetAnalyzers/Core/Microsoft.CodeQuality.Analyzers/ApiDesignGuidelines/CollectionPropertiesShouldBeReadOnly.cs
 #pragma warning disable CA2227
 
 /// <summary>
@@ -43,8 +39,7 @@ public class CompressedStaticFileOptions : StaticFileOptions
     /// <see cref="CompressedStaticFileMiddleware" /> will only serve content-coded representations
     /// with names listed in this dictionary.
     /// </remarks>
-    public ReadOnlyDictionary<StringSegment, int> ContentEncodingOrder { get; set; } =
-        new Dictionary<StringSegment, int>(s_defaultContentEncodingOrder, StringSegmentComparer.OrdinalIgnoreCase)
-            .AsReadOnly();
+    public Dictionary<StringSegment, int> ContentEncodingOrder { get; set; } =
+        new(s_defaultContentEncodingOrder, StringSegmentComparer.OrdinalIgnoreCase);
 #endif
 }

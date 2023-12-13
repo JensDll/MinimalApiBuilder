@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Logging;
 
 namespace MinimalApiBuilder.Middleware;
 
@@ -58,31 +56,26 @@ public static class CompressedStaticFileMiddlewareExtensions
     private static void AddOptions(IServiceCollection services, CompressedStaticFileOptions options)
     {
         services.AddOptions<CompressedStaticFileOptions>()
-            .PostConfigure<IWebHostEnvironment, ILogger<CompressedStaticFileMiddleware>>(
-                (currentOptions, environment, logger) =>
-                {
-                    // https://github.com/dotnet/aspnetcore/blob/v8.0.0/src/Middleware/StaticFiles/src/Infrastructure/SharedOptionsBase.cs
-                    currentOptions.RequestPath = options.RequestPath;
-                    currentOptions.FileProvider = options.FileProvider ?? environment.WebRootFileProvider;
-                    options.RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash;
-                    // https://github.com/dotnet/aspnetcore/blob/v8.0.0/src/Middleware/StaticFiles/src/StaticFileOptions.cs
-                    currentOptions.ContentTypeProvider =
-                        options.ContentTypeProvider ?? new FileExtensionContentTypeProvider();
-                    currentOptions.DefaultContentType = options.DefaultContentType;
-                    currentOptions.ServeUnknownFileTypes = options.ServeUnknownFileTypes;
-                    currentOptions.HttpsCompression = options.HttpsCompression;
-                    currentOptions.OnPrepareResponse = options.OnPrepareResponse;
+            .PostConfigure<IWebHostEnvironment>((currentOptions, environment) =>
+            {
+                // https://github.com/dotnet/aspnetcore/blob/v8.0.0/src/Middleware/StaticFiles/src/Infrastructure/SharedOptionsBase.cs
+                currentOptions.RequestPath = options.RequestPath;
+                currentOptions.FileProvider = options.FileProvider ?? environment.WebRootFileProvider;
+                options.RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash;
+                // https://github.com/dotnet/aspnetcore/blob/v8.0.0/src/Middleware/StaticFiles/src/StaticFileOptions.cs
+                currentOptions.ContentTypeProvider =
+                    options.ContentTypeProvider ?? new FileExtensionContentTypeProvider();
+                currentOptions.DefaultContentType = options.DefaultContentType;
+                currentOptions.ServeUnknownFileTypes = options.ServeUnknownFileTypes;
+                currentOptions.HttpsCompression = options.HttpsCompression;
+                currentOptions.OnPrepareResponse = options.OnPrepareResponse;
 #if NET8_0_OR_GREATER
-                    currentOptions.OnPrepareResponseAsync = options.OnPrepareResponseAsync;
+                currentOptions.OnPrepareResponseAsync = options.OnPrepareResponseAsync;
 #endif
-                    // CompressedStaticFileOptions
-                    currentOptions.ContentEncodingOrder = options.ContentEncodingOrder;
-
-                    if (currentOptions.FileProvider is NullFileProvider)
-                    {
-                        logger.WebRootPathNotFound(Path.GetFullPath(
-                            Path.Combine(environment.ContentRootPath, environment.WebRootPath ?? "wwwroot")));
-                    }
-                });
+                // CompressedStaticFileOptions
+                currentOptions.ContentEncodingOrder = options.ContentEncodingOrder;
+            })
+            .FluentValidation<CompressedStaticFileOptions, CompressedStaticFileOptionsValidator>()
+            .ValidateOnStart();
     }
 }
