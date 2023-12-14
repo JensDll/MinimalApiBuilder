@@ -43,12 +43,6 @@ builder.Services.ConfigureHttpJsonOptions(static options =>
 });
 #endif
 
-
-DefaultFilesOptions defaultFilesOptions = new()
-{
-    DefaultFileNames = ["index.html"]
-};
-
 CompressedStaticFileOptions staticFileOptions = new()
 {
     OnPrepareResponse = context =>
@@ -78,7 +72,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseDefaultFiles(defaultFilesOptions);
 app.UseCompressedStaticFiles();
 
 if (!app.Environment.IsDevelopment())
@@ -100,4 +93,30 @@ RouteGroupBuilder multipart = app.MapGroup("/multipart").WithTags("Multipart");
 Configure(multipart.MapPost("/zipstream", ZipStreamEndpoint.Handle));
 Configure(multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 
+app.MapFallbackToIndexHtml();
+
 app.Run();
+
+internal static class FallbackExtensions
+{
+    public static IEndpointConventionBuilder MapFallbackToIndexHtml(this IEndpointRouteBuilder endpoints)
+    {
+        return endpoints.MapFallback(CreateRequestDelegate(endpoints));
+    }
+
+    private static RequestDelegate CreateRequestDelegate(IEndpointRouteBuilder endpoints)
+    {
+        IApplicationBuilder app = endpoints.CreateApplicationBuilder();
+
+        app.Use(static next => context =>
+        {
+            context.Request.Path += "/index.html";
+            context.SetEndpoint(null);
+            return next(context);
+        });
+
+        app.UseCompressedStaticFiles();
+
+        return app.Build();
+    }
+}

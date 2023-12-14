@@ -1,3 +1,5 @@
+import { Compression } from './compression'
+
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/main.css'],
@@ -6,8 +8,13 @@ export default defineNuxtConfig({
       tailwindcss: {},
     },
   },
-  routeRules: {
-    '/': { redirect: '/first-page' },
+  vite: {
+    plugins: [Compression()],
+  },
+  nitro: {
+    output: {
+      publicDir: '../wwwroot',
+    },
   },
   experimental: {
     inlineSSRStyles: false,
