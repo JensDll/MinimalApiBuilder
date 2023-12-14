@@ -2,7 +2,7 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MinimalApiBuilder;
+namespace MinimalApiBuilder.Generator;
 
 /// <summary>
 /// Attribute used by the minimal API builder generator
@@ -16,7 +16,7 @@ public sealed class RegisterValidatorAttribute : Attribute
     /// </summary>
     /// <param name="lifetime">
     /// The service lifetime with which the <see cref="AbstractValidator{T}" />
-    /// will be added to the <see cref="IServiceCollection" />; defaults to <see cref="ServiceLifetime.Singleton" />.
+    /// is added to the <see cref="IServiceCollection" />; defaults to <see cref="ServiceLifetime.Singleton" />.
     /// </param>
     [SuppressMessage("Style", "IDE0060:Remove unused parameter")]
     [SuppressMessage("Design", "CA1019:Define accessors for attribute arguments")]

@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
+using MinimalApiBuilder.Generator;
 
-namespace MinimalApiBuilder;
+namespace MinimalApiBuilder.Multipart;
 
 /// <summary>
 /// A wrapper around <see cref="MultipartSection" />.

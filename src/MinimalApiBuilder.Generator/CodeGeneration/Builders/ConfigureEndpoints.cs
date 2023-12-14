@@ -13,7 +13,7 @@ internal sealed class ConfigureEndpoints : SourceBuilder
 
     public ConfigureEndpoints()
     {
-        _namespace = OpenBlock("namespace MinimalApiBuilder");
+        _namespace = OpenBlock("namespace MinimalApiBuilder.Generator");
         _class = OpenBlock($"internal static partial class {nameof(ConfigureEndpoints)}");
     }
 

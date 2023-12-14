@@ -5,7 +5,7 @@
 
 #nullable enable
 
-namespace MinimalApiBuilder
+namespace MinimalApiBuilder.Generator
 {
     internal static partial class ConfigureEndpoints
     {

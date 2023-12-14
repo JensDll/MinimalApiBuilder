@@ -8,9 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using MinimalApiBuilder;
+using MinimalApiBuilder.Generator;
 using MinimalApiBuilder.Middleware;
-using static MinimalApiBuilder.ConfigureEndpoints;
+using static MinimalApiBuilder.Generator.ConfigureEndpoints;
 
 #if NET8_0_OR_GREATER
 WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();

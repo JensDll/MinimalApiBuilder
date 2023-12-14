@@ -6,7 +6,7 @@
 #nullable enable
 
 [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
-public partial class E1 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
+public partial class E1 : global::MinimalApiBuilder.Generator.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
@@ -20,7 +20,7 @@ public partial class E1 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred.");
             }
             global::FluentValidation.Results.ValidationResult result = await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.Generator.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -29,7 +29,7 @@ public partial class E1 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     }
 }
 [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
-public partial class E2 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
+public partial class E2 : global::MinimalApiBuilder.Generator.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
@@ -42,8 +42,8 @@ public partial class E2 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             {
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred.");
             }
-            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
+            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.Generator.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.Generator.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -52,7 +52,7 @@ public partial class E2 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     }
 }
 [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
-public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
+public partial class E3 : global::MinimalApiBuilder.Generator.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
@@ -66,7 +66,7 @@ public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
                 return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred."));
             }
             global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
-            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred."));
+            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.Generator.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred."));
         });
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
@@ -77,7 +77,7 @@ public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred.");
             }
             global::FluentValidation.Results.ValidationResult result = await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.Generator.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -86,7 +86,7 @@ public partial class E3 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     }
 }
 [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
-public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
+public partial class E4 : global::MinimalApiBuilder.Generator.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
@@ -100,7 +100,7 @@ public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
                 return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred."));
             }
             global::FluentValidation.Results.ValidationResult result = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
-            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred."));
+            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.Generator.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred."));
         });
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
@@ -110,8 +110,8 @@ public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             {
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred.");
             }
-            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
+            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.Generator.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.Generator.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
@@ -120,7 +120,7 @@ public partial class E4 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
     }
 }
 [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
-public partial class E5 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
+public partial class E5 : global::MinimalApiBuilder.Generator.IMinimalApiBuilderEndpoint
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     public static void _auto_generated_Configure(global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder builder)
@@ -133,8 +133,8 @@ public partial class E5 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             {
                 return global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred."));
             }
-            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.StaticHelper.SuccessValidationResult : global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
-            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred."));
+            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.Generator.StaticHelper.SuccessValidationResult : global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R2>>(invocationContext.HttpContext.RequestServices).Validate(a);
+            return result.IsValid ? next(invocationContext) : global::System.Threading.Tasks.ValueTask.FromResult<object?>(global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.Generator.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred."));
         });
         global::Microsoft.AspNetCore.Http.EndpointFilterExtensions.AddEndpointFilter(builder, static async (invocationContext, next) =>
         {
@@ -144,8 +144,8 @@ public partial class E5 : global::MinimalApiBuilder.IMinimalApiBuilderEndpoint
             {
                 return global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(endpoint.ValidationErrors, type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more model binding errors occurred.");
             }
-            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
-            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
+            global::FluentValidation.Results.ValidationResult result = a is null ? global::MinimalApiBuilder.Generator.StaticHelper.SuccessValidationResult : await global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<global::FluentValidation.IValidator<global::R1>>(invocationContext.HttpContext.RequestServices).ValidateAsync(a);
+            return result.IsValid ? await next(invocationContext) : global::Microsoft.AspNetCore.Http.TypedResults.ValidationProblem(global::MinimalApiBuilder.Generator.StaticHelper.GetErrors(result), type: "https://tools.ietf.org/html/rfc9110#section-15.5.1", title: "One or more validation errors occurred.");
         });
     }
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]

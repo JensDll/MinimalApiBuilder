@@ -12,8 +12,12 @@ internal static class PredicateExtensions
             Name: "MinimalApiBuilderEndpoint",
             ContainingNamespace:
             {
-                Name: "MinimalApiBuilder",
-                ContainingNamespace.IsGlobalNamespace: true
+                Name: "Generator",
+                ContainingNamespace:
+                {
+                    Name: "MinimalApiBuilder",
+                    ContainingNamespace.IsGlobalNamespace: true
+                }
             }
         };
     }
@@ -118,8 +122,12 @@ internal static class PredicateExtensions
             Name: "RegisterValidatorAttribute",
             ContainingNamespace:
             {
-                Name: "MinimalApiBuilder",
-                ContainingNamespace.IsGlobalNamespace: true
+                Name: "Generator",
+                ContainingNamespace:
+                {
+                    Name: "MinimalApiBuilder",
+                    ContainingNamespace.IsGlobalNamespace: true
+                }
             }
         };
     }
@@ -144,8 +152,12 @@ internal static class PredicateExtensions
                 Name: "Configure",
                 ContainingNamespace:
                 {
-                    Name: "MinimalApiBuilder",
-                    ContainingNamespace.IsGlobalNamespace: true
+                    Name: "Generator",
+                    ContainingNamespace:
+                    {
+                        Name: "MinimalApiBuilder",
+                        ContainingNamespace.IsGlobalNamespace: true
+                    }
                 }
             }
             && operation.Arguments.Length == 1

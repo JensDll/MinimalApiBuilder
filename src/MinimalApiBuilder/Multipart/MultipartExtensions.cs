@@ -5,8 +5,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using MinimalApiBuilder.Generator;
 
-namespace MinimalApiBuilder;
+namespace MinimalApiBuilder.Multipart;
 
 internal static class MultipartExtensions
 {

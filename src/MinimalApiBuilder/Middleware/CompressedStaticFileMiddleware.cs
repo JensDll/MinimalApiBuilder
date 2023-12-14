@@ -14,6 +14,7 @@ using StringWithQualityHeaderValue = Microsoft.Net.Http.Headers.StringWithQualit
 namespace MinimalApiBuilder.Middleware;
 
 /// <summary>
+/// Middleware for serving static files, choosing pre-compressed files based on the Accept-Encoding header.
 /// </summary>
 public class CompressedStaticFileMiddleware : IMiddleware
 {
@@ -23,9 +24,10 @@ public class CompressedStaticFileMiddleware : IMiddleware
     private readonly IContentTypeProvider _contentTypeProvider;
 
     /// <summary>
+    /// Initializes a new instance of the <see cref="CompressedStaticFileMiddleware" /> class.
     /// </summary>
-    /// <param name="options"></param>
-    /// <param name="logger"></param>
+    /// <param name="options">The middleware's static file options.</param>
+    /// <param name="logger">The middleware's logger.</param>
     public CompressedStaticFileMiddleware(IOptions<CompressedStaticFileOptions> options,
         ILogger<CompressedStaticFileMiddleware> logger)
     {
@@ -35,11 +37,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
         _contentTypeProvider = _options.ContentTypeProvider;
     }
 
-    /// <summary>
-    /// </summary>
-    /// <param name="context"></param>
-    /// <param name="next"></param>
-    /// <returns></returns>
+    /// <inheritdoc />
     public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         PathString requestPath = context.Request.Path;
@@ -228,6 +226,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
         return SendFileAsync(context, next, 0, context.File.Length);
     }
 
+    // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-9
     private bool TryGetContentEncoding(RequestHeaders requestHeaders, out StringSegment contentEncoding)
     {
         int bestOrder = -1;
@@ -249,8 +248,8 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 continue;
             }
 
-            // Save to compare as both doubles are never used in calculation
             // ReSharper disable once CompareOfFloatsByEqualityOperator
+            // Save to compare as both doubles are never used in calculation
             if (quality == bestQuality)
             {
                 if (order > bestOrder)

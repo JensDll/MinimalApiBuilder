@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.Extensions.DependencyInjection;
-using MinimalApiBuilder;
+using MinimalApiBuilder.Generator;
+using MinimalApiBuilder.Multipart;
 
 namespace Fixture.TestApi.Features.Multipart;
 

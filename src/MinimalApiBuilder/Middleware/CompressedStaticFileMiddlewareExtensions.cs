@@ -41,7 +41,7 @@ public static class CompressedStaticFileMiddlewareExtensions
     }
 
     /// <summary>
-    /// Enables serving static and static compressed files based on the Accept-Encoding header field.
+    /// Enables serving static pre-compressed files based on the Accept-Encoding header field.
     /// </summary>
     /// <param name="builder">The <see cref="IApplicationBuilder" />.</param>
     /// <remarks>

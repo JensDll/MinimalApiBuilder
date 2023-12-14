@@ -14,23 +14,24 @@ public static class OptionsBuilderExtensions
     /// <summary>
     /// Validates options using FluentValidation.
     /// </summary>
-    /// <param name="optionsBuilder">The current <see cref="OptionsBuilder{TOptions}" />.</param>
-    /// <typeparam name="TOptions">The options type to validate.</typeparam>
-    /// <typeparam name="TValidator">The options type validator.</typeparam>
+    /// <param name="builder">The current <see cref="OptionsBuilder{TOptions}" />.</param>
+    /// <typeparam name="TOptions">The type of options to validate.</typeparam>
+    /// <typeparam name="TValidator">The validator of the options type.</typeparam>
     /// <returns></returns>
     public static OptionsBuilder<TOptions> FluentValidation
         <TOptions, [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TValidator>
-        (this OptionsBuilder<TOptions> optionsBuilder)
+        (this OptionsBuilder<TOptions> builder)
         where TOptions : class
         where TValidator : AbstractValidator<TOptions>
     {
-        optionsBuilder.Services.TryAddSingleton<IValidator<TOptions>, TValidator>();
-        optionsBuilder.Services.AddSingleton<IValidateOptions<TOptions>>(static serviceProvider =>
+        builder.Services.TryAddSingleton<IValidator<TOptions>, TValidator>();
+
+        builder.Services.AddSingleton<IValidateOptions<TOptions>>(static serviceProvider =>
         {
             var validator = serviceProvider.GetRequiredService<IValidator<TOptions>>();
             return new FluentValidationValidateOptions<TOptions>(validator);
         });
 
-        return optionsBuilder;
+        return builder;
     }
 }

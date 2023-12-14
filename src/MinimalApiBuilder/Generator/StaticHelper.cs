@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
 
-namespace MinimalApiBuilder;
+namespace MinimalApiBuilder.Generator;
 
 /// <summary>
 /// Static helper used by the minimal API builder generator.

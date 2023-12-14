@@ -5,21 +5,21 @@
 
 #nullable enable
 
-namespace MinimalApiBuilder
+namespace MinimalApiBuilder.Generator
 {
     internal static partial class ConfigureEndpoints
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         private static readonly global::System.Collections.Generic.Dictionary<(string, int), global::System.Action<global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[]>> s_map0 = new()
         {
-            [(@"", 33)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
+            [(@"", 34)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
             {
                 global::E1._auto_generated_Configure(builders[0]);
                 global::E1.Configure(builders[0]);
                 global::E2._auto_generated_Configure(builders[2]);
                 global::E2.Configure(builders[2]);
             },
-            [(@"", 38)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
+            [(@"", 39)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
             {
                 global::E1._auto_generated_Configure(builders[1]);
                 global::E1.Configure(builders[1]);

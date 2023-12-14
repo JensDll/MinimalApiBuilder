@@ -182,7 +182,8 @@ internal abstract class GeneratorUnitTest
             using Microsoft.AspNetCore.Routing;
             using Microsoft.Extensions.DependencyInjection;
             using MinimalApiBuilder;
-            using static MinimalApiBuilder.ConfigureEndpoints;
+            using MinimalApiBuilder.Generator;
+            using static MinimalApiBuilder.Generator.ConfigureEndpoints;
             using FluentValidation;
             using System;
             using System.Reflection;

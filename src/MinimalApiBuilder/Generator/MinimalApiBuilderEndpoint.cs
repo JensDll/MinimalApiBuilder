@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace MinimalApiBuilder;
+namespace MinimalApiBuilder.Generator;
 
 /// <summary>
 /// The base class of all minimal API builder endpoints.

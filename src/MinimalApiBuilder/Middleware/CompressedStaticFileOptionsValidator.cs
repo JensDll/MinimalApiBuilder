@@ -27,10 +27,9 @@ internal sealed class CompressedStaticFileOptionsValidator : AbstractValidator<C
             .WithSeverity(Severity.Warning);
 
         RuleFor(static options => options.ContentEncodingOrder)
-            .Must(contentEncodingOrder => contentEncodingOrder.Values.All(static value => value >= 0))
+            .Must(dictionary => dictionary.Values.All(static value => value >= 0))
             .WithMessage("{PropertyName} values must not be negative")
-            .Must(contentEncodingOrder =>
-                contentEncodingOrder.Comparer.Equals(StringSegmentComparer.OrdinalIgnoreCase))
+            .Must(dictionary => dictionary.Comparer.Equals(StringSegmentComparer.OrdinalIgnoreCase))
             .WithMessage("{PropertyName} keys must use case-insensitive ordinal comparison");
     }
 }

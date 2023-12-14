@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using MinimalApiBuilder.Generator;
 
-namespace MinimalApiBuilder;
+namespace MinimalApiBuilder.Multipart;
 
 /// <summary>
 /// A multipart/form-data reader using <see cref="MinimalApiBuilderEndpoint" /> to hold validation errors.

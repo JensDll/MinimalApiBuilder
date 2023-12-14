@@ -1,9 +1,8 @@
-﻿using System;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MinimalApiBuilder;
+using MinimalApiBuilder.Generator;
 
 namespace Fixture.TestApi.Features.Validation;
 
@@ -55,23 +54,11 @@ internal class SyncValidationParametersValidator : AbstractValidator<SyncValidat
     }
 }
 
-internal static class SyncValidationLoggingExtensions
+internal static partial class SyncValidationLoggingExtensions
 {
-    private static readonly Action<ILogger, SyncValidationParameters, Exception?> s_parameters =
-        LoggerMessage.Define<SyncValidationParameters>(LogLevel.Information,
-            new EventId(1, nameof(SyncValidationParameters)), "Parameters: {Parameters}");
+    [LoggerMessage(0, LogLevel.Information, $"{nameof(SyncValidationParameters)}: {{Parameters}}")]
+    internal static partial void SyncValidationParameters(this ILogger logger, SyncValidationParameters parameters);
 
-    private static readonly Action<ILogger, SyncValidationRequest, Exception?> s_request =
-        LoggerMessage.Define<SyncValidationRequest>(LogLevel.Information,
-            new EventId(2, nameof(SyncValidationRequest)), "Request: {Request}");
-
-    internal static void SyncValidationParameters(this ILogger logger, SyncValidationParameters parameters)
-    {
-        s_parameters(logger, parameters, null);
-    }
-
-    internal static void SyncValidationRequest(this ILogger logger, SyncValidationRequest request)
-    {
-        s_request(logger, request, null);
-    }
+    [LoggerMessage(1, LogLevel.Information, $"{nameof(SyncValidationRequest)}: {{Request}}")]
+    internal static partial void SyncValidationRequest(this ILogger logger, SyncValidationRequest request);
 }
