@@ -1,4 +1,4 @@
-namespace MinimalApiBuilder;
+namespace MinimalApiBuilder.Multipart;
 
 internal static class TempDirectory
 {
