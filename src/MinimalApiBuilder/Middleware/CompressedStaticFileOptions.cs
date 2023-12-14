@@ -13,33 +13,29 @@ namespace MinimalApiBuilder.Middleware;
 /// </summary>
 public class CompressedStaticFileOptions : StaticFileOptions
 {
-    private static readonly KeyValuePair<StringSegment, int>[] s_defaultContentEncodingOrder =
+    private static readonly KeyValuePair<StringSegment, (int, string)>[] s_defaultContentEncodingOrder =
     {
-        new("br", 1),
-        new("gzip", 0)
+        new(ContentCodingNames.Br, (1, "br")),
+        new(ContentCodingNames.Gzip, (0, "gz"))
     };
 
 #if NET8_0_OR_GREATER
     /// <summary>
-    /// The preferred <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a>
-    /// order when the best match cannot be determined by the quality value in the header field.
+    /// The available pre-compressed file formats. Keys are <see cref="ContentCodingNames" />, and
+    /// values are tuples of order and file extension. <see cref="CompressedStaticFileMiddleware" />
+    /// uses order to prioritize the selected representation when the quality values of
+    /// <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a> are equal.
     /// </summary>
-    /// <remarks>
-    /// <see cref="CompressedStaticFileMiddleware" /> will only serve content-coded representations
-    /// with names listed in this dictionary.
-    /// </remarks>
-    public FrozenDictionary<StringSegment, int> ContentEncodingOrder { get; set; } =
+    public FrozenDictionary<StringSegment, (int, string)> ContentEncoding { get; set; } =
         s_defaultContentEncodingOrder.ToFrozenDictionary(StringSegmentComparer.OrdinalIgnoreCase);
 #else
     /// <summary>
-    /// The preferred <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a>
-    /// order when the best match cannot be determined by the quality value in the header field.
+    /// The available pre-compressed file formats. Keys are <see cref="ContentCodingNames" />, and
+    /// values are tuples of order and file extension. <see cref="CompressedStaticFileMiddleware" />
+    /// uses order to prioritize the selected representation when the quality values of
+    /// <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a> are equal.
     /// </summary>
-    /// <remarks>
-    /// <see cref="CompressedStaticFileMiddleware" /> will only serve content-coded representations
-    /// with names listed in this dictionary.
-    /// </remarks>
-    public Dictionary<StringSegment, int> ContentEncodingOrder { get; set; } =
+    public Dictionary<StringSegment, (int, string)> ContentEncoding { get; set; } =
         new(s_defaultContentEncodingOrder, StringSegmentComparer.OrdinalIgnoreCase);
 #endif
 }

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Headers;
@@ -178,12 +179,12 @@ public class CompressedStaticFileMiddleware : IMiddleware
     {
         IFileInfo fileInfo = _fileProvider.GetFileInfo(subPath);
 
-        if (!TryGetContentEncoding(requestHeaders, out contentEncoding))
+        if (!TryGetContentEncoding(requestHeaders, out contentEncoding, out string? extension))
         {
             return fileInfo;
         }
 
-        IFileInfo compressedFileInfo = _fileProvider.GetFileInfo($"{subPath}.{contentEncoding}");
+        IFileInfo compressedFileInfo = _fileProvider.GetFileInfo($"{subPath}.{extension}");
 
         if (compressedFileInfo.Exists)
         {
@@ -227,20 +228,24 @@ public class CompressedStaticFileMiddleware : IMiddleware
     }
 
     // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-9
-    private bool TryGetContentEncoding(RequestHeaders requestHeaders, out StringSegment contentEncoding)
+    private bool TryGetContentEncoding(RequestHeaders requestHeaders,
+        out StringSegment contentEncoding,
+        [NotNullWhen(true)] out string? extension)
     {
         int bestOrder = -1;
         double bestQuality = -1;
 
         contentEncoding = null;
+        extension = null;
 
         foreach (StringWithQualityHeaderValue value in requestHeaders.AcceptEncoding)
         {
-            if (!_options.ContentEncodingOrder.TryGetValue(value.Value, out int order))
+            if (!_options.ContentEncoding.TryGetValue(value.Value, out (int, string) pair))
             {
                 continue;
             }
 
+            (int order, string ext) = pair;
             double quality = value.Quality ?? 1;
 
             if (quality == 0)
@@ -256,6 +261,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 {
                     bestOrder = order;
                     contentEncoding = value.Value;
+                    extension = ext;
                 }
 
                 continue;
@@ -264,6 +270,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
             bestOrder = order;
             bestQuality = quality > bestQuality ? quality : bestQuality;
             contentEncoding = value.Value;
+            extension = ext;
         }
 
         return contentEncoding.HasValue;

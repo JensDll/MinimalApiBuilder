@@ -122,14 +122,6 @@ internal static class FallbackExtensions
 
             app.UseCompressedStaticFiles();
 
-            app.Use(static next => context =>
-            {
-                context.Request.Path = "/404.html";
-                return next(context);
-            });
-
-            app.UseCompressedStaticFiles();
-
             return app.Build();
         }
     }

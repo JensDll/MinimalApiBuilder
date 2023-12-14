@@ -1,5 +1,3 @@
-import { Compression } from './compression'
-
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['~/assets/main.css'],
@@ -8,10 +6,8 @@ export default defineNuxtConfig({
       tailwindcss: {},
     },
   },
-  vite: {
-    plugins: [Compression()],
-  },
   nitro: {
+    compressPublicAssets: true,
     output: {
       publicDir: '../wwwroot',
     },

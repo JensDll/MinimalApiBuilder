@@ -73,7 +73,7 @@ public static class CompressedStaticFileMiddlewareExtensions
                 currentOptions.OnPrepareResponseAsync = options.OnPrepareResponseAsync;
 #endif
                 // CompressedStaticFileOptions
-                currentOptions.ContentEncodingOrder = options.ContentEncodingOrder;
+                currentOptions.ContentEncoding = options.ContentEncoding;
             })
             .FluentValidation<CompressedStaticFileOptions, CompressedStaticFileOptionsValidator>()
             .ValidateOnStart();

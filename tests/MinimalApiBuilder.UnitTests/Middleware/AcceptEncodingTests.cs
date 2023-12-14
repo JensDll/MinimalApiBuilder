@@ -17,36 +17,36 @@ internal sealed class AcceptEncodingTests
     [Test]
     public async Task Without_Quality_Chooses_Based_On_Configured_Order()
     {
-        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, (int, string)>[]
         {
-            new("br", 3),
-            new("gzip", 2),
-            new("deflate", 1)
+            new("br", (3, "br")),
+            new("gzip", (2, "gz")),
+            new("deflate", (1, "deflate"))
         }, "br, gzip, deflate");
 
-        await AssertResponseAsync(response, ContentCodingNames.Br);
+        await AssertResponseAsync(response, "br");
     }
 
-    [TestCase("br")]
-    [TestCase("gzip")]
-    public async Task Unconfigured_Content_Encoding_Is_Ignored(string expectedEncoding)
+    [TestCase("br", "br")]
+    [TestCase("gzip", "gz")]
+    public async Task Unconfigured_Content_Encoding_Is_Ignored(string encoding, string extension)
     {
-        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, (int, string)>[]
         {
-            new(expectedEncoding, 0)
+            new(encoding, (0, extension))
         }, "br, gzip, deflate");
 
-        await AssertResponseAsync(response, expectedEncoding);
+        await AssertResponseAsync(response, encoding);
     }
 
     [Test]
     public async Task Quality_Has_Higher_Precedence_Than_Order()
     {
-        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, (int, string)>[]
         {
-            new("br", 3),
-            new("gzip", 2),
-            new("deflate", 1)
+            new("br", (3, "br")),
+            new("gzip", (2, "gz")),
+            new("deflate", (1, "deflate"))
         }, "br;q=0.7, gzip;q=0.8, deflate;q=0.9");
 
         await AssertResponseAsync(response, "deflate");
@@ -54,56 +54,56 @@ internal sealed class AcceptEncodingTests
 
     [TestCase(2, 1, "gzip")]
     [TestCase(1, 2, "deflate")]
-    public async Task Order_Decides_When_Quality_Is_The_Same(int gzipOrder, int deflateOrder, string expectedEncoding)
+    public async Task Order_Decides_When_Quality_Is_The_Same(int gzipOrder, int deflateOrder, string encoding)
     {
-        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, (int, string)>[]
         {
-            new("br", 3),
-            new("gzip", gzipOrder),
-            new("deflate", deflateOrder)
+            new("br", (3, "br")),
+            new("gzip", (gzipOrder, "gz")),
+            new("deflate", (deflateOrder, "deflate"))
         }, "br;q=0.7, gzip;q=0.8, deflate;q=0.8");
 
-        await AssertResponseAsync(response, expectedEncoding);
+        await AssertResponseAsync(response, encoding);
     }
 
     [TestCase(1, 2, 3, "deflate")]
     [TestCase(3, 2, 1, "br")]
-    public async Task Default_Quality_Is_One(int brOrder, int gzipOrder, int deflateOrder, string expectedEncoding)
+    public async Task Default_Quality_Is_One(int brOrder, int gzipOrder, int deflateOrder, string encoding)
     {
-        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, (int, string)>[]
         {
-            new("br", brOrder),
-            new("gzip", gzipOrder),
-            new("deflate", deflateOrder)
+            new("br", (brOrder, "br")),
+            new("gzip", (gzipOrder, "gz")),
+            new("deflate", (deflateOrder, "deflate"))
         }, "br;q=1, gzip, deflate");
 
-        await AssertResponseAsync(response, expectedEncoding);
+        await AssertResponseAsync(response, encoding);
     }
 
     [Test]
     public async Task Quality_Zero_Means_Not_Acceptable_And_Serves_Without_Content_Negotiation()
     {
-        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, int>[]
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, (int, string)>[]
         {
-            new("br", 3),
-            new("gzip", 2),
-            new("deflate", 1)
+            new("br", (3, "br")),
+            new("gzip", (3, "gz")),
+            new("deflate", (1, "deflate"))
         }, "br;q=0, gzip;q=0, deflate;q=0");
 
         await AssertResponseAsync(response);
     }
 
     private static async Task<HttpResponseMessage> MakeRequestAsync(
-        IEnumerable<KeyValuePair<StringSegment, int>> contentEncodingOrder,
+        IEnumerable<KeyValuePair<StringSegment, (int, string)>> contentEncoding,
         string acceptEncoding)
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
         {
 #if NET8_0_OR_GREATER
-            ContentEncodingOrder = contentEncodingOrder.ToFrozenDictionary(StringSegmentComparer.OrdinalIgnoreCase)
+            ContentEncoding = contentEncoding.ToFrozenDictionary(StringSegmentComparer.OrdinalIgnoreCase)
 #else
-            ContentEncodingOrder =
-                new Dictionary<StringSegment, int>(contentEncodingOrder, StringSegmentComparer.OrdinalIgnoreCase)
+            ContentEncoding =
+                new Dictionary<StringSegment, (int, string)>(contentEncoding, StringSegmentComparer.OrdinalIgnoreCase)
 #endif
         });
 
