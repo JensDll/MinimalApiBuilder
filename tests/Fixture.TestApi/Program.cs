@@ -43,12 +43,32 @@ builder.Services.ConfigureHttpJsonOptions(static options =>
 });
 #endif
 
-builder.Services.AddCompressedStaticFileMiddleware();
 
 DefaultFilesOptions defaultFilesOptions = new()
 {
     DefaultFileNames = ["index.html"]
 };
+
+CompressedStaticFileOptions staticFileOptions = new()
+{
+    OnPrepareResponse = context =>
+    {
+        IHeaderDictionary headers = context.Context.Response.Headers;
+
+        if (context.File.Name == "index.html")
+        {
+            headers.CacheControl = "private,no-store,no-cache,max-age=0,must-revalidate";
+            headers.XContentTypeOptions = "nosniff";
+            headers.XXSSProtection = "0";
+            return;
+        }
+
+        headers.CacheControl = "public,max-age=31536000,immutable";
+        headers.XContentTypeOptions = "nosniff";
+    }
+};
+
+builder.Services.AddCompressedStaticFileMiddleware(staticFileOptions);
 
 WebApplication app = builder.Build();
 
