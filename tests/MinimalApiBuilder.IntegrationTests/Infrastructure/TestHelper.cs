@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Framework;
 
-namespace MinimalApiBuilder.TestApiTests.Infrastructure;
+namespace MinimalApiBuilder.IntegrationTests.Infrastructure;
 
 internal static class TestHelper
 {

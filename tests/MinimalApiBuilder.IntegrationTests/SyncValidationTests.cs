@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation;
-using MinimalApiBuilder.TestApiTests.Infrastructure;
+using MinimalApiBuilder.IntegrationTests.Infrastructure;
 using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests;
@@ -11,7 +11,7 @@ internal sealed class SyncValidationTests
     [TestCaseSource(nameof(InvalidSingle))]
     public async Task Invalid_Single_Parameter(SyncValidationRequest request)
     {
-        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/validation/sync/single", request);
+        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/api/validation/sync/single", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }
@@ -19,7 +19,7 @@ internal sealed class SyncValidationTests
     [TestCaseSource(nameof(ValidSingle))]
     public async Task Valid_Single_Parameter(SyncValidationRequest request)
     {
-        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/validation/sync/single", request);
+        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/api/validation/sync/single", request);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
@@ -30,7 +30,7 @@ internal sealed class SyncValidationTests
         SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
-            await TestSetup.Client.PatchAsJsonAsync($"/validation/sync/multiple?value={parameters.Value}", request);
+            await TestSetup.Client.PatchAsJsonAsync($"/api/validation/sync/multiple?value={parameters.Value}", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }
@@ -41,7 +41,7 @@ internal sealed class SyncValidationTests
         SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
-            await TestSetup.Client.PatchAsJsonAsync($"/validation/sync/multiple?value={parameters.Value}", request);
+            await TestSetup.Client.PatchAsJsonAsync($"/api/validation/sync/multiple?value={parameters.Value}", request);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }

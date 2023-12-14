@@ -21,7 +21,7 @@ internal sealed class MultipartTests
         using StreamContent fileContent = new(new MemoryStream(fileData));
         formData.Add(fileContent, "some_file", "some_file.txt");
 
-        Uri uri = new("/multipart/zipstream", UriKind.Relative);
+        Uri uri = new("/api/multipart/zipstream", UriKind.Relative);
         HttpResponseMessage response = await TestSetup.Client.PostAsync(uri, formData);
 
         Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));
@@ -65,7 +65,7 @@ internal sealed class MultipartTests
         using StreamContent fileContent3 = new(new MemoryStream(data3));
         formData.Add(fileContent3, "some_file_3", "some_file_3.bin");
 
-        Uri uri = new("/multipart/bufferedfiles", UriKind.Relative);
+        Uri uri = new("/api/multipart/bufferedfiles", UriKind.Relative);
         HttpResponseMessage response = await TestSetup.Client.PostAsync(uri, formData);
 
         Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.OK));

@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation;
-using MinimalApiBuilder.TestApiTests.Infrastructure;
+using MinimalApiBuilder.IntegrationTests.Infrastructure;
 using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests;
@@ -14,8 +14,7 @@ internal sealed class AsyncValidationTests
     [TestCaseSource(nameof(InvalidSingle))]
     public async Task Invalid_Single_Parameter(AsyncValidationRequest request)
     {
-        HttpResponseMessage response =
-            await TestSetup.Client.PostAsJsonAsync<AsyncValidationRequest>("/validation/async/single", request);
+        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/api/validation/async/single", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }
@@ -23,7 +22,7 @@ internal sealed class AsyncValidationTests
     [TestCaseSource(nameof(ValidSingle))]
     public async Task Valid_Single_Parameter(AsyncValidationRequest request)
     {
-        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/validation/async/single", request);
+        HttpResponseMessage response = await TestSetup.Client.PostAsJsonAsync("/api/validation/async/single", request);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string[]>>();
@@ -36,8 +35,8 @@ internal sealed class AsyncValidationTests
         AsyncValidationRequest request,
         AsyncValidationParameters parameters)
     {
-        HttpResponseMessage response =
-            await TestSetup.Client.PatchAsJsonAsync($"/validation/async/multiple?value={parameters.Value}", request);
+        HttpResponseMessage response = await TestSetup.Client.PatchAsJsonAsync(
+            $"/api/validation/async/multiple?value={parameters.Value}", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }
@@ -47,8 +46,8 @@ internal sealed class AsyncValidationTests
         AsyncValidationRequest request,
         AsyncValidationParameters parameters)
     {
-        HttpResponseMessage response =
-            await TestSetup.Client.PatchAsJsonAsync($"/validation/async/multiple?value={parameters.Value}", request);
+        HttpResponseMessage response = await TestSetup.Client.PatchAsJsonAsync(
+            $"/api/validation/async/multiple?value={parameters.Value}", request);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }

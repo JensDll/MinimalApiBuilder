@@ -1,4 +1,4 @@
-﻿using MinimalApiBuilder.TestApiTests.Infrastructure;
+﻿using MinimalApiBuilder.IntegrationTests.Infrastructure;
 using NUnit.Framework;
 
 // ReSharper disable CheckNamespace

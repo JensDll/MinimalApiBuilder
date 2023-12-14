@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Fixture.TestApi.Features.Multipart;
 using Fixture.TestApi.Features.Validation;
@@ -49,16 +50,16 @@ CompressedStaticFileOptions staticFileOptions = new()
     {
         IHeaderDictionary headers = context.Context.Response.Headers;
 
-        if (context.File.Name == "index.html")
+        headers.XContentTypeOptions = "nosniff";
+
+        if (context.File.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
         {
             headers.CacheControl = "private,no-store,no-cache,max-age=0,must-revalidate";
-            headers.XContentTypeOptions = "nosniff";
             headers.XXSSProtection = "0";
             return;
         }
 
         headers.CacheControl = "public,max-age=31536000,immutable";
-        headers.XContentTypeOptions = "nosniff";
     }
 };
 
@@ -81,7 +82,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStatusCodePages();
 
-RouteGroupBuilder validation = app.MapGroup("/validation").WithTags("Validation");
+RouteGroupBuilder api = app.MapGroup("api");
+
+RouteGroupBuilder validation = api.MapGroup("/validation").WithTags("Validation");
 Configure(
     validation.MapPost("/sync/single", SyncSingleValidationEndpoint.Handle),
     validation.MapPatch("/sync/multiple", SyncMultipleValidationEndpoint.Handle),
@@ -89,7 +92,7 @@ Configure(
     validation.MapPatch("/async/multiple", AsyncMultipleValidationEndpoint.Handle),
     validation.MapPut("/combination", CombinedValidationEndpoint.Handle));
 
-RouteGroupBuilder multipart = app.MapGroup("/multipart").WithTags("Multipart");
+RouteGroupBuilder multipart = api.MapGroup("/multipart").WithTags("Multipart");
 Configure(multipart.MapPost("/zipstream", ZipStreamEndpoint.Handle));
 Configure(multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 
@@ -99,24 +102,35 @@ app.Run();
 
 internal static class FallbackExtensions
 {
+    private static readonly string[] s_supportedHttpMethods = [HttpMethods.Get, HttpMethods.Head];
+
     public static IEndpointConventionBuilder MapFallbackToIndexHtml(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapFallback(CreateRequestDelegate(endpoints));
-    }
+        return endpoints.MapFallback(CreateRequestDelegate(endpoints))
+            .WithMetadata(new HttpMethodMetadata(s_supportedHttpMethods));
 
-    private static RequestDelegate CreateRequestDelegate(IEndpointRouteBuilder endpoints)
-    {
-        IApplicationBuilder app = endpoints.CreateApplicationBuilder();
-
-        app.Use(static next => context =>
+        static RequestDelegate CreateRequestDelegate(IEndpointRouteBuilder endpoints)
         {
-            context.Request.Path += "/index.html";
-            context.SetEndpoint(null);
-            return next(context);
-        });
+            IApplicationBuilder app = endpoints.CreateApplicationBuilder();
 
-        app.UseCompressedStaticFiles();
+            app.Use(static next => context =>
+            {
+                context.Request.Path += "/index.html";
+                context.SetEndpoint(null);
+                return next(context);
+            });
 
-        return app.Build();
+            app.UseCompressedStaticFiles();
+
+            app.Use(static next => context =>
+            {
+                context.Request.Path = "/404.html";
+                return next(context);
+            });
+
+            app.UseCompressedStaticFiles();
+
+            return app.Build();
+        }
     }
 }

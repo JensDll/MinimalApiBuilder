@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
 using Fixture.TestApi.Features.Validation;
-using MinimalApiBuilder.TestApiTests.Infrastructure;
+using MinimalApiBuilder.IntegrationTests.Infrastructure;
 using NUnit.Framework;
 
 namespace MinimalApiBuilder.IntegrationTests;
@@ -14,7 +14,7 @@ internal sealed class CombinedValidationTests
         SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
-            await TestSetup.Client.PutAsJsonAsync($"/validation/combination?value={parameters.Value}", request);
+            await TestSetup.Client.PutAsJsonAsync($"/api/validation/combination?value={parameters.Value}", request);
 
         await TestHelper.AssertErrorResultAsync(response);
     }
@@ -25,7 +25,7 @@ internal sealed class CombinedValidationTests
         SyncValidationParameters parameters)
     {
         HttpResponseMessage response =
-            await TestSetup.Client.PutAsJsonAsync($"/validation/combination?value={parameters.Value}", request);
+            await TestSetup.Client.PutAsJsonAsync($"/api/validation/combination?value={parameters.Value}", request);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
