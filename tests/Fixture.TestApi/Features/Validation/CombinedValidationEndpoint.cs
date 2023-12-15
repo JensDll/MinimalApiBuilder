@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MinimalApiBuilder;
+using MinimalApiBuilder.Generator;
 
 namespace Fixture.TestApi.Features.Validation;
 

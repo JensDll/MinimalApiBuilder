@@ -12,7 +12,7 @@ internal sealed class DependencyInjectionExtensions : SourceBuilder
 
     public DependencyInjectionExtensions(GeneratorOptions options) : base(options)
     {
-        _namespace = OpenBlock("namespace MinimalApiBuilder");
+        _namespace = OpenBlock("namespace MinimalApiBuilder.Generator");
         _class = OpenBlock(
             "/// <summary>",
             "/// Minimal API builder dependency injection extension methods.",

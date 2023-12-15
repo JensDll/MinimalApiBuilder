@@ -1,6 +1,7 @@
 root = true
 
 [*]
+charset = utf-8
 end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
@@ -338,6 +339,7 @@ resharper_xmldoc_wrap_tags_and_pi = false
 resharper_align_multiline_binary_expressions_chain = true
 resharper_align_multiline_statement_conditions = false
 resharper_convert_to_primary_constructor_highlighting = none
+resharper_null_coalescing_condition_is_always_not_null_according_to_api_contract_highlighting = suggestion
 ######## RESHARPER ########
 
 [*.{received,verified}.{cs,txt}]

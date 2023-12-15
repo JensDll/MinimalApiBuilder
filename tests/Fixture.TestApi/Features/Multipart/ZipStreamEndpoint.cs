@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using MinimalApiBuilder;
+using MinimalApiBuilder.Generator;
 
 namespace Fixture.TestApi.Features.Multipart;
 
@@ -79,12 +79,12 @@ internal partial class ZipStreamEndpoint : MinimalApiBuilderEndpoint
 
 internal class ZipStreamRequest
 {
-    public required MinimalApiBuilder.MultipartReader MultipartReader { get; init; }
+    public required MinimalApiBuilder.Multipart.MultipartReader MultipartReader { get; init; }
 
     public static ValueTask<ZipStreamRequest?> BindAsync(HttpContext context)
     {
         ZipStreamEndpoint endpoint = context.RequestServices.GetRequiredService<ZipStreamEndpoint>();
-        MinimalApiBuilder.MultipartReader multipartReader = new(context, endpoint);
+        MinimalApiBuilder.Multipart.MultipartReader multipartReader = new(context, endpoint);
 
         if (endpoint.HasValidationError)
         {

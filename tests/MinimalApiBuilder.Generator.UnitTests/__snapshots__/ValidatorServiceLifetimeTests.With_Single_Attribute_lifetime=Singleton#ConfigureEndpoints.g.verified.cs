@@ -5,7 +5,7 @@
 
 #nullable enable
 
-namespace MinimalApiBuilder
+namespace MinimalApiBuilder.Generator
 {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
     internal static partial class ConfigureEndpoints

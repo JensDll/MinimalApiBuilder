@@ -5,7 +5,7 @@
 
 #nullable enable
 
-namespace MinimalApiBuilder
+namespace MinimalApiBuilder.Generator
 {
     /// <summary>
     /// Minimal API builder dependency injection extension methods.

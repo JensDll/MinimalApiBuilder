@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+    <LangVersion>12</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.0" Condition="'$(TargetFramework)' == 'net8.0'"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.14" Condition="'$(TargetFramework)' == 'net7.0'"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0"/>
+    <PackageReference Include="NSubstitute" Version="5.1.0"/>
+    <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.16"/>
+    <PackageReference Include="NUnit" Version="4.0.1"/>
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0"/>
+    <PackageReference Include="NUnit.Analyzers" Version="3.10.0"/>
+    <PackageReference Include="coverlet.collector" Version="6.0.0"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\MinimalApiBuilder\MinimalApiBuilder.csproj"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="static\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

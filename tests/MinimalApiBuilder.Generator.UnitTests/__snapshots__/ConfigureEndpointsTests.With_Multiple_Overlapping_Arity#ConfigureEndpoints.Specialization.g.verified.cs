@@ -5,21 +5,21 @@
 
 #nullable enable
 
-namespace MinimalApiBuilder
+namespace MinimalApiBuilder.Generator
 {
     internal static partial class ConfigureEndpoints
     {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         private static readonly global::System.Collections.Generic.Dictionary<(string, int), global::System.Action<global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[]>> s_map0 = new()
         {
-            [(@"", 43)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
+            [(@"", 44)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
             {
                 global::E1._auto_generated_Configure(builders[0]);
                 global::E1.Configure(builders[0]);
                 global::E2._auto_generated_Configure(builders[1]);
                 global::E2.Configure(builders[1]);
             },
-            [(@"", 47)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
+            [(@"", 48)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
             {
                 global::E1._auto_generated_Configure(builders[0]);
                 global::E1.Configure(builders[0]);
@@ -36,12 +36,12 @@ namespace MinimalApiBuilder
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("MinimalApiBuilder.Generator", "1.0.0.0")]
         private static readonly global::System.Collections.Generic.Dictionary<(string, int), global::System.Action<global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[]>> s_map1 = new()
         {
-            [(@"", 51)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
+            [(@"", 52)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
             {
                 global::E3._auto_generated_Configure(builders[0]);
                 global::E3.Configure(builders[0]);
             },
-            [(@"", 54)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
+            [(@"", 55)] = static (global::Microsoft.AspNetCore.Builder.RouteHandlerBuilder[] builders) =>
             {
                 global::E4._auto_generated_Configure(builders[0]);
                 global::E4.Configure(builders[0]);

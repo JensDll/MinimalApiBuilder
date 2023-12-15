@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentValidation;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MinimalApiBuilder;
+using MinimalApiBuilder.Generator;
+using MinimalApiBuilder.Multipart;
 
 namespace Fixture.TestApi.Features.Validation;
 
@@ -67,23 +67,11 @@ internal class AsyncValidationParametersValidator : AbstractValidator<AsyncValid
     }
 }
 
-internal static class AsyncValidationLoggingExtensions
+internal static partial class AsyncValidationLoggingExtensions
 {
-    private static readonly Action<ILogger, AsyncValidationParameters, Exception?> s_parameters =
-        LoggerMessage.Define<AsyncValidationParameters>(LogLevel.Information,
-            new EventId(1, nameof(AsyncValidationRequest)), "Parameters: {Request}");
+    [LoggerMessage(0, LogLevel.Information, $"{nameof(AsyncValidationParameters)}: {{Parameters}}")]
+    internal static partial void AsyncValidationParameters(this ILogger logger, AsyncValidationParameters parameters);
 
-    private static readonly Action<ILogger, AsyncValidationRequest, Exception?> s_request =
-        LoggerMessage.Define<AsyncValidationRequest>(LogLevel.Information,
-            new EventId(2, nameof(AsyncValidationRequest)), "Request: {Request}");
-
-    public static void AsyncValidationParameters(this ILogger logger, AsyncValidationParameters parameters)
-    {
-        s_parameters(logger, parameters, null);
-    }
-
-    public static void AsyncValidationRequest(this ILogger logger, AsyncValidationRequest request)
-    {
-        s_request(logger, request, null);
-    }
+    [LoggerMessage(1, LogLevel.Information, $"{nameof(AsyncValidationRequest)}: {{Request}}")]
+    internal static partial void AsyncValidationRequest(this ILogger logger, AsyncValidationRequest request);
 }

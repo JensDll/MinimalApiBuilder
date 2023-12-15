@@ -17,7 +17,7 @@ internal static class Sources
 
     public static readonly string ConfigureEndpoints = $$"""
         {{Header}}
-        namespace MinimalApiBuilder
+        namespace MinimalApiBuilder.Generator
         {
             {{GeneratedCodeAttribute}}
             internal static partial class {{nameof(ConfigureEndpoints)}}
