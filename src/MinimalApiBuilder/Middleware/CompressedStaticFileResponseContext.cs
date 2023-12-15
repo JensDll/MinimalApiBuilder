@@ -12,7 +12,7 @@ public class CompressedStaticFileResponseContext
     /// Initializes a new instance of the <see cref="CompressedStaticFileResponseContext" /> class.
     /// </summary>
     /// <param name="context">The HTTP context associated with the request.</param>
-    /// <param name="filename">The filename without any content coding extension.</param>
+    /// <param name="filename">The to-be-served filename without any content coding extension.</param>
     public CompressedStaticFileResponseContext(HttpContext context, StringSegment filename)
     {
         Context = context;
@@ -25,7 +25,7 @@ public class CompressedStaticFileResponseContext
     public HttpContext Context { get; }
 
     /// <summary>
-    /// The filename without any content coding extension.
+    /// The to-be-served filename without any content coding extension.
     /// </summary>
     public StringSegment Filename { get; }
 }
