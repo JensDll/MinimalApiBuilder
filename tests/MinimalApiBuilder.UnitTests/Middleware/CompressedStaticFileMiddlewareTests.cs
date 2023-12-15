@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Net.Http.Headers;
 using MinimalApiBuilder.Middleware;
 using MinimalApiBuilder.UnitTests.Infrastructure;
 using NSubstitute;
@@ -264,6 +265,92 @@ internal sealed class CompressedStaticFileMiddlewareTests
         {
             Assert.That(syncCalled, Is.True);
             Assert.That(asyncCalled, Is.True);
+        });
+    }
+#endif
+
+    [Test]
+    public async Task OnPrepareResponse_Is_Called_With_Correct_Arguments()
+    {
+        int timesCalled = 0;
+
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
+        {
+            OnPrepareResponse = context =>
+            {
+                ++timesCalled;
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(context.Context, Is.Not.Null);
+                    Assert.That(context.Filename, Is.EqualTo("data.txt"));
+                });
+            }
+        });
+
+        Assert.That(timesCalled, Is.EqualTo(0));
+
+        using HttpRequestMessage normalRequest = new(HttpMethod.Get, new Uri("/data.txt", UriKind.Relative));
+        using HttpResponseMessage normalResponse = await server.Client.SendAsync(normalRequest);
+        string normalContent = await normalResponse.Content.ReadAsStringAsync();
+        Assert.That(timesCalled, Is.EqualTo(1));
+
+        using HttpRequestMessage compressedRequest = new(HttpMethod.Get, new Uri("/data.txt", UriKind.Relative));
+        compressedRequest.Headers.Add(HeaderNames.AcceptEncoding, "br");
+        using HttpResponseMessage compressedResponse = await server.Client.SendAsync(compressedRequest);
+        string compressedContent = await compressedResponse.Content.ReadAsStringAsync();
+        Assert.That(timesCalled, Is.EqualTo(2));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(normalResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(normalContent, Is.EqualTo("data"));
+            Assert.That(compressedResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(compressedContent, Is.EqualTo("br data"));
+        });
+    }
+
+#if NET8_0_OR_GREATER
+    [Test]
+    public async Task OnPrepareResponseAsync_Is_Called_With_Correct_Arguments()
+    {
+        int timesCalled = 0;
+
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
+        {
+            OnPrepareResponseAsync = context =>
+            {
+                ++timesCalled;
+
+                Assert.Multiple(() =>
+                {
+                    Assert.That(context.Context, Is.Not.Null);
+                    Assert.That(context.Filename, Is.EqualTo("data.txt"));
+                });
+
+                return Task.CompletedTask;
+            }
+        });
+
+        Assert.That(timesCalled, Is.EqualTo(0));
+
+        using HttpRequestMessage normalRequest = new(HttpMethod.Get, new Uri("/data.txt", UriKind.Relative));
+        using HttpResponseMessage normalResponse = await server.Client.SendAsync(normalRequest);
+        string normalContent = await normalResponse.Content.ReadAsStringAsync();
+        Assert.That(timesCalled, Is.EqualTo(1));
+
+        using HttpRequestMessage compressedRequest = new(HttpMethod.Get, new Uri("/data.txt", UriKind.Relative));
+        compressedRequest.Headers.Add(HeaderNames.AcceptEncoding, "br");
+        using HttpResponseMessage compressedResponse = await server.Client.SendAsync(compressedRequest);
+        string compressedContent = await compressedResponse.Content.ReadAsStringAsync();
+        Assert.That(timesCalled, Is.EqualTo(2));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(normalResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(normalContent, Is.EqualTo("data"));
+            Assert.That(compressedResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(compressedContent, Is.EqualTo("br data"));
         });
     }
 #endif

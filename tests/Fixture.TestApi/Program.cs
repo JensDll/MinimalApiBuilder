@@ -46,13 +46,13 @@ builder.Services.ConfigureHttpJsonOptions(static options =>
 
 CompressedStaticFileOptions staticFileOptions = new()
 {
-    OnPrepareResponse = context =>
+    OnPrepareResponse = static context =>
     {
         IHeaderDictionary headers = context.Context.Response.Headers;
 
         headers.XContentTypeOptions = "nosniff";
 
-        if (context.File.Name.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+        if (context.Filename.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
         {
             headers.CacheControl = "private,no-store,no-cache,max-age=0,must-revalidate";
             headers.XXSSProtection = "0";

@@ -74,7 +74,8 @@ public class CompressedStaticFileMiddleware : IMiddleware
         RequestHeaders requestHeaders = context.Request.GetTypedHeaders();
         ResponseHeaders responseHeaders = context.Response.GetTypedHeaders();
 
-        IFileInfo fileInfo = GetFileInfo(requestHeaders, subPath, out StringSegment contentEncoding);
+        IFileInfo fileInfo = GetFileInfo(requestHeaders, subPath, out StringSegment contentEncoding,
+            out StringSegment filename);
 
         if (!fileInfo.Exists)
         {
@@ -82,7 +83,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
             return next(context);
         }
 
-        StaticFileResponseContext staticFileResponseContext = new(context, fileInfo);
+        CompressedStaticFileResponseContext responseContext = new(context, filename);
         (EntityTagHeaderValue etag, DateTimeOffset lastModified) = GetEtagAndLastModified(fileInfo);
 
         if (HttpMethods.IsHead(context.Request.Method))
@@ -93,9 +94,9 @@ public class CompressedStaticFileMiddleware : IMiddleware
             SetContentEncoding(responseHeaders, contentEncoding);
             context.Response.ContentType = contentType;
             context.Response.ContentLength = fileInfo.Length;
-            _options.OnPrepareResponse(staticFileResponseContext);
+            _options.OnPrepareResponse(responseContext);
 #if NET8_0_OR_GREATER
-            return _options.OnPrepareResponseAsync(staticFileResponseContext);
+            return _options.OnPrepareResponseAsync(responseContext);
 #else
             return Task.CompletedTask;
 #endif
@@ -116,12 +117,12 @@ public class CompressedStaticFileMiddleware : IMiddleware
                     PreconditionHelper.EvaluateIfRange(requestHeaders, etag, lastModified) == (true, false))
                 {
                     _logger.IfRangePreconditionFailed(subPath);
-                    return SendFileAsync(staticFileResponseContext, next, subPath);
+                    return SendFileAsync(responseContext, fileInfo, next, subPath);
                 }
 
                 if (!RangeHelper.TryParseRange(context, requestHeaders, fileInfo.Length, out (long, long)? range))
                 {
-                    return SendFileAsync(staticFileResponseContext, next, subPath);
+                    return SendFileAsync(responseContext, fileInfo, next, subPath);
                 }
 
                 if (range is null)
@@ -130,7 +131,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                     responseHeaders.ContentRange = new ContentRangeHeaderValue(fileInfo.Length);
                     _logger.RangeNotSatisfiable(context.Request.Headers.Range, subPath);
 #if NET8_0_OR_GREATER
-                    return _options.OnPrepareResponseAsync(staticFileResponseContext);
+                    return _options.OnPrepareResponseAsync(responseContext);
 #else
                     return Task.CompletedTask;
 #endif
@@ -143,7 +144,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 SetStatusCode(context, StatusCodes.Status206PartialContent);
                 context.Response.ContentLength = count;
                 _logger.SendingRange(start, end, subPath);
-                return SendFileAsync(staticFileResponseContext, next, start, count);
+                return SendFileAsync(responseContext, fileInfo, next, start, count);
             case PreconditionState.NotModified:
                 responseHeaders.LastModified = lastModified;
                 responseHeaders.ETag = etag;
@@ -153,18 +154,18 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 context.Response.ContentType = contentType;
                 context.Response.ContentLength = fileInfo.Length;
                 _logger.NotModified(subPath);
-                _options.OnPrepareResponse(staticFileResponseContext);
+                _options.OnPrepareResponse(responseContext);
 #if NET8_0_OR_GREATER
-                return _options.OnPrepareResponseAsync(staticFileResponseContext);
+                return _options.OnPrepareResponseAsync(responseContext);
 #else
                 return Task.CompletedTask;
 #endif
             case PreconditionState.PreconditionFailed:
                 SetStatusCode(context, StatusCodes.Status412PreconditionFailed);
                 _logger.PreconditionFailed(subPath);
-                _options.OnPrepareResponse(staticFileResponseContext);
+                _options.OnPrepareResponse(responseContext);
 #if NET8_0_OR_GREATER
-                return _options.OnPrepareResponseAsync(staticFileResponseContext);
+                return _options.OnPrepareResponseAsync(responseContext);
 #else
                 return Task.CompletedTask;
 #endif
@@ -175,9 +176,11 @@ public class CompressedStaticFileMiddleware : IMiddleware
         }
     }
 
-    private IFileInfo GetFileInfo(RequestHeaders requestHeaders, string subPath, out StringSegment contentEncoding)
+    private IFileInfo GetFileInfo(RequestHeaders requestHeaders, string subPath,
+        out StringSegment contentEncoding, out StringSegment filename)
     {
         IFileInfo fileInfo = _fileProvider.GetFileInfo(subPath);
+        filename = fileInfo.Name;
 
         if (!TryGetContentEncoding(requestHeaders, out contentEncoding, out string? extension))
         {
@@ -188,6 +191,8 @@ public class CompressedStaticFileMiddleware : IMiddleware
 
         if (compressedFileInfo.Exists)
         {
+            filename = new StringSegment(compressedFileInfo.Name, 0,
+                compressedFileInfo.Name.Length - extension.Length - 1);
             return compressedFileInfo;
         }
 
@@ -196,7 +201,8 @@ public class CompressedStaticFileMiddleware : IMiddleware
         return fileInfo;
     }
 
-    private async Task SendFileAsync(StaticFileResponseContext context, RequestDelegate next, long offset, long count)
+    private async Task SendFileAsync(CompressedStaticFileResponseContext context,
+        IFileInfo fileInfo, RequestDelegate next, long offset, long count)
     {
         SetCompressionMode(context.Context);
 
@@ -207,7 +213,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
 
         try
         {
-            await context.Context.Response.SendFileAsync(context.File, offset, count, context.Context.RequestAborted);
+            await context.Context.Response.SendFileAsync(fileInfo, offset, count, context.Context.RequestAborted);
         }
         catch (OperationCanceledException e)
         {
@@ -220,11 +226,12 @@ public class CompressedStaticFileMiddleware : IMiddleware
         }
     }
 
-    private Task SendFileAsync(StaticFileResponseContext context, RequestDelegate next, string subPath)
+    private Task SendFileAsync(CompressedStaticFileResponseContext context,
+        IFileInfo fileInfo, RequestDelegate next, string subPath)
     {
-        context.Context.Response.ContentLength = context.File.Length;
+        context.Context.Response.ContentLength = fileInfo.Length;
         _logger.SendingFile(subPath);
-        return SendFileAsync(context, next, 0, context.File.Length);
+        return SendFileAsync(context, fileInfo, next, 0, fileInfo.Length);
     }
 
     // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-9

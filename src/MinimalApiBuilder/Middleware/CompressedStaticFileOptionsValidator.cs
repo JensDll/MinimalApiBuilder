@@ -19,15 +19,15 @@ internal sealed class CompressedStaticFileOptionsValidator : AbstractValidator<C
                     return true;
                 }
 
-                logger.WebRootPathNotFound(Path.GetFullPath(
-                    Path.Combine(environment.ContentRootPath, environment.WebRootPath ?? "wwwroot")));
+                logger.WebRootPathNotFound(Path.GetFullPath(Path.Combine(environment.ContentRootPath,
+                    environment.WebRootPath ?? "wwwroot")));
 
                 return false;
             })
             .WithSeverity(Severity.Warning);
 
         RuleFor(static options => options.ContentEncoding)
-            .Must(dictionary => dictionary.Values.All(static value => value.Item1 >= 0))
+            .Must(dictionary => dictionary.Values.All(static value => value.Order >= 0))
             .WithMessage("{PropertyName} order values must not be negative")
             .Must(dictionary => dictionary.Comparer.Equals(StringSegmentComparer.OrdinalIgnoreCase))
             .WithMessage("{PropertyName} keys must use case-insensitive ordinal comparison");

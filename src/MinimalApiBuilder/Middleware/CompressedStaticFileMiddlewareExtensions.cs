@@ -11,12 +11,11 @@ namespace MinimalApiBuilder.Middleware;
 public static class CompressedStaticFileMiddlewareExtensions
 {
     /// <summary>
-    /// Registers the scoped <see cref="CompressedStaticFileMiddleware" />.
+    /// Registers the singleton <see cref="CompressedStaticFileMiddleware" /> with specified options.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection" />.</param>
     /// <param name="options">
-    /// The <see cref="CompressedStaticFileOptions" /> used to configure
-    /// the <see cref="CompressedStaticFileMiddleware" /> behavior.
+    /// The <see cref="CompressedStaticFileOptions" /> used to configure the middleware.
     /// </param>
     /// <returns></returns>
     public static IServiceCollection AddCompressedStaticFileMiddleware(
@@ -24,30 +23,27 @@ public static class CompressedStaticFileMiddlewareExtensions
         CompressedStaticFileOptions options)
     {
         AddOptions(services, options);
-        services.AddScoped<CompressedStaticFileMiddleware>();
+        services.AddSingleton<CompressedStaticFileMiddleware>();
         return services;
     }
 
     /// <summary>
-    /// Registers the scoped <see cref="CompressedStaticFileMiddleware" /> with default options.
+    /// Registers the singleton <see cref="CompressedStaticFileMiddleware" /> with default options.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection" />.</param>
     /// <returns></returns>
     public static IServiceCollection AddCompressedStaticFileMiddleware(this IServiceCollection services)
     {
         AddOptions(services, new CompressedStaticFileOptions());
-        services.AddScoped<CompressedStaticFileMiddleware>();
+        services.AddSingleton<CompressedStaticFileMiddleware>();
         return services;
     }
 
     /// <summary>
-    /// Enables serving static pre-compressed files based on the Accept-Encoding header field.
+    /// Enables serving static pre-compressed files based on the
+    /// <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a> header field.
     /// </summary>
     /// <param name="builder">The <see cref="IApplicationBuilder" />.</param>
-    /// <remarks>
-    /// A drop-in replacement for the <see cref="StaticFileMiddleware" />
-    /// but uses factory-based middleware over convention-based middleware.
-    /// </remarks>
     public static void UseCompressedStaticFiles(this IApplicationBuilder builder)
     {
         builder.UseMiddleware<CompressedStaticFileMiddleware>();

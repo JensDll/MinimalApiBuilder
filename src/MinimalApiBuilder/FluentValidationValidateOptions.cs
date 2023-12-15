@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace MinimalApiBuilder;
 
 /// <summary>
-/// Options validator with FluentValidation.
+/// Options validator using FluentValidation.
 /// </summary>
 /// <typeparam name="TOptions">The type of options being validated.</typeparam>
 public class FluentValidationValidateOptions<TOptions> : IValidateOptions<TOptions>
@@ -14,7 +14,7 @@ public class FluentValidationValidateOptions<TOptions> : IValidateOptions<TOptio
     private readonly IValidator<TOptions> _validator;
 
     /// <summary>
-    /// Creates a new instance of <see cref="FluentValidationValidateOptions{TOptions}" />.
+    /// Initializes a new instance of <see cref="FluentValidationValidateOptions{TOptions}" />.
     /// </summary>
     /// <param name="validator">The options validator.</param>
     public FluentValidationValidateOptions(IValidator<TOptions> validator)

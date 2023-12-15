@@ -13,7 +13,7 @@ namespace MinimalApiBuilder.Middleware;
 /// </summary>
 public class CompressedStaticFileOptions : StaticFileOptions
 {
-    private static readonly KeyValuePair<StringSegment, (int, string)>[] s_defaultContentEncodingOrder =
+    private static readonly KeyValuePair<StringSegment, (int Order, string Extension)>[] s_defaultContentEncoding =
     {
         new(ContentCodingNames.Br, (1, "br")),
         new(ContentCodingNames.Gzip, (0, "gz"))
@@ -26,8 +26,8 @@ public class CompressedStaticFileOptions : StaticFileOptions
     /// uses order to prioritize the selected representation when the quality values of
     /// <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a> are equal.
     /// </summary>
-    public FrozenDictionary<StringSegment, (int, string)> ContentEncoding { get; set; } =
-        s_defaultContentEncodingOrder.ToFrozenDictionary(StringSegmentComparer.OrdinalIgnoreCase);
+    public FrozenDictionary<StringSegment, (int Order, string Extension)> ContentEncoding { get; set; } =
+        s_defaultContentEncoding.ToFrozenDictionary(StringSegmentComparer.OrdinalIgnoreCase);
 #else
     /// <summary>
     /// The available pre-compressed file formats. Keys are <see cref="ContentCodingNames" />, and
@@ -35,7 +35,17 @@ public class CompressedStaticFileOptions : StaticFileOptions
     /// uses order to prioritize the selected representation when the quality values of
     /// <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a> are equal.
     /// </summary>
-    public Dictionary<StringSegment, (int, string)> ContentEncoding { get; set; } =
-        new(s_defaultContentEncodingOrder, StringSegmentComparer.OrdinalIgnoreCase);
+    public Dictionary<StringSegment, (int Order, string Extension)> ContentEncoding { get; set; } =
+        new(s_defaultContentEncoding, StringSegmentComparer.OrdinalIgnoreCase);
+#endif
+
+    /// <inheritdoc cref="StaticFileOptions.OnPrepareResponse" />
+    public new Action<CompressedStaticFileResponseContext> OnPrepareResponse { get; set; } = static _ =>
+        { };
+
+#if NET8_0_OR_GREATER
+    /// <inheritdoc cref="StaticFileOptions.OnPrepareResponseAsync" />
+    public new Func<CompressedStaticFileResponseContext, Task> OnPrepareResponseAsync { get; set; } = static _ =>
+        Task.CompletedTask;
 #endif
 }
