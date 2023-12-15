@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Headers;
@@ -91,7 +90,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
             responseHeaders.LastModified = lastModified;
             responseHeaders.ETag = etag;
             responseHeaders.Headers.AcceptRanges = "bytes";
-            SetContentEncoding(responseHeaders, contentEncoding);
+            responseHeaders.Headers.ContentEncoding = contentEncoding.Value;
             context.Response.ContentType = contentType;
             context.Response.ContentLength = fileInfo.Length;
             _options.OnPrepareResponse(responseContext);
@@ -110,7 +109,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 responseHeaders.LastModified = lastModified;
                 responseHeaders.ETag = etag;
                 responseHeaders.Headers.AcceptRanges = "bytes";
-                SetContentEncoding(responseHeaders, contentEncoding);
+                responseHeaders.Headers.ContentEncoding = contentEncoding.Value;
                 context.Response.ContentType = contentType;
 
                 if (RangeHelper.HasRangeHeaderField(context) &&
@@ -149,7 +148,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 responseHeaders.LastModified = lastModified;
                 responseHeaders.ETag = etag;
                 responseHeaders.Headers.AcceptRanges = "bytes";
-                SetContentEncoding(responseHeaders, contentEncoding);
+                responseHeaders.Headers.ContentEncoding = contentEncoding.Value;
                 SetStatusCode(context, StatusCodes.Status304NotModified);
                 context.Response.ContentType = contentType;
                 context.Response.ContentLength = fileInfo.Length;
@@ -182,10 +181,14 @@ public class CompressedStaticFileMiddleware : IMiddleware
         IFileInfo fileInfo = _fileProvider.GetFileInfo(subPath);
         filename = fileInfo.Name;
 
-        if (!TryGetContentEncoding(requestHeaders, out contentEncoding, out string? extension))
+        (contentEncoding, string extension) = GetContentEncoding(requestHeaders);
+
+        if (!contentEncoding.HasValue)
         {
             return fileInfo;
         }
+
+        Debug.Assert(extension is not null);
 
         IFileInfo compressedFileInfo = _fileProvider.GetFileInfo($"{subPath}.{extension}");
 
@@ -235,15 +238,12 @@ public class CompressedStaticFileMiddleware : IMiddleware
     }
 
     // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-9
-    private bool TryGetContentEncoding(RequestHeaders requestHeaders,
-        out StringSegment contentEncoding,
-        [NotNullWhen(true)] out string? extension)
+    private (StringSegment, string) GetContentEncoding(RequestHeaders requestHeaders)
     {
         int bestOrder = -1;
         double bestQuality = -1;
 
-        contentEncoding = null;
-        extension = null;
+        (StringSegment, string) result = default;
 
         foreach (StringWithQualityHeaderValue value in requestHeaders.AcceptEncoding)
         {
@@ -252,7 +252,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 continue;
             }
 
-            (int order, string ext) = pair;
+            (int order, string extension) = pair;
             double quality = value.Quality ?? 1;
 
             if (quality == 0)
@@ -267,8 +267,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 if (order > bestOrder)
                 {
                     bestOrder = order;
-                    contentEncoding = value.Value;
-                    extension = ext;
+                    result = (value.Value, extension);
                 }
 
                 continue;
@@ -276,11 +275,10 @@ public class CompressedStaticFileMiddleware : IMiddleware
 
             bestOrder = order;
             bestQuality = quality > bestQuality ? quality : bestQuality;
-            contentEncoding = value.Value;
-            extension = ext;
+            result = (value.Value, extension);
         }
 
-        return contentEncoding.HasValue;
+        return result;
     }
 
     private bool TryGetContentType(string subPath, out string? contentType)
@@ -326,14 +324,6 @@ public class CompressedStaticFileMiddleware : IMiddleware
         EntityTagHeaderValue etag = new($"\"{Convert.ToString(etagHash, 16)}\"");
 
         return (etag, lastModified);
-    }
-
-    private static void SetContentEncoding(ResponseHeaders responseHeaders, StringSegment contentEncoding)
-    {
-        if (contentEncoding.HasValue)
-        {
-            responseHeaders.Headers.ContentEncoding = contentEncoding.Value;
-        }
     }
 
     private static void SetStatusCode(HttpContext context, int statusCode)

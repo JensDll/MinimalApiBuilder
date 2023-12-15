@@ -144,6 +144,26 @@ internal sealed class CompressedStaticFileMiddlewareDelegationTests
             ContentTypeProvider = FalseContentTypeProvider.Instance
         });
 
+    [TestCaseSource(nameof(s_existingFiles))]
+    public async Task Unconfigured_Content_Type_With_ServeUnknownFileTypes_Does_Not_Delegate_Request(string uri)
+    {
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
+        {
+            ContentTypeProvider = FalseContentTypeProvider.Instance,
+            ServeUnknownFileTypes = true
+        });
+
+        using HttpRequestMessage request = new(HttpMethod.Get, new Uri(uri, UriKind.Relative));
+        using HttpResponseMessage response = await server.Client.SendAsync(request);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Headers.ETag, Is.Not.Null);
+            Assert.That(response.Content.Headers.ContentLength, Is.GreaterThan(0));
+        });
+    }
+
     private static Task DelegatesRequest(HttpMethod method, string requestUri)
     {
         return DelegatesRequest(method, requestUri, new CompressedStaticFileOptions());

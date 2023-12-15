@@ -86,9 +86,20 @@ internal sealed class AcceptEncodingTests
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, (int, string)>[]
         {
             new("br", (3, "br")),
-            new("gzip", (3, "gz")),
+            new("gzip", (2, "gz")),
             new("deflate", (1, "deflate"))
         }, "br;q=0, gzip;q=0, deflate;q=0");
+
+        await AssertResponseAsync(response);
+    }
+
+    [Test]
+    public async Task File_Without_Valid_Representation_Is_Served_Without_Content_Negotiation()
+    {
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<StringSegment, (int, string)>[]
+        {
+            new("zstd", (0, "zstd"))
+        }, "br, gzip, deflate, zstd");
 
         await AssertResponseAsync(response);
     }
