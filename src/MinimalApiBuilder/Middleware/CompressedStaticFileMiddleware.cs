@@ -148,7 +148,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                     SetStatusCode(context, StatusCodes.Status416RangeNotSatisfiable);
                     responseHeaders.ContentRange = new ContentRangeHeaderValue(fileInfo.Length);
                     _logger.RangeNotSatisfiable(context.Request.Headers.Range, subPath);
-                    return _options.OnPrepareResponseAsync(responseContext);
+                    return Task.CompletedTask;
                 }
 
                 (long start, long end) = range.Value;
@@ -168,13 +168,11 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 context.Response.ContentType = contentType;
                 context.Response.ContentLength = fileInfo.Length;
                 _logger.NotModified(subPath);
-                _options.OnPrepareResponse(responseContext);
-                return _options.OnPrepareResponseAsync(responseContext);
+                return Task.CompletedTask;
             case PreconditionState.PreconditionFailed:
                 SetStatusCode(context, StatusCodes.Status412PreconditionFailed);
                 _logger.PreconditionFailed(subPath);
-                _options.OnPrepareResponse(responseContext);
-                return _options.OnPrepareResponseAsync(responseContext);
+                return Task.CompletedTask;
             default:
                 InvalidOperationException exception = new($"Unexpected precondition state value: {precondition}");
                 Debug.Fail(exception.ToString());

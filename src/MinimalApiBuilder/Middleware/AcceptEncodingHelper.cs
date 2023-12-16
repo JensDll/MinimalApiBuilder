@@ -31,7 +31,7 @@ internal static class AcceptEncodingHelper
 
             if (quality < double.Epsilon)
             {
-                if (StringSegment.Equals("*", value.Value, StringComparison.OrdinalIgnoreCase) ||
+                if (StringSegment.Equals("*", value.Value, StringComparison.Ordinal) ||
                     StringSegment.Equals(ContentCodingNames.Identity, value.Value, StringComparison.OrdinalIgnoreCase))
                 {
                     uncompressedFileAllowed = false;
@@ -60,7 +60,7 @@ internal static class AcceptEncodingHelper
             }
         }
 
-        // No codings or all codings are q=0
+        // No codings matching options.ContentCodingOrder or all codings are q=0
         if (bestOrder == -1)
         {
             return false;
