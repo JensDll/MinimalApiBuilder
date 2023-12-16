@@ -35,6 +35,7 @@ builder.Services.Configure<RouteHandlerOptions>(static options =>
     options.ThrowOnBadRequest = false;
 });
 
+
 #if NET8_0_OR_GREATER
 builder.Services.ConfigureHttpJsonOptions(static options =>
 {

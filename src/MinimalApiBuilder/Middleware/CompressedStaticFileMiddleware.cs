@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 using EntityTagHeaderValue = Microsoft.Net.Http.Headers.EntityTagHeaderValue;
-using StringWithQualityHeaderValue = Microsoft.Net.Http.Headers.StringWithQualityHeaderValue;
 
 namespace MinimalApiBuilder.Middleware;
 
@@ -73,8 +72,32 @@ public class CompressedStaticFileMiddleware : IMiddleware
         RequestHeaders requestHeaders = context.Request.GetTypedHeaders();
         ResponseHeaders responseHeaders = context.Response.GetTypedHeaders();
 
-        IFileInfo fileInfo = GetFileInfo(requestHeaders, subPath, out StringSegment contentEncoding,
-            out StringSegment filename);
+        IFileInfo fileInfo = _fileProvider.GetFileInfo(subPath);
+        StringSegment filename = fileInfo.Name;
+
+        if (AcceptEncodingHelper.TryGetContentCoding(requestHeaders, _options, out string? contentCoding,
+            out string? extension, out bool uncompressedFileAllowed))
+        {
+            IFileInfo compressedFileInfo = _fileProvider.GetFileInfo($"{subPath}.{extension}");
+
+            if (compressedFileInfo.Exists)
+            {
+                fileInfo = compressedFileInfo;
+                filename = new StringSegment(compressedFileInfo.Name, 0,
+                    compressedFileInfo.Name.Length - extension.Length - 1);
+            }
+            else if (!uncompressedFileAllowed && fileInfo.Exists)
+            {
+                SetStatusCode(context, StatusCodes.Status415UnsupportedMediaType);
+                responseHeaders.Headers.AcceptEncoding = _options.AcceptEncoding;
+                _logger.ContentCodingContentNegotiationFailed(context.Request.Headers.AcceptEncoding);
+                return Task.CompletedTask;
+            }
+            else
+            {
+                contentCoding = null;
+            }
+        }
 
         if (!fileInfo.Exists)
         {
@@ -82,7 +105,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
             return next(context);
         }
 
-        CompressedStaticFileResponseContext responseContext = new(context, filename);
+        CompressedStaticFileResponseContext responseContext = new(context, filename, contentCoding);
         (EntityTagHeaderValue etag, DateTimeOffset lastModified) = GetEtagAndLastModified(fileInfo);
 
         if (HttpMethods.IsHead(context.Request.Method))
@@ -90,15 +113,11 @@ public class CompressedStaticFileMiddleware : IMiddleware
             responseHeaders.LastModified = lastModified;
             responseHeaders.ETag = etag;
             responseHeaders.Headers.AcceptRanges = "bytes";
-            responseHeaders.Headers.ContentEncoding = contentEncoding.Value;
+            responseHeaders.Headers.ContentEncoding = contentCoding;
             context.Response.ContentType = contentType;
             context.Response.ContentLength = fileInfo.Length;
             _options.OnPrepareResponse(responseContext);
-#if NET8_0_OR_GREATER
             return _options.OnPrepareResponseAsync(responseContext);
-#else
-            return Task.CompletedTask;
-#endif
         }
 
         PreconditionState precondition = PreconditionHelper.EvaluatePreconditions(requestHeaders, etag, lastModified);
@@ -109,7 +128,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 responseHeaders.LastModified = lastModified;
                 responseHeaders.ETag = etag;
                 responseHeaders.Headers.AcceptRanges = "bytes";
-                responseHeaders.Headers.ContentEncoding = contentEncoding.Value;
+                responseHeaders.Headers.ContentEncoding = contentCoding;
                 context.Response.ContentType = contentType;
 
                 if (RangeHelper.HasRangeHeaderField(context) &&
@@ -129,11 +148,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                     SetStatusCode(context, StatusCodes.Status416RangeNotSatisfiable);
                     responseHeaders.ContentRange = new ContentRangeHeaderValue(fileInfo.Length);
                     _logger.RangeNotSatisfiable(context.Request.Headers.Range, subPath);
-#if NET8_0_OR_GREATER
                     return _options.OnPrepareResponseAsync(responseContext);
-#else
-                    return Task.CompletedTask;
-#endif
                 }
 
                 (long start, long end) = range.Value;
@@ -148,60 +163,23 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 responseHeaders.LastModified = lastModified;
                 responseHeaders.ETag = etag;
                 responseHeaders.Headers.AcceptRanges = "bytes";
-                responseHeaders.Headers.ContentEncoding = contentEncoding.Value;
+                responseHeaders.Headers.ContentEncoding = contentCoding;
                 SetStatusCode(context, StatusCodes.Status304NotModified);
                 context.Response.ContentType = contentType;
                 context.Response.ContentLength = fileInfo.Length;
                 _logger.NotModified(subPath);
                 _options.OnPrepareResponse(responseContext);
-#if NET8_0_OR_GREATER
                 return _options.OnPrepareResponseAsync(responseContext);
-#else
-                return Task.CompletedTask;
-#endif
             case PreconditionState.PreconditionFailed:
                 SetStatusCode(context, StatusCodes.Status412PreconditionFailed);
                 _logger.PreconditionFailed(subPath);
                 _options.OnPrepareResponse(responseContext);
-#if NET8_0_OR_GREATER
                 return _options.OnPrepareResponseAsync(responseContext);
-#else
-                return Task.CompletedTask;
-#endif
             default:
                 InvalidOperationException exception = new($"Unexpected precondition state value: {precondition}");
                 Debug.Fail(exception.ToString());
                 throw exception;
         }
-    }
-
-    private IFileInfo GetFileInfo(RequestHeaders requestHeaders, string subPath,
-        out StringSegment contentEncoding, out StringSegment filename)
-    {
-        IFileInfo fileInfo = _fileProvider.GetFileInfo(subPath);
-        filename = fileInfo.Name;
-
-        (contentEncoding, string extension) = GetContentEncoding(requestHeaders);
-
-        if (!contentEncoding.HasValue)
-        {
-            return fileInfo;
-        }
-
-        Debug.Assert(extension is not null);
-
-        IFileInfo compressedFileInfo = _fileProvider.GetFileInfo($"{subPath}.{extension}");
-
-        if (compressedFileInfo.Exists)
-        {
-            filename = new StringSegment(compressedFileInfo.Name, 0,
-                compressedFileInfo.Name.Length - extension.Length - 1);
-            return compressedFileInfo;
-        }
-
-        contentEncoding = null;
-
-        return fileInfo;
     }
 
     private async Task SendFileAsync(CompressedStaticFileResponseContext context,
@@ -210,9 +188,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
         SetCompressionMode(context.Context);
 
         _options.OnPrepareResponse(context);
-#if NET8_0_OR_GREATER
         await _options.OnPrepareResponseAsync(context);
-#endif
 
         try
         {
@@ -235,50 +211,6 @@ public class CompressedStaticFileMiddleware : IMiddleware
         context.Context.Response.ContentLength = fileInfo.Length;
         _logger.SendingFile(subPath);
         return SendFileAsync(context, fileInfo, next, 0, fileInfo.Length);
-    }
-
-    // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-9
-    private (StringSegment, string) GetContentEncoding(RequestHeaders requestHeaders)
-    {
-        int bestOrder = -1;
-        double bestQuality = -1;
-
-        (StringSegment, string) result = default;
-
-        foreach (StringWithQualityHeaderValue value in requestHeaders.AcceptEncoding)
-        {
-            if (!_options.ContentEncoding.TryGetValue(value.Value, out (int, string) pair))
-            {
-                continue;
-            }
-
-            (int order, string extension) = pair;
-            double quality = value.Quality ?? 1;
-
-            if (quality == 0)
-            {
-                continue;
-            }
-
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            // Save to compare as both doubles are never used in calculation
-            if (quality == bestQuality)
-            {
-                if (order > bestOrder)
-                {
-                    bestOrder = order;
-                    result = (value.Value, extension);
-                }
-
-                continue;
-            }
-
-            bestOrder = order;
-            bestQuality = quality > bestQuality ? quality : bestQuality;
-            result = (value.Value, extension);
-        }
-
-        return result;
     }
 
     private bool TryGetContentType(string subPath, out string? contentType)
