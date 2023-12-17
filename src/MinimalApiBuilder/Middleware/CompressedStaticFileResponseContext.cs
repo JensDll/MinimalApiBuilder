@@ -13,10 +13,12 @@ public class CompressedStaticFileResponseContext
     /// </summary>
     /// <param name="context">The HTTP context associated with the request.</param>
     /// <param name="filename">The to-be-served filename without any content coding extension.</param>
-    public CompressedStaticFileResponseContext(HttpContext context, StringSegment filename)
+    /// <param name="contentCoding">The to-be-served files content coding.</param>
+    public CompressedStaticFileResponseContext(HttpContext context, StringSegment filename, string? contentCoding)
     {
         Context = context;
         Filename = filename;
+        ContentCoding = contentCoding;
     }
 
     /// <summary>
@@ -28,4 +30,9 @@ public class CompressedStaticFileResponseContext
     /// The to-be-served filename without any content coding extension.
     /// </summary>
     public StringSegment Filename { get; }
+
+    /// <summary>
+    /// The to-be-served files content coding or <c>null</c> if no pre-compressed file is being served.
+    /// </summary>
+    public string? ContentCoding { get; }
 }

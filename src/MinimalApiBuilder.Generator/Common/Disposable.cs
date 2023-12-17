@@ -9,8 +9,7 @@ internal sealed class Disposable : IDisposable
         _onDispose = onDispose;
     }
 
-    public static readonly Disposable Empty = new(static () =>
-        { });
+    public static readonly Disposable Empty = new(static () => { });
 
     public void Dispose()
     {

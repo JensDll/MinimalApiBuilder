@@ -49,29 +49,35 @@ public static class CompressedStaticFileMiddlewareExtensions
         builder.UseMiddleware<CompressedStaticFileMiddleware>();
     }
 
-    private static void AddOptions(IServiceCollection services, CompressedStaticFileOptions options)
+    private static void AddOptions(IServiceCollection services, CompressedStaticFileOptions o)
     {
         services.AddOptions<CompressedStaticFileOptions>()
-            .PostConfigure<IWebHostEnvironment>((currentOptions, environment) =>
+            .PostConfigure<IWebHostEnvironment>((options, environment) =>
             {
                 // https://github.com/dotnet/aspnetcore/blob/v8.0.0/src/Middleware/StaticFiles/src/Infrastructure/SharedOptionsBase.cs
-                currentOptions.RequestPath = options.RequestPath;
-                currentOptions.FileProvider = options.FileProvider ?? environment.WebRootFileProvider;
-                options.RedirectToAppendTrailingSlash = options.RedirectToAppendTrailingSlash;
+                options.RequestPath = o.RequestPath;
+                options.FileProvider = o.FileProvider ?? environment.WebRootFileProvider;
+                options.RedirectToAppendTrailingSlash = o.RedirectToAppendTrailingSlash;
+
                 // https://github.com/dotnet/aspnetcore/blob/v8.0.0/src/Middleware/StaticFiles/src/StaticFileOptions.cs
-                currentOptions.ContentTypeProvider =
-                    options.ContentTypeProvider ?? new FileExtensionContentTypeProvider();
-                currentOptions.DefaultContentType = options.DefaultContentType;
-                currentOptions.ServeUnknownFileTypes = options.ServeUnknownFileTypes;
-                currentOptions.HttpsCompression = options.HttpsCompression;
-                currentOptions.OnPrepareResponse = options.OnPrepareResponse;
-#if NET8_0_OR_GREATER
-                currentOptions.OnPrepareResponseAsync = options.OnPrepareResponseAsync;
-#endif
+                options.ContentTypeProvider = o.ContentTypeProvider ?? new FileExtensionContentTypeProvider();
+                options.DefaultContentType = o.DefaultContentType;
+                options.ServeUnknownFileTypes = o.ServeUnknownFileTypes;
+                options.HttpsCompression = o.HttpsCompression;
+                options.OnPrepareResponse = o.OnPrepareResponse;
+                options.OnPrepareResponseAsync = o.OnPrepareResponseAsync;
+
                 // CompressedStaticFileOptions
-                currentOptions.ContentEncoding = options.ContentEncoding;
+                options.ContentCoding = o.ContentCoding;
+                options.Initialize();
             })
             .FluentValidation<CompressedStaticFileOptions, CompressedStaticFileOptionsValidator>()
             .ValidateOnStart();
+    }
+
+    internal static bool IsNotAllowed(this IdentityAllowedFlags flags)
+    {
+        return (flags & (IdentityAllowedFlags.Allowed | IdentityAllowedFlags.NotAllowed)) ==
+               IdentityAllowedFlags.NotAllowed;
     }
 }

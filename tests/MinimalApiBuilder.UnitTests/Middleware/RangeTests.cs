@@ -9,17 +9,15 @@ namespace MinimalApiBuilder.UnitTests.Middleware;
 
 internal sealed class RangeTests
 {
-    private static readonly Uri s_uri = new("/range.txt", UriKind.Relative);
-
     [Test]
     public async Task IfRange_207_With_Current_ETag()
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.RangeTxtUri);
         EntityTagHeaderValue originalEtag = original.Headers.ETag!;
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.RangeTxtUri);
         request.Headers.Add(HeaderNames.IfRange, originalEtag.Tag);
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
@@ -33,9 +31,9 @@ internal sealed class RangeTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.RangeTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.RangeTxtUri);
         request.Headers.Add(HeaderNames.IfRange, original.Content.Headers.LastModified!.Value.ToString("R"));
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
@@ -49,9 +47,9 @@ internal sealed class RangeTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.RangeTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.RangeTxtUri);
         request.Headers.Add(HeaderNames.IfRange, "\"outdated\"");
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
 
@@ -65,9 +63,9 @@ internal sealed class RangeTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.RangeTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.RangeTxtUri);
         request.Headers.Add(HeaderNames.IfRange,
             original.Content.Headers.LastModified!.Value.AddHours(hours).ToString("R"));
         request.Headers.Add(HeaderNames.Range, "bytes=0-10");
@@ -82,10 +80,10 @@ internal sealed class RangeTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.RangeTxtUri);
         EntityTagHeaderValue originalEtag = original.Headers.ETag!;
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.RangeTxtUri);
         request.Headers.Add(HeaderNames.IfRange, originalEtag.Tag);
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);
@@ -102,7 +100,7 @@ internal sealed class RangeTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.RangeTxtUri);
         request.Headers.Add(HeaderNames.Range, rangeHeader);
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);
@@ -123,7 +121,7 @@ internal sealed class RangeTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.RangeTxtUri);
         request.Headers.Add(HeaderNames.Range, rangeHeader);
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);

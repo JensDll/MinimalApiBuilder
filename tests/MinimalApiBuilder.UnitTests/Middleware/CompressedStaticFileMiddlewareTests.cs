@@ -16,8 +16,6 @@ namespace MinimalApiBuilder.UnitTests.Middleware;
 
 internal sealed class CompressedStaticFileMiddlewareTests
 {
-    private static readonly Uri s_uri = new("/data.txt", UriKind.Relative);
-
     [Test]
     public async Task NotFound_And_Logs_Warning_When_WebRootPath_Is_Missing()
     {
@@ -30,7 +28,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
                 .ConfigureDefaults())
             .BuildStaticFilesTestServerAsync();
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         logger.Received(2).Log(Arg.Is(LogLevel.Warning), Arg.Is<string>(message =>
             message.Contains("The WebRootPath was not found:")
@@ -60,7 +58,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
             builder.UseCompressedStaticFiles();
         });
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         await feature.Received(1).SendFileAsync(Arg.Any<string>(), Arg.Any<long>(), Arg.Any<long>(),
             Arg.Any<CancellationToken>());
@@ -85,7 +83,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
         DateTimeOffset trimmed = new DateTimeOffset(last.Year, last.Month, last.Day, last.Hour,
             last.Minute, last.Second, last.Offset).ToUniversalTime();
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         Assert.Multiple(() =>
         {
@@ -117,7 +115,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
     public async Task Null_Values_In_Options_Work(CompressedStaticFileOptions options)
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(options);
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
 
@@ -185,7 +183,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
             builder.UseCompressedStaticFiles();
         });
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         Assert.That((int)response.StatusCode, Is.EqualTo(statusCode));
     }
@@ -197,18 +195,14 @@ internal sealed class CompressedStaticFileMiddlewareTests
 
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
         {
-            OnPrepareResponse = _ =>
-            {
-                called = true;
-            }
+            OnPrepareResponse = _ => called = true
         });
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         Assert.That(called, Is.True);
     }
 
-#if NET8_0_OR_GREATER
     [Test]
     public async Task OnPrepareResponseAsync_Is_Called()
     {
@@ -223,13 +217,11 @@ internal sealed class CompressedStaticFileMiddlewareTests
             }
         });
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         Assert.That(called, Is.True);
     }
-#endif
 
-#if NET8_0_OR_GREATER
     [Test]
     public async Task OnPrepareResponse_Is_Called_Before_OnPrepareResponseAsync()
     {
@@ -259,7 +251,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
             }
         });
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         Assert.Multiple(() =>
         {
@@ -267,7 +259,6 @@ internal sealed class CompressedStaticFileMiddlewareTests
             Assert.That(asyncCalled, Is.True);
         });
     }
-#endif
 
     [Test]
     public async Task OnPrepareResponse_Is_Called_With_Correct_Arguments()
@@ -279,23 +270,23 @@ internal sealed class CompressedStaticFileMiddlewareTests
             OnPrepareResponse = context =>
             {
                 ++timesCalled;
-
                 Assert.Multiple(() =>
                 {
                     Assert.That(context.Context, Is.Not.Null);
                     Assert.That(context.Filename, Is.EqualTo("data.txt"));
+                    Assert.That(context.ContentCoding, timesCalled == 1 ? Is.Null : Is.EqualTo("br"));
                 });
             }
         });
 
         Assert.That(timesCalled, Is.EqualTo(0));
 
-        using HttpRequestMessage normalRequest = new(HttpMethod.Get, new Uri("/data.txt", UriKind.Relative));
+        using HttpRequestMessage normalRequest = new(HttpMethod.Get, StaticUri.DataTxtUri);
         using HttpResponseMessage normalResponse = await server.Client.SendAsync(normalRequest);
         string normalContent = await normalResponse.Content.ReadAsStringAsync();
         Assert.That(timesCalled, Is.EqualTo(1));
 
-        using HttpRequestMessage compressedRequest = new(HttpMethod.Get, new Uri("/data.txt", UriKind.Relative));
+        using HttpRequestMessage compressedRequest = new(HttpMethod.Get, StaticUri.DataTxtUri);
         compressedRequest.Headers.Add(HeaderNames.AcceptEncoding, "br");
         using HttpResponseMessage compressedResponse = await server.Client.SendAsync(compressedRequest);
         string compressedContent = await compressedResponse.Content.ReadAsStringAsync();
@@ -310,7 +301,6 @@ internal sealed class CompressedStaticFileMiddlewareTests
         });
     }
 
-#if NET8_0_OR_GREATER
     [Test]
     public async Task OnPrepareResponseAsync_Is_Called_With_Correct_Arguments()
     {
@@ -321,25 +311,24 @@ internal sealed class CompressedStaticFileMiddlewareTests
             OnPrepareResponseAsync = context =>
             {
                 ++timesCalled;
-
                 Assert.Multiple(() =>
                 {
                     Assert.That(context.Context, Is.Not.Null);
                     Assert.That(context.Filename, Is.EqualTo("data.txt"));
+                    Assert.That(context.ContentCoding, timesCalled == 1 ? Is.Null : Is.EqualTo("br"));
                 });
-
                 return Task.CompletedTask;
             }
         });
 
         Assert.That(timesCalled, Is.EqualTo(0));
 
-        using HttpRequestMessage normalRequest = new(HttpMethod.Get, new Uri("/data.txt", UriKind.Relative));
+        using HttpRequestMessage normalRequest = new(HttpMethod.Get, StaticUri.DataTxtUri);
         using HttpResponseMessage normalResponse = await server.Client.SendAsync(normalRequest);
         string normalContent = await normalResponse.Content.ReadAsStringAsync();
         Assert.That(timesCalled, Is.EqualTo(1));
 
-        using HttpRequestMessage compressedRequest = new(HttpMethod.Get, new Uri("/data.txt", UriKind.Relative));
+        using HttpRequestMessage compressedRequest = new(HttpMethod.Get, StaticUri.DataTxtUri);
         compressedRequest.Headers.Add(HeaderNames.AcceptEncoding, "br");
         using HttpResponseMessage compressedResponse = await server.Client.SendAsync(compressedRequest);
         string compressedContent = await compressedResponse.Content.ReadAsStringAsync();
@@ -353,5 +342,4 @@ internal sealed class CompressedStaticFileMiddlewareTests
             Assert.That(compressedContent, Is.EqualTo("br data"));
         });
     }
-#endif
 }

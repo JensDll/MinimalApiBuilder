@@ -47,6 +47,9 @@ internal static partial class CompressedStaticFileMiddlewareLoggerExtensions
     [LoggerMessage(10, LogLevel.Debug, "If-Range precondition for {Path} failed")]
     public static partial void IfRangePreconditionFailed(this ILogger logger, string path);
 
+    [LoggerMessage(11, LogLevel.Debug, "Content coding content negotiation failed {AcceptEncoding}")]
+    public static partial void ContentCodingContentNegotiationFailed(this ILogger logger, string? acceptEncoding);
+
     [LoggerMessage(20, LogLevel.Warning,
         "The WebRootPath was not found: {WebRootPath}. Compressed static files may be unavailable")]
     public static partial void WebRootPathNotFound(this ILogger logger, string webRootPath);
