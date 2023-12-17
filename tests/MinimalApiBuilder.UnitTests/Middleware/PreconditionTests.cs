@@ -7,14 +7,12 @@ namespace MinimalApiBuilder.UnitTests.Middleware;
 
 internal sealed class PreconditionTests
 {
-    private static readonly Uri s_uri = new("/data.txt", UriKind.Relative);
-
     [Test]
     public async Task IfMatch_412_When_Not_Listed()
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfMatch, "\"not-matching\"");
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);
@@ -27,10 +25,10 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
         string etag = original.Headers.ETag!.Tag;
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfMatch, alone ? etag : $"\"tag1\", {etag}, \"tag2\"");
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);
@@ -43,9 +41,9 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfMatch, "*");
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);
@@ -58,7 +56,7 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfNoneMatch, "\"not-matching\"");
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);
@@ -71,12 +69,12 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
         string etag = weak ? $"W/{original.Headers.ETag!.Tag}" : original.Headers.ETag!.Tag;
 
         Assert.That(original.Headers.ETag.IsWeak, Is.False);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfNoneMatch, alone ? etag : $"\"tag1\", {etag}, \"tag2\"");
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);
@@ -89,9 +87,9 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfNoneMatch, "*");
 
         using HttpResponseMessage response = await server.Client.SendAsync(request);
@@ -104,9 +102,9 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfModifiedSince,
             original.Content.Headers.LastModified!.Value.AddHours(-1).ToString("R"));
 
@@ -120,9 +118,9 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfModifiedSince,
             original.Content.Headers.LastModified!.Value.ToString("R"));
 
@@ -136,9 +134,9 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfModifiedSince,
             original.Content.Headers.LastModified!.Value.AddHours(1).ToString("R"));
 
@@ -152,9 +150,9 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfUnmodifiedSince,
             original.Content.Headers.LastModified!.Value.AddHours(-1).ToString("R"));
 
@@ -168,9 +166,9 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfUnmodifiedSince,
             original.Content.Headers.LastModified!.Value.ToString("R"));
 
@@ -184,9 +182,9 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        using HttpRequestMessage request = new(HttpMethod.Get, s_uri);
+        using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfUnmodifiedSince,
             original.Content.Headers.LastModified!.Value.AddHours(1).ToString("R"));
 

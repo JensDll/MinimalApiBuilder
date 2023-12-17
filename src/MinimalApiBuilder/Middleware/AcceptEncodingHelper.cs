@@ -38,7 +38,8 @@ internal static class AcceptEncodingHelper
 
             if (quality < double.Epsilon)
             {
-                // "identity;q=0" or "*;q=0"
+                // If the representation has no content coding, then it is acceptable by default unless specifically
+                // excluded by the Accept-Encoding header field stating either "identity;q=0" or "*;q=0" ...
                 if (order is 0 or 1)
                 {
                     identityAllowed |= IdentityAllowedFlags.NotAllowed;
@@ -47,14 +48,12 @@ internal static class AcceptEncodingHelper
                 continue;
             }
 
-            if (order == 0)
-            {
-                identityAllowed |= IdentityAllowedFlags.Allowed;
+            // ... without a more specific entry for "identity"
+            identityAllowed |= order is 0 or 1 ? IdentityAllowedFlags.Allowed : IdentityAllowedFlags.None;
 
-                if (!identityExists)
-                {
-                    continue;
-                }
+            if (!identityExists && order == 0)
+            {
+                continue;
             }
 
             if (quality > bestQuality)
@@ -70,13 +69,13 @@ internal static class AcceptEncodingHelper
             }
         }
 
-        // No codings matching options.ContentCodingOrder, identity, or all codings are q=0
+        // No codings matching options.ContentCodingOrder, or is identity, or all codings are q=0
         if (bestOrder <= 0)
         {
             return false;
         }
 
-#pragma warning disable CS8762 // Only options.OrderLookup[0] contains null values
+#pragma warning disable CS8762 // Only options.OrderLookup[0] and [1] contains null values
 
         // Best coding != "*"
         if (bestOrder != 1)
@@ -86,7 +85,6 @@ internal static class AcceptEncodingHelper
         }
 
         // Best coding == "*"
-
         Debug.Assert(visited[1]);
 
         for (int i = options.OrderLookup.Length - 1; i >= 2; --i)

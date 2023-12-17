@@ -21,6 +21,5 @@ public sealed class RegisterValidatorAttribute : Attribute
     [SuppressMessage("Style", "IDE0060:Remove unused parameter")]
     [SuppressMessage("Design", "CA1019:Define accessors for attribute arguments")]
     // ReSharper disable once UnusedParameter.Local
-    public RegisterValidatorAttribute(ServiceLifetime lifetime)
-    { }
+    public RegisterValidatorAttribute(ServiceLifetime lifetime) { }
 }

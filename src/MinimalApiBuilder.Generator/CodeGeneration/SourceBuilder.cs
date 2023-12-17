@@ -11,8 +11,7 @@ internal abstract class SourceBuilder
     private readonly StringBuilder _builder = new(Sources.Header);
     private int _indent;
 
-    protected SourceBuilder() : this(default)
-    { }
+    protected SourceBuilder() : this(default) { }
 
     protected SourceBuilder(GeneratorOptions options)
     {

@@ -10,10 +10,6 @@ namespace MinimalApiBuilder.UnitTests.Middleware;
 
 internal sealed class AcceptEncodingTests
 {
-    private static readonly Uri s_dataUri = new("/data.txt", UriKind.Relative);
-    private static readonly Uri s_rangeUri = new("/range.txt", UriKind.Relative);
-    private static readonly Uri s_fooUri = new("/foo.txt", UriKind.Relative);
-
     [Test]
     public async Task Without_Quality_Chooses_Based_On_Configured_Order()
     {
@@ -52,13 +48,10 @@ internal sealed class AcceptEncodingTests
         await AssertResponseAsync(response, "deflate");
     }
 
-    // Both at the end
     [TestCase(2, 1, "br;q=0.7, gzip;q=0.8, deflate;q=0.8", "gzip")]
     [TestCase(1, 2, "br;q=0.7, gzip;q=0.8, deflate;q=0.8", "deflate")]
-    // Both at the beginning
     [TestCase(2, 1, "gzip;q=0.8, deflate;q=0.8, br;q=0.7", "gzip")]
     [TestCase(1, 2, "gzip;q=0.8, deflate;q=0.8, br;q=0.7", "deflate")]
-    // One left, one right
     [TestCase(2, 1, "gzip;q=0.8, br;q=0.7, deflate;q=0.8", "gzip")]
     [TestCase(1, 2, "gzip;q=0.8, br;q=0.7, deflate;q=0.8", "deflate")]
     public async Task Order_Decides_When_Quality_Is_The_Same(int gzipOrder, int deflateOrder,
@@ -75,7 +68,7 @@ internal sealed class AcceptEncodingTests
     }
 
     [Test]
-    public async Task Quality_Zero_Means_Not_Acceptable_And_Serves_Without_Content_Encoding()
+    public async Task Quality_Zero_Means_Not_Acceptable_And_Is_Served_Without_Content_Encoding()
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
         {
@@ -88,7 +81,7 @@ internal sealed class AcceptEncodingTests
     }
 
     [Test]
-    public async Task File_Without_Valid_Representation_Serves_Without_Content_Encoding()
+    public async Task File_Without_Valid_Representation_Is_Served_Without_Content_Encoding()
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
         {
@@ -99,7 +92,7 @@ internal sealed class AcceptEncodingTests
     }
 
     [Test]
-    public async Task Empty_Accept_Encoding_Serves_Without_Content_Encoding()
+    public async Task Empty_Accept_Encoding_Is_Served_Without_Content_Encoding()
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
         {
@@ -149,13 +142,15 @@ internal sealed class AcceptEncodingTests
             new("br", (3, "br")),
             new("gzip", (2, "gz")),
             new("deflate", (1, "deflate"))
-        }, acceptEncoding, s_rangeUri);
+        }, acceptEncoding, StaticUri.RangeTxtUri);
+
+        bool hasAcceptEncoding =
+            response.Headers.TryGetValues(HeaderNames.AcceptEncoding, out IEnumerable<string>? values);
 
         Assert.Multiple(() =>
         {
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.UnsupportedMediaType));
-            Assert.That(response.Headers.TryGetValues(HeaderNames.AcceptEncoding, out IEnumerable<string>? values),
-                Is.True);
+            Assert.That(hasAcceptEncoding, Is.True);
             Assert.That(values, Is.EqualTo(s_expectedAcceptEncoding));
         });
     }
@@ -164,21 +159,21 @@ internal sealed class AcceptEncodingTests
     [TestCase("identity;q=0.1, identity;q=0, br")]
     [TestCase("br, *;q=0, identity;q=0.1")]
     [TestCase("br, identity;q=0.1, *;q=0")]
-    public async Task Identity_Forbidden_Ignored_With_More_Specific_Entry(
-        string acceptEncoding)
+    [TestCase("br, identity;q=0, *;q=0.1")]
+    public async Task Identity_Forbidden_Is_Ignored_With_More_Specific_Entry(string acceptEncoding)
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
         {
             new("br", (3, "br")),
             new("gzip", (2, "gz")),
             new("deflate", (1, "deflate"))
-        }, acceptEncoding, s_rangeUri);
+        }, acceptEncoding, StaticUri.RangeTxtUri);
 
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
     }
 
     [Test]
-    public async Task Identity_Serves_Without_Content_Encoding_When_Available()
+    public async Task Is_Served_Without_Content_Encoding_When_Identity_Has_Highest_Quality()
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
         {
@@ -190,13 +185,25 @@ internal sealed class AcceptEncodingTests
     }
 
     [Test]
-    public async Task Identity_Serves_With_Content_Encoding_When_Not_Available()
+    public async Task Is_Served_With_Content_Encoding_When_Identity_Has_Equal_Quality()
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
         {
             new("br", (1, "br")),
             new("gzip", (0, "gz"))
-        }, "identity, br;q=0.9", s_fooUri);
+        }, "identity, br");
+
+        await AssertResponseAsync(response, "br");
+    }
+
+    [Test]
+    public async Task Is_Served_With_Content_Encoding_When_Identity_Is_Not_Available()
+    {
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
+        {
+            new("br", (1, "br")),
+            new("gzip", (0, "gz"))
+        }, "identity, br;q=0.9", StaticUri.FooTxtUri);
 
         await AssertResponseAsync(response, "br");
     }
@@ -205,7 +212,7 @@ internal sealed class AcceptEncodingTests
         IReadOnlyList<KeyValuePair<string, (int, string)>> contentEncoding,
         string acceptEncoding)
     {
-        return MakeRequestAsync(contentEncoding, acceptEncoding, s_dataUri);
+        return MakeRequestAsync(contentEncoding, acceptEncoding, StaticUri.DataTxtUri);
     }
 
     private static async Task<HttpResponseMessage> MakeRequestAsync(

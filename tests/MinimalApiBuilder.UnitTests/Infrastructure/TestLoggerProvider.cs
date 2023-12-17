@@ -16,6 +16,5 @@ internal sealed class TestLoggerProvider : ILoggerProvider
         return _logger;
     }
 
-    public void Dispose()
-    { }
+    public void Dispose() { }
 }

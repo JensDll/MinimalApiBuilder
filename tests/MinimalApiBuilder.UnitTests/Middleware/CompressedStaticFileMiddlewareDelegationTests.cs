@@ -14,8 +14,6 @@ namespace MinimalApiBuilder.UnitTests.Middleware;
 
 internal sealed class CompressedStaticFileMiddlewareDelegationTests
 {
-    private static readonly Uri s_uri = new("/data.txt", UriKind.Relative);
-
     [Test]
     public async Task Endpoint_With_RequestDelegate_Delegates_Request()
     {
@@ -34,15 +32,14 @@ internal sealed class CompressedStaticFileMiddlewareDelegationTests
                 return next(context);
             });
             builder.UseCompressedStaticFiles();
-            builder.UseEndpoints(_ =>
-                { });
+            builder.UseEndpoints(_ => { });
         }, static services =>
         {
             services.AddCompressedStaticFileMiddleware();
             services.AddRouting();
         }, logger);
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         logger.Received(1).Log(LogLevel.Debug,
             Arg.Is<string>(message => message == "Skipping as the request already matches an endpoint"));
@@ -67,15 +64,14 @@ internal sealed class CompressedStaticFileMiddlewareDelegationTests
                 return next(context);
             });
             builder.UseCompressedStaticFiles();
-            builder.UseEndpoints(_ =>
-                { });
+            builder.UseEndpoints(_ => { });
         }, static services =>
         {
             services.AddCompressedStaticFileMiddleware();
             services.AddRouting();
         });
 
-        using HttpResponseMessage response = await server.Client.GetAsync(s_uri);
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
         Assert.Multiple(() =>
         {
