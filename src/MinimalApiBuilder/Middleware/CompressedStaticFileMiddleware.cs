@@ -75,8 +75,8 @@ public class CompressedStaticFileMiddleware : IMiddleware
         IFileInfo fileInfo = _fileProvider.GetFileInfo(subPath);
         StringSegment filename = fileInfo.Name;
 
-        if (AcceptEncodingHelper.TryGetContentCoding(requestHeaders, _options, out string? contentCoding,
-            out string? extension, out bool uncompressedFileAllowed))
+        if (AcceptEncodingHelper.TryGetContentCoding(requestHeaders, _options, fileInfo.Exists,
+            out string? contentCoding, out string? extension, out IdentityAllowedFlags identity))
         {
             IFileInfo compressedFileInfo = _fileProvider.GetFileInfo($"{subPath}.{extension}");
 
@@ -86,7 +86,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 filename = new StringSegment(compressedFileInfo.Name, 0,
                     compressedFileInfo.Name.Length - extension.Length - 1);
             }
-            else if (!uncompressedFileAllowed && fileInfo.Exists)
+            else if (identity.IsNotAllowed())
             {
                 SetStatusCode(context, StatusCodes.Status415UnsupportedMediaType);
                 responseHeaders.Headers.AcceptEncoding = _options.AcceptEncoding;

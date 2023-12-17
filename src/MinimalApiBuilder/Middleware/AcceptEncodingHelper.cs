@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http.Headers;
-using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
 
 namespace MinimalApiBuilder.Middleware;
@@ -12,11 +11,12 @@ internal static class AcceptEncodingHelper
     public static bool TryGetContentCoding(
         RequestHeaders requestHeaders,
         CompressedStaticFileOptions options,
+        bool identityExists,
         [NotNullWhen(true)] out string? contentCoding,
         [NotNullWhen(true)] out string? extension,
-        out bool uncompressedFileAllowed)
+        out IdentityAllowedFlags identityAllowed)
     {
-        uncompressedFileAllowed = true;
+        identityAllowed = identityExists ? IdentityAllowedFlags.None : IdentityAllowedFlags.Allowed;
         contentCoding = null;
         extension = null;
 
@@ -27,25 +27,35 @@ internal static class AcceptEncodingHelper
 
         foreach (StringWithQualityHeaderValue value in requestHeaders.AcceptEncoding)
         {
-            double quality = value.Quality.GetValueOrDefault(1);
-
-            if (quality < double.Epsilon)
-            {
-                if (StringSegment.Equals("*", value.Value, StringComparison.Ordinal) ||
-                    StringSegment.Equals(ContentCodingNames.Identity, value.Value, StringComparison.OrdinalIgnoreCase))
-                {
-                    uncompressedFileAllowed = false;
-                }
-
-                continue;
-            }
-
             if (!options.ContentCodingOrder.TryGetValue(value.Value, out int order))
             {
                 continue;
             }
 
             visited[order] = true;
+
+            double quality = value.Quality.GetValueOrDefault(1);
+
+            if (quality < double.Epsilon)
+            {
+                // "identity;q=0" or "*;q=0"
+                if (order is 0 or 1)
+                {
+                    identityAllowed |= IdentityAllowedFlags.NotAllowed;
+                }
+
+                continue;
+            }
+
+            if (order == 0)
+            {
+                identityAllowed |= IdentityAllowedFlags.Allowed;
+
+                if (!identityExists)
+                {
+                    continue;
+                }
+            }
 
             if (quality > bestQuality)
             {
@@ -60,8 +70,8 @@ internal static class AcceptEncodingHelper
             }
         }
 
-        // No codings matching options.ContentCodingOrder or all codings are q=0
-        if (bestOrder == -1)
+        // No codings matching options.ContentCodingOrder, identity, or all codings are q=0
+        if (bestOrder <= 0)
         {
             return false;
         }
@@ -69,7 +79,7 @@ internal static class AcceptEncodingHelper
 #pragma warning disable CS8762 // Only options.OrderLookup[0] contains null values
 
         // Best coding != "*"
-        if (bestOrder != 0)
+        if (bestOrder != 1)
         {
             (contentCoding, extension) = options.OrderLookup[bestOrder];
             return true;
@@ -77,9 +87,9 @@ internal static class AcceptEncodingHelper
 
         // Best coding == "*"
 
-        Debug.Assert(visited[0]);
+        Debug.Assert(visited[1]);
 
-        for (int i = options.OrderLookup.Length - 1; i >= 1; --i)
+        for (int i = options.OrderLookup.Length - 1; i >= 2; --i)
         {
             if (visited[i])
             {

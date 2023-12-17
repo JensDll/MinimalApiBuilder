@@ -74,4 +74,10 @@ public static class CompressedStaticFileMiddlewareExtensions
             .FluentValidation<CompressedStaticFileOptions, CompressedStaticFileOptionsValidator>()
             .ValidateOnStart();
     }
+
+    internal static bool IsNotAllowed(this IdentityAllowedFlags flags)
+    {
+        return (flags & (IdentityAllowedFlags.Allowed | IdentityAllowedFlags.NotAllowed)) ==
+               IdentityAllowedFlags.NotAllowed;
+    }
 }

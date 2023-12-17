@@ -12,6 +12,7 @@ internal sealed class AcceptEncodingTests
 {
     private static readonly Uri s_dataUri = new("/data.txt", UriKind.Relative);
     private static readonly Uri s_rangeUri = new("/range.txt", UriKind.Relative);
+    private static readonly Uri s_fooUri = new("/foo.txt", UriKind.Relative);
 
     [Test]
     public async Task Without_Quality_Chooses_Based_On_Configured_Order()
@@ -140,7 +141,7 @@ internal sealed class AcceptEncodingTests
 
     [TestCase("br, identity;q=0")]
     [TestCase("br, *;q=0")]
-    public async Task UnsupportedMediaType_415_When_Uncompressed_Files_Forbidden_And_Compressed_File_Not_Available(
+    public async Task UnsupportedMediaType_415_When_Identity_Forbidden_And_Compressed_File_Not_Available(
         string acceptEncoding)
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
@@ -157,6 +158,47 @@ internal sealed class AcceptEncodingTests
                 Is.True);
             Assert.That(values, Is.EqualTo(s_expectedAcceptEncoding));
         });
+    }
+
+    [TestCase("br, identity;q=0, identity;q=0.1")]
+    [TestCase("identity;q=0.1, identity;q=0, br")]
+    [TestCase("br, *;q=0, identity;q=0.1")]
+    [TestCase("br, identity;q=0.1, *;q=0")]
+    public async Task Identity_Forbidden_Ignored_With_More_Specific_Entry(
+        string acceptEncoding)
+    {
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
+        {
+            new("br", (3, "br")),
+            new("gzip", (2, "gz")),
+            new("deflate", (1, "deflate"))
+        }, acceptEncoding, s_rangeUri);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+    }
+
+    [Test]
+    public async Task Identity_Serves_Without_Content_Encoding_When_Available()
+    {
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
+        {
+            new("br", (1, "br")),
+            new("gzip", (0, "gz"))
+        }, "identity, br;q=0.9");
+
+        await AssertResponseAsync(response);
+    }
+
+    [Test]
+    public async Task Identity_Serves_With_Content_Encoding_When_Not_Available()
+    {
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
+        {
+            new("br", (1, "br")),
+            new("gzip", (0, "gz"))
+        }, "identity, br;q=0.9", s_fooUri);
+
+        await AssertResponseAsync(response, "br");
     }
 
     private static Task<HttpResponseMessage> MakeRequestAsync(
