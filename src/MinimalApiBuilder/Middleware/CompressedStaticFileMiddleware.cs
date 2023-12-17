@@ -17,6 +17,8 @@ namespace MinimalApiBuilder.Middleware;
 /// </summary>
 public class CompressedStaticFileMiddleware : IMiddleware
 {
+    private static readonly StringValues s_acceptRanges = new("bytes");
+
     private readonly CompressedStaticFileOptions _options;
     private readonly ILogger<CompressedStaticFileMiddleware> _logger;
     private readonly IFileProvider _fileProvider;
@@ -112,7 +114,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
         {
             responseHeaders.LastModified = lastModified;
             responseHeaders.ETag = etag;
-            responseHeaders.Headers.AcceptRanges = "bytes";
+            responseHeaders.Headers.AcceptRanges = s_acceptRanges;
             responseHeaders.Headers.ContentEncoding = contentCoding;
             context.Response.ContentType = contentType;
             context.Response.ContentLength = fileInfo.Length;
@@ -127,7 +129,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
             case PreconditionState.ShouldProcess:
                 responseHeaders.LastModified = lastModified;
                 responseHeaders.ETag = etag;
-                responseHeaders.Headers.AcceptRanges = "bytes";
+                responseHeaders.Headers.AcceptRanges = s_acceptRanges;
                 responseHeaders.Headers.ContentEncoding = contentCoding;
                 context.Response.ContentType = contentType;
 
@@ -162,7 +164,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
             case PreconditionState.NotModified:
                 responseHeaders.LastModified = lastModified;
                 responseHeaders.ETag = etag;
-                responseHeaders.Headers.AcceptRanges = "bytes";
+                responseHeaders.Headers.AcceptRanges = s_acceptRanges;
                 responseHeaders.Headers.ContentEncoding = contentCoding;
                 SetStatusCode(context, StatusCodes.Status304NotModified);
                 context.Response.ContentType = contentType;

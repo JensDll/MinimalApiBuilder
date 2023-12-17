@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using MinimalApiBuilder.Generator;
 using MinimalApiBuilder.Middleware;
 using static MinimalApiBuilder.Generator.ConfigureEndpoints;
@@ -35,7 +36,6 @@ builder.Services.Configure<RouteHandlerOptions>(static options =>
     options.ThrowOnBadRequest = false;
 });
 
-
 #if NET8_0_OR_GREATER
 builder.Services.ConfigureHttpJsonOptions(static options =>
 {
@@ -51,16 +51,16 @@ CompressedStaticFileOptions staticFileOptions = new()
     {
         IHeaderDictionary headers = context.Context.Response.Headers;
 
-        headers.XContentTypeOptions = "nosniff";
+        headers.XContentTypeOptions = Headers.NoSniff;
 
-        if (context.Filename.EndsWith(".html", StringComparison.OrdinalIgnoreCase))
+        if (context.Filename.EndsWith(".html", StringComparison.Ordinal))
         {
-            headers.CacheControl = "private,no-store,no-cache,max-age=0,must-revalidate";
-            headers.XXSSProtection = "0";
+            headers.CacheControl = Headers.CacheControlHtml;
+            headers.XXSSProtection = Headers.XXSSProtection;
             return;
         }
 
-        headers.CacheControl = "public,max-age=31536000,immutable";
+        headers.CacheControl = Headers.CacheControl;
     }
 };
 
@@ -126,4 +126,15 @@ internal static class FallbackExtensions
             return app.Build();
         }
     }
+}
+
+internal static class Headers
+{
+    public static readonly StringValues NoSniff = new("nosniff");
+
+    public static readonly StringValues CacheControl = new("public,max-age=31536000,immutable");
+
+    public static readonly StringValues CacheControlHtml = new("private,no-store,no-cache,max-age=0,must-revalidate");
+
+    public static readonly StringValues XXSSProtection = new("0");
 }
