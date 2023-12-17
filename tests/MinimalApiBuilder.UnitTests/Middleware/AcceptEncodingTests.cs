@@ -150,6 +150,8 @@ internal sealed class AcceptEncodingTests
 
     [TestCase("br, identity;q=0")]
     [TestCase("br, *;q=0")]
+    [TestCase("identity;q=0, *")]
+    [TestCase("*, identity;q=0")]
     public async Task UnsupportedMediaType_415_When_Identity_Forbidden_And_Compressed_File_Not_Available(
         string acceptEncoding)
     {
@@ -171,11 +173,9 @@ internal sealed class AcceptEncodingTests
         });
     }
 
-    [TestCase("br, identity;q=0, identity;q=0.1")]
-    [TestCase("identity;q=0.1, identity;q=0, br")]
     [TestCase("br, *;q=0, identity;q=0.1")]
     [TestCase("br, identity;q=0.1, *;q=0")]
-    [TestCase("br, identity;q=0, *;q=0.1")]
+    [TestCase("identity, *;q=0")]
     public async Task Identity_Forbidden_Is_Ignored_With_More_Specific_Entry(string acceptEncoding)
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]

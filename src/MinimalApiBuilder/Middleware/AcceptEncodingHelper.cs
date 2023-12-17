@@ -52,12 +52,15 @@ internal static class AcceptEncodingHelper
                 continue;
             }
 
-            // ... without a more specific entry for "identity"
-            identityAllowed |= order is 0 or 1 ? IdentityAllowedFlags.Allowed : IdentityAllowedFlags.None;
-
-            if (!identityExists && order == 0)
+            if (order == 0)
             {
-                continue;
+                // ... without a more specific entry for "identity"
+                identityAllowed |= IdentityAllowedFlags.Allowed;
+
+                if (!identityExists)
+                {
+                    continue;
+                }
             }
 
             if (quality > bestQuality)
