@@ -113,12 +113,21 @@ internal sealed class AcceptEncodingTests
     [TestCase(3, 2, 1, "*;q=0.5, deflate;q=0.4", "br")]
     [TestCase(2, 3, 1, "*;q=0.5, deflate;q=0.4", "gzip")]
     [TestCase(3, 2, 1, "*;q=0.5, br;q=0.4", "gzip")]
-    [TestCase(3, 2, 1, "*;q=0.5, br;q=0.4, gzip;q=0.4, deflate;q=0.4", "br")]
+    [TestCase(3, 2, 1, "br;q=0, *;q=0.5", "gzip")]
+    [TestCase(3, 2, 1, "br;q=0, *;q=0.5, gzip;q=0.4", "deflate")]
     [TestCase(3, 2, 1, "*;q=0.5, deflate;q=0.5", "deflate")]
     [TestCase(3, 2, 1, "deflate;q=0.5, *;q=0.5", "deflate")]
     [TestCase(3, 2, 1, "br;q=0.5, *;q=0.5", "br")]
+    [TestCase(3, 2, 1, "br;q=0, *;q=0.5, gzip;q=0.4", "deflate")]
+    // Non-star fallback
+    [TestCase(3, 2, 1, "*;q=0.5, br;q=0.4, gzip;q=0.4, deflate;q=0.4", "br")]
+    [TestCase(3, 2, 1, "*;q=0.5, gzip;q=0.4, br;q=0.4, deflate;q=0.4", "br")]
+    [TestCase(3, 2, 1, "br;q=0, *;q=0.5, gzip;q=0.4, deflate;q=0.4", "gzip")]
+    [TestCase(3, 2, 1, "br;q=0, *, gzip;q=0, deflate;q=0", null)]
+    [TestCase(3, 2, 1, "*;q=0.5, br;q=0.4, gzip;q=0.4, deflate;q=0.4, identity;q=0.45", null)]
+    [TestCase(3, 2, 1, "*;q=0.5, deflate;q=0.4, br;q=0.4, gzip;q=0.44, zstd, identity;q=0.45", null)]
     public async Task Wildcard_Chooses_The_Best_Available_Content_Coding(int brOrder, int gzipOrder,
-        int deflateOrder, string acceptEncoding, string expectedContentCoding)
+        int deflateOrder, string acceptEncoding, string? expectedContentCoding)
     {
         using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
         {
@@ -127,7 +136,14 @@ internal sealed class AcceptEncodingTests
             new("deflate", (deflateOrder, "deflate"))
         }, acceptEncoding);
 
-        await AssertResponseAsync(response, expectedContentCoding);
+        if (expectedContentCoding is not null)
+        {
+            await AssertResponseAsync(response, expectedContentCoding);
+        }
+        else
+        {
+            await AssertResponseAsync(response);
+        }
     }
 
     private static readonly string[] s_expectedAcceptEncoding = ["br", "gzip", "deflate"];

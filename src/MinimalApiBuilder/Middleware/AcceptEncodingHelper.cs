@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Net.Http.Headers;
 
+// ReSharper disable CompareOfFloatsByEqualityOperator
+
 namespace MinimalApiBuilder.Middleware;
 
 internal static class AcceptEncodingHelper
@@ -25,7 +27,9 @@ internal static class AcceptEncodingHelper
 
         Span<bool> visited = stackalloc bool[options.OrderLookup.Length];
 
-        foreach (StringWithQualityHeaderValue value in requestHeaders.AcceptEncoding)
+        IList<StringWithQualityHeaderValue> acceptEncoding = requestHeaders.AcceptEncoding;
+
+        foreach (StringWithQualityHeaderValue value in acceptEncoding)
         {
             if (!options.ContentCodingOrder.TryGetValue(value.Value, out int order))
             {
@@ -61,8 +65,6 @@ internal static class AcceptEncodingHelper
                 bestOrder = order;
                 bestQuality = quality;
             }
-            // ReSharper disable once CompareOfFloatsByEqualityOperator
-            // Save to compare as both doubles are never used in calculations
             else if (quality == bestQuality && order > bestOrder)
             {
                 bestOrder = order;
@@ -98,7 +100,49 @@ internal static class AcceptEncodingHelper
             return true;
         }
 
-        (contentCoding, extension) = options.OrderLookup[^1];
-        return options.OrderLookup.Length != 1;
+        (contentCoding, extension) = FindBestNonStartFallback(acceptEncoding, options, out bool success);
+        return success;
+    }
+
+    private static (string?, string?) FindBestNonStartFallback(
+        IEnumerable<StringWithQualityHeaderValue> acceptEncoding,
+        CompressedStaticFileOptions options,
+        out bool success)
+    {
+        int bestOrder = -1;
+        double bestQuality = -1;
+
+        foreach (StringWithQualityHeaderValue value in acceptEncoding)
+        {
+            if (!options.ContentCodingOrder.TryGetValue(value.Value, out int order))
+            {
+                continue;
+            }
+
+            if (order == 1)
+            {
+                continue;
+            }
+
+            double quality = value.Quality.GetValueOrDefault(1);
+
+            if (quality < double.Epsilon)
+            {
+                continue;
+            }
+
+            if (quality > bestQuality)
+            {
+                bestOrder = order;
+                bestQuality = quality;
+            }
+            else if (quality == bestQuality && order > bestOrder)
+            {
+                bestOrder = order;
+            }
+        }
+
+        success = bestOrder >= 2;
+        return options.OrderLookup[bestOrder >= 2 ? bestOrder : 0];
     }
 }
