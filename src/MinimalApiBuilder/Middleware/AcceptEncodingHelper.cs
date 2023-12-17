@@ -100,11 +100,11 @@ internal static class AcceptEncodingHelper
             return true;
         }
 
-        (contentCoding, extension) = FindBestNonStartFallback(acceptEncoding, options, out bool success);
+        (contentCoding, extension) = FindBestNonStarFallback(acceptEncoding, options, out bool success);
         return success;
     }
 
-    private static (string?, string?) FindBestNonStartFallback(
+    private static (string?, string?) FindBestNonStarFallback(
         IEnumerable<StringWithQualityHeaderValue> acceptEncoding,
         CompressedStaticFileOptions options,
         out bool success)
