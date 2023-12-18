@@ -80,7 +80,7 @@ internal static class AcceptEncodingHelper
             return false;
         }
 
-#pragma warning disable CS8762 // Only options.OrderLookup[0] and [1] contains null values
+#pragma warning disable CS8762 // Only options.OrderLookup[0] and [1] contain null values
 
         // Best coding != "*"
         if (bestOrder != 1)

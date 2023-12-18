@@ -226,6 +226,18 @@ internal sealed class AcceptEncodingTests
         await AssertResponseAsync(response, "br");
     }
 
+    [Test]
+    public async Task NotFound_When_Identity_Forbidden_And_File_Does_Not_Exist()
+    {
+        using HttpResponseMessage response = await MakeRequestAsync(new KeyValuePair<string, (int, string)>[]
+        {
+            new("br", (1, "br")),
+            new("gzip", (0, "gz"))
+        }, "identity;q=0", StaticUri.DoesNotExistUri);
+
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    }
+
     private static Task<HttpResponseMessage> MakeRequestAsync(
         IReadOnlyList<KeyValuePair<string, (int, string)>> contentEncoding,
         string acceptEncoding)

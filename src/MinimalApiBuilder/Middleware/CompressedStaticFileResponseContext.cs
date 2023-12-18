@@ -4,7 +4,7 @@ using Microsoft.Extensions.Primitives;
 namespace MinimalApiBuilder.Middleware;
 
 /// <summary>
-/// Contains the current request context and the to-be-served filename without any content coding extension.
+/// Contains the current request context and selected information of the to-be-served file.
 /// </summary>
 public class CompressedStaticFileResponseContext
 {
@@ -32,7 +32,7 @@ public class CompressedStaticFileResponseContext
     public StringSegment Filename { get; }
 
     /// <summary>
-    /// The to-be-served files content coding or <c>null</c> if no pre-compressed file is being served.
+    /// The to-be-served file's content coding or <c>null</c> if no pre-compressed file is being served.
     /// </summary>
     public string? ContentCoding { get; }
 }

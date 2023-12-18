@@ -9,4 +9,6 @@ internal static class StaticUri
     public static readonly Uri FooTxtUri = new("/foo.txt", UriKind.Relative);
 
     public static readonly Uri SubDataJsUri = new("/sub/data.js", UriKind.Relative);
+
+    public static readonly Uri DoesNotExistUri = new("/does-not-exist.txt", UriKind.Relative);
 }
