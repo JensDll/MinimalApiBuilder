@@ -1,7 +1,0 @@
-﻿GET http://localhost:5000/index.html
-Accept-Encoding: identity, br;q=0.9
-
-###
-
-HEAD http://localhost:5000/index.html
-Accept-Encoding: br

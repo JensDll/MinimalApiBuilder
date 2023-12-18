@@ -89,7 +89,7 @@ internal static class AcceptEncodingHelper
             return true;
         }
 
-        // Best coding == "*"
+        // Best coding == "*" (it does not include identity)
         Debug.Assert(visited[1]);
 
         for (int i = options.OrderLookup.Length - 1; i >= 2; --i)

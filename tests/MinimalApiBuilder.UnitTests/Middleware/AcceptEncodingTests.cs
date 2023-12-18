@@ -149,9 +149,11 @@ internal sealed class AcceptEncodingTests
     private static readonly string[] s_expectedAcceptEncoding = ["br", "gzip", "deflate"];
 
     [TestCase("br, identity;q=0")]
-    [TestCase("br, *;q=0")]
+    [TestCase("*;q=0, br")]
     [TestCase("identity;q=0, *")]
     [TestCase("*, identity;q=0")]
+    [TestCase("zstd, identity;q=0")]
+    [TestCase("identity;q=0, zstd")]
     public async Task UnsupportedMediaType_415_When_Identity_Forbidden_And_Compressed_File_Not_Available(
         string acceptEncoding)
     {

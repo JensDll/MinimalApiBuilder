@@ -100,6 +100,13 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 contentCoding = null;
             }
         }
+        else if (identity.IsNotAllowed())
+        {
+            SetStatusCode(context, StatusCodes.Status415UnsupportedMediaType);
+            responseHeaders.Headers.AcceptEncoding = _options.AcceptEncoding;
+            _logger.ContentCodingContentNegotiationFailed(context.Request.Headers.AcceptEncoding);
+            return Task.CompletedTask;
+        }
 
         if (!fileInfo.Exists)
         {
