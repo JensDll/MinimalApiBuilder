@@ -63,14 +63,15 @@ public class CompressedStaticFileOptions : StaticFileOptions
     {
         AcceptEncoding = new StringValues(ContentCoding.Select(pair => pair.Key).ToArray());
 
-        OrderLookup = new (string? ContentCoding, string? Extension)[ContentCoding.Count + 2];
-
-        var entries = new KeyValuePair<StringSegment, int>[ContentCoding.Count + 2];
-        entries[1] = new KeyValuePair<StringSegment, int>(ContentCodingNames.Identity, 0);
-        entries[0] = new KeyValuePair<StringSegment, int>("*", 1);
-
         int i = 2;
-        foreach ((string contentCoding, (_, string extension)) in ContentCoding.OrderBy(pair => pair.Value.Order))
+
+        OrderLookup = new (string? ContentCoding, string? Extension)[ContentCoding.Count + i];
+        var entries = new KeyValuePair<StringSegment, int>[ContentCoding.Count + i];
+        entries[0] = new KeyValuePair<StringSegment, int>(ContentCodingNames.Identity, 0);
+        entries[1] = new KeyValuePair<StringSegment, int>("*", 1);
+
+        foreach ((string contentCoding, (_, string extension)) in
+            ContentCoding.OrderBy(static pair => pair.Value.Order))
         {
             entries[i] = new KeyValuePair<StringSegment, int>(contentCoding, i);
             OrderLookup[i] = (contentCoding, extension);
