@@ -10,6 +10,7 @@ internal static class PreconditionHelper
     {
         RangeConditionHeaderValue? ifRange = requestHeaders.IfRange;
 
+        // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-range
         if (ifRange?.EntityTag is not null)
         {
             return (true, ifRange.EntityTag.Compare(etag, true));
