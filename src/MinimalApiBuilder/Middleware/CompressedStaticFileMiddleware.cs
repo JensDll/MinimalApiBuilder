@@ -90,10 +90,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
             }
             else if (identity.IsNotAllowed())
             {
-                SetStatusCode(context, StatusCodes.Status415UnsupportedMediaType);
-                responseHeaders.Headers.AcceptEncoding = _options.AcceptEncoding;
-                _logger.ContentCodingContentNegotiationFailed(context.Request.Headers.AcceptEncoding);
-                return Task.CompletedTask;
+                return ContentCodingContentNegotiationFailed(context);
             }
             else
             {
@@ -102,10 +99,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
         }
         else if (identity.IsNotAllowed())
         {
-            SetStatusCode(context, StatusCodes.Status415UnsupportedMediaType);
-            responseHeaders.Headers.AcceptEncoding = _options.AcceptEncoding;
-            _logger.ContentCodingContentNegotiationFailed(context.Request.Headers.AcceptEncoding);
-            return Task.CompletedTask;
+            return ContentCodingContentNegotiationFailed(context);
         }
 
         if (!fileInfo.Exists)
@@ -218,6 +212,18 @@ public class CompressedStaticFileMiddleware : IMiddleware
         context.Context.Response.ContentLength = fileInfo.Length;
         _logger.SendingFile(subPath);
         return SendFileAsync(context, fileInfo, next, 0, fileInfo.Length);
+    }
+
+    // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-15
+    // Servers that fail a request due to an unsupported content coding ought to respond with a 415 (Unsupported Media Type)
+    // status and include an Accept-Encoding header field in that response,
+    // allowing clients to distinguish between issues related to content codings and media types.
+    private Task ContentCodingContentNegotiationFailed(HttpContext context)
+    {
+        SetStatusCode(context, StatusCodes.Status415UnsupportedMediaType);
+        context.Response.Headers.AcceptEncoding = _options.AcceptEncoding;
+        _logger.ContentCodingContentNegotiationFailed(context.Request.Headers.AcceptEncoding);
+        return Task.CompletedTask;
     }
 
     private bool TryGetContentType(string subPath, out string? contentType)

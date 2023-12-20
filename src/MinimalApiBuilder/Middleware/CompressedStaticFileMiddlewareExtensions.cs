@@ -40,7 +40,7 @@ public static class CompressedStaticFileMiddlewareExtensions
     }
 
     /// <summary>
-    /// Enables serving static pre-compressed files based on the
+    /// Enables serving static files, choosing pre-compressed files based on the
     /// <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a> header field.
     /// </summary>
     /// <param name="builder">The <see cref="IApplicationBuilder" />.</param>

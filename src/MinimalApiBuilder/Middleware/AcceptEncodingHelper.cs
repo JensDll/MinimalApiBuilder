@@ -42,6 +42,7 @@ internal static class AcceptEncodingHelper
 
             if (quality < double.Epsilon)
             {
+                // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-10.2
                 // If the representation has no content coding, then it is acceptable by default unless specifically
                 // excluded by the Accept-Encoding header field stating either "identity;q=0" or "*;q=0" ...
                 if (order is 0 or 1)
@@ -54,7 +55,7 @@ internal static class AcceptEncodingHelper
 
             if (order == 0)
             {
-                // ... without a more specific entry for "identity"
+                // ... without a more specific entry for "identity".
                 identityAllowed |= IdentityAllowedFlags.Allowed;
 
                 if (!identityExists)
@@ -89,9 +90,12 @@ internal static class AcceptEncodingHelper
             return true;
         }
 
-        // Best coding == "*" (it does not include identity)
+        // Best coding == "*"
         Debug.Assert(visited[1]);
 
+        // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-6
+        // The asterisk "*" symbol in an Accept-Encoding field matches any available content coding not explicitly listed in the field.
+        // Note: It will not serve identity even if it isn't explicitly listed.
         for (int i = options.OrderLookup.Length - 1; i >= 2; --i)
         {
             if (visited[i])
