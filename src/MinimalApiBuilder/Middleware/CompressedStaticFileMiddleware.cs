@@ -51,7 +51,10 @@ public class CompressedStaticFileMiddleware : IMiddleware
             return next(context);
         }
 
-        if (!IsValidMethod(context))
+        bool isGet = HttpMethods.IsGet(context.Request.Method);
+        bool isHead = HttpMethods.IsHead(context.Request.Method);
+
+        if (!isGet && !isHead)
         {
             _logger.InvalidMethod(context.Request.Method);
             return next(context);
@@ -111,7 +114,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
         CompressedStaticFileResponseContext responseContext = new(context, filename, contentCoding);
         (EntityTagHeaderValue etag, DateTimeOffset lastModified) = GetEtagAndLastModified(fileInfo);
 
-        if (HttpMethods.IsHead(context.Request.Method))
+        if (isHead)
         {
             responseHeaders.LastModified = lastModified;
             responseHeaders.ETag = etag;
@@ -215,8 +218,8 @@ public class CompressedStaticFileMiddleware : IMiddleware
     }
 
     // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-15
-    // Servers that fail a request due to an unsupported content coding ought to respond with a 415 (Unsupported Media Type)
-    // status and include an Accept-Encoding header field in that response,
+    // Servers that fail a request due to an unsupported content coding ought to respond with a
+    // 415 (Unsupported Media Type) status and include an Accept-Encoding header field in that response,
     // allowing clients to distinguish between issues related to content codings and media types.
     private Task ContentCodingContentNegotiationFailed(HttpContext context)
     {
@@ -250,12 +253,6 @@ public class CompressedStaticFileMiddleware : IMiddleware
     private static bool HasEndpointDelegate(HttpContext context)
     {
         return context.GetEndpoint()?.RequestDelegate is not null;
-    }
-
-    private static bool IsValidMethod(HttpContext context)
-    {
-        return HttpMethods.IsGet(context.Request.Method) ||
-               HttpMethods.IsHead(context.Request.Method);
     }
 
     private static (EntityTagHeaderValue, DateTimeOffset) GetEtagAndLastModified(IFileInfo fileInfo)
