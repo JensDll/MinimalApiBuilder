@@ -8,14 +8,14 @@ namespace MinimalApiBuilder.UnitTests.Infrastructure;
 public abstract class TestLogger : ILogger
 {
     /// <summary>
-    /// For mocking.
+    /// Ought to be mocked.
     /// </summary>
     /// <param name="logLevel"></param>
     /// <param name="message"></param>
     public abstract void Log(LogLevel logLevel, string message);
 
     /// <summary>
-    /// For mocking.
+    /// Ought to be mocked.
     /// </summary>
     /// <param name="state"></param>
     /// <typeparam name="TState"></typeparam>

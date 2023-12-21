@@ -149,9 +149,17 @@ public class CompressedStaticFileMiddleware : IMiddleware
                     return SendFileAsync(responseContext, fileInfo, next, subPath);
                 }
 
+                // https://www.rfc-editor.org/rfc/rfc9110.html#section-14.2-13
+                // If all of the preconditions are true, the server supports the Range header field for the target resource,
+                // the received Range field-value contains a valid ranges-specifier, and either the range-unit is not supported
+                // for that target resource or the ranges-specifier is unsatisfiable with respect to the selected representation,
+                // the server SHOULD send a 416 (Range Not Satisfiable) response.
                 if (range is null)
                 {
                     SetStatusCode(context, StatusCodes.Status416RangeNotSatisfiable);
+                    // https://www.rfc-editor.org/rfc/rfc9110.html#section-15.5.17-3
+                    // A server that generates a 416 response to a byte-range request SHOULD generate a Content-Range header field
+                    // specifying the current length of the selected representation (Section 14.4).
                     responseHeaders.ContentRange = new ContentRangeHeaderValue(fileInfo.Length);
                     _logger.RangeNotSatisfiable(context.Request.Headers.Range, subPath);
                     return Task.CompletedTask;

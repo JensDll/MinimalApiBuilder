@@ -30,7 +30,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
 
         using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
 
-        logger.Received(2).Log(Arg.Is(LogLevel.Warning), Arg.Is<string>(message =>
+        logger.Received(2).Log(Arg.Is(LogLevel.Warning), Arg.Is<string>(static message =>
             message.Contains("The WebRootPath was not found:")
             && message.Contains("Compressed static files may be unavailable")));
 
