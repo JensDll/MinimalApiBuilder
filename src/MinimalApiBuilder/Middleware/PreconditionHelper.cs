@@ -11,6 +11,7 @@ internal static class PreconditionHelper
         RangeConditionHeaderValue? ifRange = requestHeaders.IfRange;
 
         // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-range
+
         return ifRange?.EntityTag is not null
             ? (true, ifRange.EntityTag.Compare(etag, true))
             : ifRange?.LastModified is not null
@@ -30,13 +31,14 @@ internal static class PreconditionHelper
         IList<EntityTagHeaderValue> ifMatch = requestHeaders.IfMatch;
         DateTimeOffset? ifUnmodifiedSince = requestHeaders.IfUnmodifiedSince;
 
+        // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-match
+        // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-unmodified-since
+
         return ifMatch.Count > 0
-            // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-match
             ? ifMatch[0].Compare(EntityTagHeaderValue.Any, true) ||
               ifMatch.Any(value => value.Compare(etag, true))
                 ? EvaluateIfNoneMatch(requestHeaders, etag, lastModified)
                 : PreconditionState.PreconditionFailed
-            // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-unmodified-since
             : ifUnmodifiedSince.HasValue
                 ? lastModified <= ifUnmodifiedSince.Value
                     ? EvaluateIfNoneMatch(requestHeaders, etag, lastModified)
@@ -50,13 +52,14 @@ internal static class PreconditionHelper
         IList<EntityTagHeaderValue> ifNoneMatch = requestHeaders.IfNoneMatch;
         DateTimeOffset? ifModifiedSince = requestHeaders.IfModifiedSince;
 
+        // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-none-match
+        // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-modified-since
+
         return ifNoneMatch.Count > 0
-            // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-none-match
             ? ifNoneMatch[0].Compare(EntityTagHeaderValue.Any, false) ||
               ifNoneMatch.Any(value => value.Compare(etag, false))
                 ? PreconditionState.NotModified
                 : PreconditionState.ShouldProcess
-            // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-modified-since
             : ifModifiedSince.HasValue
                 ? lastModified <= ifModifiedSince.Value
                     ? PreconditionState.NotModified

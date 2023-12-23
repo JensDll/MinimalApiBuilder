@@ -26,7 +26,6 @@ internal sealed class LinearSearchContentTypeProvider : IContentTypeProvider
 
     public bool TryGetContentType(string subpath, [MaybeNullWhen(false)] out string contentType)
     {
-        contentType = null;
         ReadOnlySpan<char> path = subpath.AsSpan();
         int index = path.LastIndexOf('.') + 1;
         ReadOnlySpan<char> extension = path[index..];
@@ -40,6 +39,7 @@ internal sealed class LinearSearchContentTypeProvider : IContentTypeProvider
             }
         }
 
+        contentType = null;
         return false;
     }
 }
