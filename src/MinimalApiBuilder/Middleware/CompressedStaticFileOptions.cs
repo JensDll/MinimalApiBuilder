@@ -55,7 +55,7 @@ public class CompressedStaticFileOptions : StaticFileOptions
 
     internal void Initialize()
     {
-        AcceptEncoding = new StringValues(ContentCoding.Select(static pair => pair.Key).ToArray());
+        AcceptEncoding = new StringValues(string.Join(',', ContentCoding.Select(static pair => pair.Key)));
 
         int i = 2;
 

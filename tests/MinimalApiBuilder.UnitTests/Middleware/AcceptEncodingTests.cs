@@ -144,8 +144,6 @@ internal sealed class AcceptEncodingTests
         }
     }
 
-    private static readonly string[] s_expectedAcceptEncoding = ["br", "gzip", "deflate"];
-
     [TestCase("br, identity;q=0")]
     [TestCase("*;q=0, br")]
     [TestCase("identity;q=0, *")]
@@ -169,7 +167,7 @@ internal sealed class AcceptEncodingTests
         {
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.UnsupportedMediaType));
             Assert.That(hasAcceptEncoding, Is.True);
-            Assert.That(values, Is.EqualTo(s_expectedAcceptEncoding));
+            Assert.That(values!.Single(), Is.EqualTo("br,gzip,deflate"));
         });
     }
 
