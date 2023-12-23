@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Fixture.TestApi.Common;
 using Fixture.TestApi.Features.Multipart;
 using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using MinimalApiBuilder.Generator;
 using MinimalApiBuilder.Middleware;
 using static MinimalApiBuilder.Generator.ConfigureEndpoints;
@@ -61,7 +61,8 @@ CompressedStaticFileOptions staticFileOptions = new()
         }
 
         headers.CacheControl = Headers.CacheControl;
-    }
+    },
+    ContentTypeProvider = ContentTypeProvider.Instance
 };
 
 builder.Services.AddCompressedStaticFileMiddleware(staticFileOptions);
@@ -100,41 +101,3 @@ Configure(multipart.MapPost("/bufferedfiles", BufferedFilesEndpoint.Handle));
 app.MapFallbackToIndexHtml();
 
 app.Run();
-
-internal static class FallbackExtensions
-{
-    private static readonly string[] s_supportedHttpMethods = [HttpMethods.Get, HttpMethods.Head];
-
-    public static IEndpointConventionBuilder MapFallbackToIndexHtml(this IEndpointRouteBuilder endpoints)
-    {
-        return endpoints.MapFallback(CreateRequestDelegate(endpoints))
-            .WithMetadata(new HttpMethodMetadata(s_supportedHttpMethods));
-
-        static RequestDelegate CreateRequestDelegate(IEndpointRouteBuilder endpoints)
-        {
-            IApplicationBuilder app = endpoints.CreateApplicationBuilder();
-
-            app.Use(static next => context =>
-            {
-                context.Request.Path += "/index.html";
-                context.SetEndpoint(null);
-                return next(context);
-            });
-
-            app.UseCompressedStaticFiles();
-
-            return app.Build();
-        }
-    }
-}
-
-internal static class Headers
-{
-    public static readonly StringValues NoSniff = new("nosniff");
-
-    public static readonly StringValues CacheControl = new("public,max-age=31536000,immutable");
-
-    public static readonly StringValues CacheControlHtml = new("private,no-store,no-cache,max-age=0,must-revalidate");
-
-    public static readonly StringValues XXSSProtection = new("0");
-}
