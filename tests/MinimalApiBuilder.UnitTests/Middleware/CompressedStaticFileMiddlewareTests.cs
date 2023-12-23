@@ -75,7 +75,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
             FileProvider = provider
         });
 
-        IFileInfo fileInfo = provider.GetFileInfo("data.txt");
+        IFileInfo fileInfo = provider.GetFileInfo(StaticUri.DataTxtUri.ToString());
 
         Assert.That(fileInfo.Exists, Is.True);
 
@@ -112,7 +112,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
     }
 
     [TestCaseSource(nameof(NullValueOptions))]
-    public async Task Null_Values_In_Options_Work(CompressedStaticFileOptions options)
+    public async Task Null_Values_In_Options_Allowed(CompressedStaticFileOptions options)
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(options);
         using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);

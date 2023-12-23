@@ -3,8 +3,6 @@ using Microsoft.Net.Http.Headers;
 using MinimalApiBuilder.Middleware;
 using MinimalApiBuilder.UnitTests.Infrastructure;
 using NUnit.Framework;
-#if NET8_0_OR_GREATER
-#endif
 
 namespace MinimalApiBuilder.UnitTests.Middleware;
 

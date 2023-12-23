@@ -45,11 +45,7 @@ internal static class AcceptEncodingHelper
                 // https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3-10.2
                 // If the representation has no content coding, then it is acceptable by default unless specifically
                 // excluded by the Accept-Encoding header field stating either "identity;q=0" or "*;q=0" ...
-                if (order is 0 or 1)
-                {
-                    identityAllowed |= IdentityAllowedFlags.NotAllowed;
-                }
-
+                identityAllowed |= order is 0 or 1 ? IdentityAllowedFlags.NotAllowed : IdentityAllowedFlags.None;
                 continue;
             }
 

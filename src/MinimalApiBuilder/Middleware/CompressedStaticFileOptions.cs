@@ -20,17 +20,11 @@ public class CompressedStaticFileOptions : StaticFileOptions
     public IReadOnlyList<KeyValuePair<string, (int Order, string Extension)>> ContentCoding { get; set; } =
         new KeyValuePair<string, (int, string)>[]
         {
-            new(ContentCodingNames.Gzip, (0, "gz")),
-            new(ContentCodingNames.Br, (1, "br"))
+            new(ContentCodingNames.Br, (1, "br")),
+            new(ContentCodingNames.Gzip, (0, "gz"))
         };
 
-    /// <summary>
-    /// Called after the status code and headers have been set, but before the body has been written.
-    /// This can be used to add or change the response headers.
-    /// </summary>
-    /// <remarks>
-    /// <see cref="OnPrepareResponse" /> is called before <see cref="OnPrepareResponseAsync" />.
-    /// </remarks>
+    /// <inheritdoc cref="StaticFileOptions.OnPrepareResponse" />
     public new Action<CompressedStaticFileResponseContext> OnPrepareResponse { get; set; } = static _ => { };
 
 #if NET8_0_OR_GREATER
@@ -61,7 +55,7 @@ public class CompressedStaticFileOptions : StaticFileOptions
 
     internal void Initialize()
     {
-        AcceptEncoding = new StringValues(ContentCoding.Select(pair => pair.Key).ToArray());
+        AcceptEncoding = new StringValues(ContentCoding.Select(static pair => pair.Key).ToArray());
 
         int i = 2;
 
