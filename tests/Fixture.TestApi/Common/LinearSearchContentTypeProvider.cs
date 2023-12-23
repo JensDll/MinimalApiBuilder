@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.StaticFiles;
 
 namespace Fixture.TestApi.Common;
 
-internal sealed class ContentTypeProvider : IContentTypeProvider
+internal sealed class LinearSearchContentTypeProvider : IContentTypeProvider
 {
     private static readonly string[] s_values =
     [
@@ -22,7 +22,7 @@ internal sealed class ContentTypeProvider : IContentTypeProvider
         "image/x-icon"
     ];
 
-    public static ContentTypeProvider Instance { get; } = new();
+    public static LinearSearchContentTypeProvider Instance { get; } = new();
 
     public bool TryGetContentType(string subpath, [MaybeNullWhen(false)] out string contentType)
     {

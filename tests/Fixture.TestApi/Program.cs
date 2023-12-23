@@ -62,7 +62,7 @@ CompressedStaticFileOptions staticFileOptions = new()
 
         headers.CacheControl = Headers.CacheControl;
     },
-    ContentTypeProvider = ContentTypeProvider.Instance
+    ContentTypeProvider = LinearSearchContentTypeProvider.Instance
 };
 
 builder.Services.AddCompressedStaticFileMiddleware(staticFileOptions);
