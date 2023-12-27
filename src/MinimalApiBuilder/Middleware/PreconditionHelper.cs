@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.Headers;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Net.Http.Headers;
 
 namespace MinimalApiBuilder.Middleware;
@@ -28,7 +29,7 @@ internal static class PreconditionHelper
     private static PreconditionState EvaluateIfMatch(RequestHeaders requestHeaders,
         EntityTagHeaderValue etag, DateTimeOffset lastModified)
     {
-        IList<EntityTagHeaderValue> ifMatch = requestHeaders.IfMatch;
+        var ifMatch = Unsafe.As<List<EntityTagHeaderValue>>(requestHeaders.IfMatch);
         DateTimeOffset? ifUnmodifiedSince = requestHeaders.IfUnmodifiedSince;
 
         // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-match
@@ -36,7 +37,7 @@ internal static class PreconditionHelper
 
         return ifMatch.Count > 0
             ? ifMatch[0].Compare(EntityTagHeaderValue.Any, true) ||
-              ifMatch.Any(value => value.Compare(etag, true))
+              ifMatch.Contains(etag, true)
                 ? EvaluateIfNoneMatch(requestHeaders, etag, lastModified)
                 : PreconditionState.PreconditionFailed
             : ifUnmodifiedSince.HasValue
@@ -49,7 +50,7 @@ internal static class PreconditionHelper
     private static PreconditionState EvaluateIfNoneMatch(RequestHeaders requestHeaders,
         EntityTagHeaderValue etag, DateTimeOffset lastModified)
     {
-        IList<EntityTagHeaderValue> ifNoneMatch = requestHeaders.IfNoneMatch;
+        var ifNoneMatch = Unsafe.As<List<EntityTagHeaderValue>>(requestHeaders.IfNoneMatch);
         DateTimeOffset? ifModifiedSince = requestHeaders.IfModifiedSince;
 
         // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-none-match
@@ -57,7 +58,7 @@ internal static class PreconditionHelper
 
         return ifNoneMatch.Count > 0
             ? ifNoneMatch[0].Compare(EntityTagHeaderValue.Any, false) ||
-              ifNoneMatch.Any(value => value.Compare(etag, false))
+              ifNoneMatch.Contains(etag, false)
                 ? PreconditionState.NotModified
                 : PreconditionState.ShouldProcess
             : ifModifiedSince.HasValue
@@ -65,5 +66,19 @@ internal static class PreconditionHelper
                     ? PreconditionState.NotModified
                     : PreconditionState.ShouldProcess
                 : PreconditionState.ShouldProcess;
+    }
+
+    private static bool Contains(this List<EntityTagHeaderValue> etags,
+        EntityTagHeaderValue etag, bool useStrongComparison)
+    {
+        foreach (EntityTagHeaderValue value in etags)
+        {
+            if (value.Compare(etag, useStrongComparison))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
