@@ -22,9 +22,9 @@ internal sealed class CompressedStaticFileMiddlewareTests
         var logger = Substitute.For<TestLogger>();
 
         using StaticFilesTestServer server = await new HostBuilder()
+            .ConfigureTestLoggingProvider(logger)
             .ConfigureWebHost(builder => builder
                 .UseTestServer()
-                .ConfigureTestLoggingProvider(logger)
                 .ConfigureDefaults())
             .BuildStaticFilesTestServerAsync();
 
@@ -59,11 +59,54 @@ internal sealed class CompressedStaticFileMiddlewareTests
         });
 
         using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
+        byte[] responseContent = await response.Content.ReadAsByteArrayAsync();
 
         await feature.Received(1).SendFileAsync(Arg.Any<string>(), Arg.Any<long>(), Arg.Any<long>(),
             Arg.Any<CancellationToken>());
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+            Assert.That(responseContent, Is.Empty);
+        });
+    }
+
+    [Test]
+    public async Task OperationCanceledException_Caught_And_Logged()
+    {
+        var feature = Substitute.For<IHttpResponseBodyFeature>();
+        feature.SendFileAsync(
+            path: Arg.Any<string>(),
+            offset: Arg.Any<long>(),
+            count: Arg.Any<long>(),
+            cancellationToken: Arg.Any<CancellationToken>()).ThrowsAsync<OperationCanceledException>();
+
+        var logger = Substitute.For<TestLogger>();
+
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(configureApp: builder =>
+        {
+            builder.Use(next => context =>
+            {
+                context.Features.Set(feature);
+                return next(context);
+            });
+            builder.UseCompressedStaticFiles();
+        }, logger);
+
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
+        byte[] responseContent = await response.Content.ReadAsByteArrayAsync();
+
+        await feature.Received(1).SendFileAsync(Arg.Any<string>(), Arg.Any<long>(), Arg.Any<long>(),
+            Arg.Any<CancellationToken>());
+
+        logger.Received(1).Log(Arg.Is(LogLevel.Debug), Arg.Is<string>(
+            static message => message == "The file transmission was cancelled"));
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(responseContent, Is.Empty);
+        });
     }
 
     [Test]

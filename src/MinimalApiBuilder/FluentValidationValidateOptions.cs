@@ -34,7 +34,7 @@ public class FluentValidationValidateOptions<TOptions> : IValidateOptions<TOptio
 
         IEnumerable<string> errors = result.Errors
             .Where(static failure => failure.Severity == Severity.Error)
-            .Select(failure => failure.ErrorMessage);
+            .Select(static failure => failure.ErrorMessage);
 
         return ValidateOptionsResult.Fail(errors);
     }

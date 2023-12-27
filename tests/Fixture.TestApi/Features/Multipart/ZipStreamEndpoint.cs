@@ -3,11 +3,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Threading;
 using System.Threading.Tasks;
+using Fixture.TestApi.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using MinimalApiBuilder.Generator;
 
@@ -20,9 +20,7 @@ internal partial class ZipStreamEndpoint : MinimalApiBuilderEndpoint
         HttpContext context,
         CancellationToken cancellationToken)
     {
-        ContentDispositionHeaderValue contentDisposition = new("attachment");
-        contentDisposition.SetHttpFileName("result.zip");
-        context.Response.Headers.ContentDisposition = contentDisposition.ToString();
+        context.Response.Headers.ContentDisposition = Headers.ResultZip;
         context.Response.ContentType = "application/zip";
 
         using ZipArchive archive = new(context.Response.BodyWriter.AsStream(), ZipArchiveMode.Create);
@@ -44,7 +42,7 @@ internal partial class ZipStreamEndpoint : MinimalApiBuilderEndpoint
 
     public static void Configure(RouteHandlerBuilder builder)
     {
-        builder.WithOpenApi(operation => new OpenApiOperation(operation)
+        builder.WithOpenApi(static operation => new OpenApiOperation(operation)
         {
             RequestBody = new OpenApiRequestBody
             {

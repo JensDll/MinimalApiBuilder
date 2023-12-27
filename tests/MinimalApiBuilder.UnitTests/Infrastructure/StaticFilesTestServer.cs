@@ -33,64 +33,43 @@ internal sealed class StaticFilesTestServer : IDisposable
         return CreateAsync(DefaultConfigureApp, DefaultConfigureServices(staticFileOptions));
     }
 
-    public static async Task<StaticFilesTestServer> CreateAsync(Action<IApplicationBuilder> configureApp)
+    public static Task<StaticFilesTestServer> CreateAsync(Action<IApplicationBuilder> configureApp)
     {
-        IHost host = GetHostBuilder(configureApp, DefaultConfigureServices).Build();
-
-        await host.StartAsync();
-
-        TestServer server = host.GetTestServer();
-        HttpClient client = server.CreateClient();
-
-        return new StaticFilesTestServer(host, server, client);
+        return GetHostBuilder(configureApp, DefaultConfigureServices).BuildStaticFilesTestServerAsync();
     }
 
-    public static async Task<StaticFilesTestServer> CreateAsync(Action<IServiceCollection> configureServices)
+    public static Task<StaticFilesTestServer> CreateAsync(Action<IApplicationBuilder> configureApp, ILogger logger)
     {
-        IHost host = GetHostBuilder(DefaultConfigureApp, configureServices).Build();
-
-        await host.StartAsync();
-
-        TestServer server = host.GetTestServer();
-        HttpClient client = server.CreateClient();
-
-        return new StaticFilesTestServer(host, server, client);
+        return GetHostBuilder(configureApp, DefaultConfigureServices)
+            .ConfigureTestLoggingProvider(logger)
+            .BuildStaticFilesTestServerAsync();
     }
 
-    public static async Task<StaticFilesTestServer> CreateAsync(
-        Action<IApplicationBuilder> configureApp,
+    public static Task<StaticFilesTestServer> CreateAsync(Action<IServiceCollection> configureServices)
+    {
+        return GetHostBuilder(DefaultConfigureApp, configureServices).BuildStaticFilesTestServerAsync();
+    }
+
+    public static Task<StaticFilesTestServer> CreateAsync(Action<IServiceCollection> configureServices, ILogger logger)
+    {
+        return GetHostBuilder(DefaultConfigureApp, configureServices)
+            .ConfigureTestLoggingProvider(logger)
+            .BuildStaticFilesTestServerAsync();
+    }
+
+    public static Task<StaticFilesTestServer> CreateAsync(Action<IApplicationBuilder> configureApp,
         Action<IServiceCollection> configureServices)
     {
-        IHost host = GetHostBuilder(configureApp, configureServices).Build();
-
-        await host.StartAsync();
-
-        TestServer server = host.GetTestServer();
-        HttpClient client = server.CreateClient();
-
-        return new StaticFilesTestServer(host, server, client);
+        return GetHostBuilder(configureApp, configureServices)
+            .BuildStaticFilesTestServerAsync();
     }
 
-    public static async Task<StaticFilesTestServer> CreateAsync(
-        Action<IApplicationBuilder> configureApp,
-        Action<IServiceCollection> configureServices,
-        ILogger logger)
+    public static Task<StaticFilesTestServer> CreateAsync(Action<IApplicationBuilder> configureApp,
+        Action<IServiceCollection> configureServices, ILogger logger)
     {
-        IHost host = GetHostBuilder(configureApp, configureServices)
-            .ConfigureLogging(builder =>
-            {
-                builder.ClearProviders();
-                builder.AddProvider(new TestLoggerProvider(logger));
-                builder.SetMinimumLevel(LogLevel.Debug);
-            })
-            .Build();
-
-        await host.StartAsync();
-
-        TestServer server = host.GetTestServer();
-        HttpClient client = server.CreateClient();
-
-        return new StaticFilesTestServer(host, server, client);
+        return GetHostBuilder(configureApp, configureServices)
+            .ConfigureTestLoggingProvider(logger)
+            .BuildStaticFilesTestServerAsync();
     }
 
     public static void DefaultConfigureApp(IApplicationBuilder app)

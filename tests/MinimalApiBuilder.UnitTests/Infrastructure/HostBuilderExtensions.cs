@@ -25,15 +25,16 @@ internal static class HostBuilderExtensions
         return webHostBuilder;
     }
 
-    public static IWebHostBuilder ConfigureTestLoggingProvider(this IWebHostBuilder webHostBuilder, ILogger logger)
+    public static IHostBuilder ConfigureTestLoggingProvider(this IHostBuilder hostBuilder, ILogger logger)
     {
-        webHostBuilder.ConfigureLogging(builder =>
+        hostBuilder.ConfigureLogging(builder =>
         {
             builder.ClearProviders();
             builder.AddProvider(new TestLoggerProvider(logger));
+            builder.SetMinimumLevel(LogLevel.Debug);
         });
 
-        return webHostBuilder;
+        return hostBuilder;
     }
 
     public static async Task<StaticFilesTestServer> BuildStaticFilesTestServerAsync(this IHostBuilder hostBuilder)
