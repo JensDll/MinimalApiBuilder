@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Net.Http.Headers;
 
@@ -28,10 +27,12 @@ internal static class AcceptEncodingHelper
 
         Span<bool> visited = stackalloc bool[options.OrderLookup.Length];
 
-        var acceptEncoding = Unsafe.As<List<StringWithQualityHeaderValue>>(requestHeaders.AcceptEncoding);
+        IList<StringWithQualityHeaderValue> acceptEncoding = requestHeaders.AcceptEncoding;
 
-        foreach (StringWithQualityHeaderValue value in acceptEncoding)
+        for (int i = 0; i < acceptEncoding.Count; ++i)
         {
+            StringWithQualityHeaderValue value = acceptEncoding[i];
+
             if (!options.ContentCodingOrder.TryGetValue(value.Value, out int order))
             {
                 continue;
@@ -109,15 +110,17 @@ internal static class AcceptEncodingHelper
     }
 
     private static (string?, string?) FindBestNonStarFallback(
-        List<StringWithQualityHeaderValue> acceptEncoding,
+        IList<StringWithQualityHeaderValue> acceptEncoding,
         CompressedStaticFileOptions options,
         out bool success)
     {
         int bestOrder = -1;
         double bestQuality = -1;
 
-        foreach (StringWithQualityHeaderValue value in acceptEncoding)
+        for (int i = 0; i < acceptEncoding.Count; ++i)
         {
+            StringWithQualityHeaderValue value = acceptEncoding[i];
+
             if (!options.ContentCodingOrder.TryGetValue(value.Value, out int order))
             {
                 continue;

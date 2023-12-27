@@ -340,6 +340,7 @@ resharper_align_multiline_binary_expressions_chain = true
 resharper_align_multiline_statement_conditions = false
 resharper_convert_to_primary_constructor_highlighting = none
 resharper_null_coalescing_condition_is_always_not_null_according_to_api_contract_highlighting = suggestion
+resharper_for_can_be_converted_to_foreach_highlighting = none
 ######## RESHARPER ########
 
 [*.{received,verified}.{cs,txt}]

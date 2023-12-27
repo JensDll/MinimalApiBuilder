@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using Microsoft.AspNetCore.Http.Headers;
+﻿using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Net.Http.Headers;
 
 namespace MinimalApiBuilder.Middleware;
@@ -29,7 +28,7 @@ internal static class PreconditionHelper
     private static PreconditionState EvaluateIfMatch(RequestHeaders requestHeaders,
         EntityTagHeaderValue etag, DateTimeOffset lastModified)
     {
-        var ifMatch = Unsafe.As<List<EntityTagHeaderValue>>(requestHeaders.IfMatch);
+        IList<EntityTagHeaderValue> ifMatch = requestHeaders.IfMatch;
         DateTimeOffset? ifUnmodifiedSince = requestHeaders.IfUnmodifiedSince;
 
         // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-match
@@ -50,7 +49,7 @@ internal static class PreconditionHelper
     private static PreconditionState EvaluateIfNoneMatch(RequestHeaders requestHeaders,
         EntityTagHeaderValue etag, DateTimeOffset lastModified)
     {
-        var ifNoneMatch = Unsafe.As<List<EntityTagHeaderValue>>(requestHeaders.IfNoneMatch);
+        IList<EntityTagHeaderValue> ifNoneMatch = requestHeaders.IfNoneMatch;
         DateTimeOffset? ifModifiedSince = requestHeaders.IfModifiedSince;
 
         // https://www.rfc-editor.org/rfc/rfc9110.html#name-if-none-match
@@ -68,12 +67,12 @@ internal static class PreconditionHelper
                 : PreconditionState.ShouldProcess;
     }
 
-    private static bool Contains(this List<EntityTagHeaderValue> etags,
+    private static bool Contains(this IList<EntityTagHeaderValue> etags,
         EntityTagHeaderValue etag, bool useStrongComparison)
     {
-        foreach (EntityTagHeaderValue value in etags)
+        for (int i = 0; i < etags.Count; ++i)
         {
-            if (value.Compare(etag, useStrongComparison))
+            if (etags[i].Compare(etag, useStrongComparison))
             {
                 return true;
             }
