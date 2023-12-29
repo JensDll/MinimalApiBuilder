@@ -3,7 +3,5 @@
                         xmlns:s="clr-namespace:System;assembly=mscorlib"
                         xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml"
                         xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-  <s:String x:Key="/Default/Environment/Hierarchy/Build/SolBuilderDuo/CustomGlobalProperties/=MINIMALAPIBUILDER_005FTEST_005FTYPE/@EntryIndexedValue">
-    Local
-  </s:String>
+  <s:String x:Key="/Default/Environment/Hierarchy/Build/SolBuilderDuo/CustomGlobalProperties/=MINIMALAPIBUILDER_005FTEST_005FTYPE/@EntryIndexedValue">Local</s:String>
 </wpf:ResourceDictionary>
