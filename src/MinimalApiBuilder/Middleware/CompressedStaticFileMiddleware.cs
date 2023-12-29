@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Headers;
@@ -249,15 +250,6 @@ public class CompressedStaticFileMiddleware : IMiddleware
         return _options.ServeUnknownFileTypes;
     }
 
-    private void SetCompressionMode(HttpContext context)
-    {
-        IHttpsCompressionFeature? responseCompressionFeature = context.Features.Get<IHttpsCompressionFeature>();
-        if (responseCompressionFeature is not null)
-        {
-            responseCompressionFeature.Mode = _options.HttpsCompression;
-        }
-    }
-
     private static bool HasEndpointDelegate(HttpContext context)
     {
         return context.GetEndpoint()?.RequestDelegate is not null;
@@ -271,9 +263,18 @@ public class CompressedStaticFileMiddleware : IMiddleware
             last.Hour, last.Minute, last.Second, last.Offset).ToUniversalTime();
 
         long etagHash = lastModified.ToFileTime() ^ fileInfo.Length;
-        EntityTagHeaderValue etag = new($"\"{Convert.ToString(etagHash, 16)}\"");
+        EntityTagHeaderValue etag = new($"\"{etagHash.ToString("x", CultureInfo.InvariantCulture)}\"");
 
         return (etag, lastModified);
+    }
+
+    private void SetCompressionMode(HttpContext context)
+    {
+        IHttpsCompressionFeature? responseCompressionFeature = context.Features.Get<IHttpsCompressionFeature>();
+        if (responseCompressionFeature is not null)
+        {
+            responseCompressionFeature.Mode = _options.HttpsCompression;
+        }
     }
 
     private static void SetStatusCode(HttpContext context, int statusCode)

@@ -14,10 +14,10 @@
     "nuxt": "3.9.0",
     "postcss": "8.4.32",
     "prettier": "3.1.1",
-    "prettier-plugin-tailwindcss": "0.5.9",
+    "prettier-plugin-tailwindcss": "0.5.10",
     "tailwindcss": "3.4.0",
     "tailwindcss-plugin-icons": "2.2.0",
-    "vue": "3.3.13",
+    "vue": "3.4.0",
     "vue-router": "4.2.5"
   }
 }

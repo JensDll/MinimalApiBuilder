@@ -56,30 +56,6 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
     [Test]
     public Task With_Empty_Options_Should_Keep_Default_Values()
     {
-        TestAnalyzerConfigOptionsProvider provider = new(
-            globalOptions: new TestAnalyzerConfigOptions
-            {
-                Options =
-                {
-                    [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "",
-                    [GeneratorOptions.Keys.ValidationProblemTypeBuildProperty] = "",
-                    [GeneratorOptions.Keys.ValidationProblemTitleBuildProperty] = "",
-                    [GeneratorOptions.Keys.ModelBindingProblemTypeBuildProperty] = "",
-                    [GeneratorOptions.Keys.ModelBindingProblemTitleBuildProperty] = ""
-                }
-            },
-            localOptions: new TestAnalyzerConfigOptions
-            {
-                Options =
-                {
-                    [GeneratorOptions.Keys.AssignNameToEndpoint] = "",
-                    [GeneratorOptions.Keys.ValidationProblemType] = "",
-                    [GeneratorOptions.Keys.ValidationProblemTitle] = "",
-                    [GeneratorOptions.Keys.ModelBindingProblemType] = "",
-                    [GeneratorOptions.Keys.ModelBindingProblemTitle] = ""
-                }
-            });
-
         // language=cs
         const string source = """
             public class R {
@@ -104,8 +80,32 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source, provider);
+        return VerifyGeneratorAsync(source, s_emptyProvider);
     }
+
+    private static readonly TestAnalyzerConfigOptionsProvider s_emptyProvider = new(
+        globalOptions: new TestAnalyzerConfigOptions
+        {
+            Options =
+            {
+                [GeneratorOptions.Keys.AssignNameToEndpointBuildProperty] = "",
+                [GeneratorOptions.Keys.ValidationProblemTypeBuildProperty] = "",
+                [GeneratorOptions.Keys.ValidationProblemTitleBuildProperty] = "",
+                [GeneratorOptions.Keys.ModelBindingProblemTypeBuildProperty] = "",
+                [GeneratorOptions.Keys.ModelBindingProblemTitleBuildProperty] = ""
+            }
+        },
+        localOptions: new TestAnalyzerConfigOptions
+        {
+            Options =
+            {
+                [GeneratorOptions.Keys.AssignNameToEndpoint] = "",
+                [GeneratorOptions.Keys.ValidationProblemType] = "",
+                [GeneratorOptions.Keys.ValidationProblemTitle] = "",
+                [GeneratorOptions.Keys.ModelBindingProblemType] = "",
+                [GeneratorOptions.Keys.ModelBindingProblemTitle] = ""
+            }
+        });
 
     private static IEnumerable<TestAnalyzerConfigOptionsProvider> AssignNameProviders()
     {

@@ -17,7 +17,7 @@ public interface IMinimalApiBuilderEndpoint
 #pragma warning restore CA1707
 
     /// <summary>
-    /// Configure the <see cref="RouteHandlerBuilder" /> of this endpoint.
+    /// Configures the <see cref="RouteHandlerBuilder" /> of this endpoint.
     /// </summary>
     /// <param name="builder">
     /// A <see cref="RouteHandlerBuilder" /> that can be used to further customize the endpoint.

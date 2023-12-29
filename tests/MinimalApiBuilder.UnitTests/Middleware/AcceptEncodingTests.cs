@@ -134,14 +134,9 @@ internal sealed class AcceptEncodingTests
             new("deflate", (deflateOrder, "deflate"))
         }, acceptEncoding);
 
-        if (expectedContentCoding is not null)
-        {
-            await AssertResponseAsync(response, expectedContentCoding);
-        }
-        else
-        {
-            await AssertResponseAsync(response);
-        }
+        await (expectedContentCoding is null
+            ? AssertResponseAsync(response)
+            : AssertResponseAsync(response, expectedContentCoding));
     }
 
     [TestCase("br, identity;q=0")]
