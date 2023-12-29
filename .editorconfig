@@ -327,20 +327,42 @@ dotnet_naming_rule.private_fields.severity = warning
 ######## NAMING RULES ########
 
 ######## RESHARPER ########
-resharper_place_simple_anonymousmethod_on_single_line = false
-resharper_inconsistent_naming_highlighting = none
-resharper_csharp_outdent_statement_labels = true
-resharper_csharp_blank_lines_around_field = 0
-resharper_csharp_indent_raw_literal_string = do_not_change
-resharper_csharp_empty_block_style = together_same_line
-resharper_xmldoc_indent_text = zero_indent
-resharper_xmldoc_wrap_lines = false
-resharper_xmldoc_wrap_tags_and_pi = false
-resharper_align_multiline_binary_expressions_chain = true
-resharper_align_multiline_statement_conditions = false
+# C# Syntax Style
+# https://www.jetbrains.com/help/resharper/EditorConfig_CSHARP_CSharpCodeStylePageImplSchema.html
+csharp_for_built_in_types = use_explicit_type
+csharp_for_simple_types = use_explicit_type
+csharp_for_other_types = use_var_when_evident
+
+# C# Braces Layout
+# https://www.jetbrains.com/help/resharper/EditorConfig_CSHARP_BracesPageSchema.html
+csharp_empty_block_style = together_same_line
+
+# C# Line Breaks
+# https://www.jetbrains.com/help/resharper/EditorConfig_CSHARP_LineBreaksPageSchema.html
+csharp_place_simple_anonymousmethod_on_single_line = false
+
+# C# Tabs, Indents, Alignment
+# https://www.jetbrains.com/help/resharper/EditorConfig_CSHARP_CSharpIndentStylePageSchema.html
+csharp_outdent_statement_labels = true
+csharp_indent_raw_literal_string = do_not_change
+csharp_align_multiline_binary_expressions_chain = true
+
+# C# Blank Lines
+# https://www.jetbrains.com/help/resharper/EditorConfig_CSHARP_BlankLinesPageScheme.html
+csharp_blank_lines_around_field = 0
+
+# C# Code Inspections
+# https://www.jetbrains.com/help/resharper/Reference__Code_Inspections_CSHARP.html
+resharper_inconsistent_naming_highlighting = suggestion
 resharper_convert_to_primary_constructor_highlighting = none
-resharper_null_coalescing_condition_is_always_not_null_according_to_api_contract_highlighting = suggestion
 resharper_for_can_be_converted_to_foreach_highlighting = none
+resharper_null_coalescing_condition_is_always_not_null_according_to_api_contract_highlighting = suggestion
+
+# XMLDOC Formatting Style
+# https://www.jetbrains.com/help/resharper/EditorConfig_XMLDOC_XmlDocCodeStylePageSchema.html
+xmldoc_indent_text = zero_indent
+xmldoc_wrap_tags_and_pi = false
+xmldoc_wrap_lines = false
 ######## RESHARPER ########
 
 [*.{received,verified}.{cs,txt}]
