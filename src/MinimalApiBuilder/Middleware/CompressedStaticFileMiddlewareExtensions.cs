@@ -11,6 +11,16 @@ namespace MinimalApiBuilder.Middleware;
 public static class CompressedStaticFileMiddlewareExtensions
 {
     /// <summary>
+    /// Registers the singleton <see cref="CompressedStaticFileMiddleware" /> with default options.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection" />.</param>
+    /// <returns></returns>
+    public static IServiceCollection AddCompressedStaticFileMiddleware(this IServiceCollection services)
+    {
+        return AddCompressedStaticFileMiddleware(services, new CompressedStaticFileOptions());
+    }
+
+    /// <summary>
     /// Registers the singleton <see cref="CompressedStaticFileMiddleware" /> with specified options.
     /// </summary>
     /// <param name="services">The <see cref="IServiceCollection" />.</param>
@@ -23,18 +33,6 @@ public static class CompressedStaticFileMiddlewareExtensions
         CompressedStaticFileOptions options)
     {
         AddOptions(services, options);
-        services.AddSingleton<CompressedStaticFileMiddleware>();
-        return services;
-    }
-
-    /// <summary>
-    /// Registers the singleton <see cref="CompressedStaticFileMiddleware" /> with default options.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection" />.</param>
-    /// <returns></returns>
-    public static IServiceCollection AddCompressedStaticFileMiddleware(this IServiceCollection services)
-    {
-        AddOptions(services, new CompressedStaticFileOptions());
         services.AddSingleton<CompressedStaticFileMiddleware>();
         return services;
     }
@@ -77,7 +75,7 @@ public static class CompressedStaticFileMiddlewareExtensions
 
     internal static bool IsNotAllowed(this IdentityAllowedFlags flags)
     {
-        return (flags & (IdentityAllowedFlags.Allowed | IdentityAllowedFlags.NotAllowed)) ==
-               IdentityAllowedFlags.NotAllowed;
+        const IdentityAllowedFlags allowedNotAllowed = IdentityAllowedFlags.Allowed | IdentityAllowedFlags.NotAllowed;
+        return (flags & allowedNotAllowed) == IdentityAllowedFlags.NotAllowed;
     }
 }

@@ -16,6 +16,7 @@ public class CompressedStaticFileOptions : StaticFileOptions
     /// values are tuples of order and file extension. <see cref="CompressedStaticFileMiddleware" />
     /// uses order to prioritize the selected representation when the quality values of
     /// <a href="https://www.rfc-editor.org/rfc/rfc9110.html#section-12.5.3">Accept-Encoding</a> are equal.
+    /// Higher order values are preferred.
     /// </summary>
     public IReadOnlyList<KeyValuePair<string, (int Order, string Extension)>> ContentCoding { get; set; } =
         new KeyValuePair<string, (int, string)>[]
