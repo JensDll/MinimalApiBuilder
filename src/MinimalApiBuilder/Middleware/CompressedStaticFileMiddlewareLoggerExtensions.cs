@@ -5,14 +5,6 @@ namespace MinimalApiBuilder.Middleware;
 
 internal static partial class CompressedStaticFileMiddlewareLoggerExtensions
 {
-    private static readonly Func<ILogger, PathString, IDisposable?> s_middleware =
-        LoggerMessage.DefineScope<PathString>($"{nameof(CompressedStaticFileMiddleware)}: {{Path}}");
-
-    internal static IDisposable? CompressedStaticFileMiddleware(this ILogger logger, PathString path)
-    {
-        return s_middleware(logger, path);
-    }
-
     [LoggerMessage(0, LogLevel.Debug, "Skipping as the request already matches an endpoint")]
     internal static partial void EndpointMatched(this ILogger logger);
 

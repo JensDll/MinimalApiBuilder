@@ -42,10 +42,6 @@ public class CompressedStaticFileMiddleware : IMiddleware
     /// <inheritdoc />
     public Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        PathString requestPath = context.Request.Path;
-
-        using IDisposable? scope = _logger.CompressedStaticFileMiddleware(requestPath);
-
         if (HasEndpointDelegate(context))
         {
             _logger.EndpointMatched();
@@ -61,7 +57,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
             return next(context);
         }
 
-        if (!requestPath.StartsWithSegments(_options.RequestPath, out PathString remaining))
+        if (!context.Request.Path.StartsWithSegments(_options.RequestPath, out PathString remaining))
         {
             _logger.PathMismatch(_options.RequestPath);
             return next(context);
