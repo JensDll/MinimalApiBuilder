@@ -32,7 +32,7 @@ jobs:
       - name: Running tests
         run: dotnet test --no-build --no-restore --configuration ${{ matrix.configuration }}
 
-  local-no-hw-intrinsic:
+  local-no-intrinsic:
     strategy:
       matrix:
         configuration: [Debug, Release]
