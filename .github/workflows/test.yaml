@@ -32,6 +32,35 @@ jobs:
       - name: Running tests
         run: dotnet test --no-build --no-restore --configuration ${{ matrix.configuration }}
 
+  local-no-hw-intrinsic:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+        os: [ubuntu-22.04, windows-2022, macos-12]
+    runs-on: ${{ matrix.os }}
+    env:
+      MINIMALAPIBUILDER_TEST_TYPE: Local
+      DOTNET_EnableHWIntrinsic: 0
+    name: Local ${{ matrix.os }} (${{ matrix.configuration }})
+    steps:
+      - name: Allowing git long paths
+        run: git config --global core.longpaths true
+
+      - name: Checking out the repository
+        uses: actions/checkout@v4.1.1
+
+      - name: Setting up dotnet
+        uses: actions/setup-dotnet@v4.0.0
+
+      - name: Restoring the solution
+        run: dotnet restore
+
+      - name: Building the solution
+        run: dotnet build --no-restore --configuration ${{ matrix.configuration }}
+
+      - name: Running tests
+        run: dotnet test --no-build --no-restore --configuration ${{ matrix.configuration }}
+
   publish:
     strategy:
       fail-fast: false
