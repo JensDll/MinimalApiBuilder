@@ -310,7 +310,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 byte o = (byte)((hash >> 56) & 15);
                 byte p = (byte)((hash >> 60) & 15);
 
-                span[0] = 'o';
+                span[0] = '"';
                 span[1] = (char)(a + (a < 10 ? 48 : 87));
                 span[2] = (char)(b + (b < 10 ? 48 : 87));
                 span[3] = (char)(c + (c < 10 ? 48 : 87));
