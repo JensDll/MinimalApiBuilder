@@ -259,32 +259,29 @@ public class CompressedStaticFileMiddleware : IMiddleware
         DateTimeOffset lastModified = new DateTimeOffset(last.Year, last.Month, last.Day,
             last.Hour, last.Minute, last.Second, last.Offset).ToUniversalTime();
 
-        string etagValue = string.Create(18, lastModified.ToFileTime() ^ fileInfo.Length, static (span, etagHash) =>
+        string etagValue = string.Create(18, lastModified.ToFileTime() ^ fileInfo.Length, static (span, hash) =>
         {
-            const int asciiZero = 48;
-            const int asciiA = 87;
-
             if (Vector256.IsHardwareAccelerated)
             {
                 Vector256<short> values = Vector256.Create(
-                    (short)(etagHash & 15),
-                    (short)((etagHash >> 4) & 15),
-                    (short)((etagHash >> 8) & 15),
-                    (short)((etagHash >> 12) & 15),
-                    (short)((etagHash >> 16) & 15),
-                    (short)((etagHash >> 20) & 15),
-                    (short)((etagHash >> 24) & 15),
-                    (short)((etagHash >> 28) & 15),
-                    (short)((etagHash >> 32) & 15),
-                    (short)((etagHash >> 36) & 15),
-                    (short)((etagHash >> 40) & 15),
-                    (short)((etagHash >> 44) & 15),
-                    (short)((etagHash >> 48) & 15),
-                    (short)((etagHash >> 52) & 15),
-                    (short)((etagHash >> 56) & 15),
-                    (short)((etagHash >> 60) & 15));
-                Vector256<short> numbers = Vector256.Create<short>(asciiZero);
-                Vector256<short> letters = Vector256.Create<short>(asciiA);
+                    (short)(hash & 15),
+                    (short)((hash >> 4) & 15),
+                    (short)((hash >> 8) & 15),
+                    (short)((hash >> 12) & 15),
+                    (short)((hash >> 16) & 15),
+                    (short)((hash >> 20) & 15),
+                    (short)((hash >> 24) & 15),
+                    (short)((hash >> 28) & 15),
+                    (short)((hash >> 32) & 15),
+                    (short)((hash >> 36) & 15),
+                    (short)((hash >> 40) & 15),
+                    (short)((hash >> 44) & 15),
+                    (short)((hash >> 48) & 15),
+                    (short)((hash >> 52) & 15),
+                    (short)((hash >> 56) & 15),
+                    (short)((hash >> 60) & 15));
+                Vector256<short> numbers = Vector256.Create<short>(48);
+                Vector256<short> letters = Vector256.Create<short>(87);
 
                 Vector256<short> mask = Vector256.LessThan(values, Vector256.Create<short>(10));
                 Vector256<short> blend = Vector256.ConditionalSelect(mask, numbers, letters);
@@ -296,40 +293,40 @@ public class CompressedStaticFileMiddleware : IMiddleware
             }
             else
             {
-                byte a = (byte)(etagHash & 15);
-                byte b = (byte)((etagHash >> 4) & 15);
-                byte c = (byte)((etagHash >> 8) & 15);
-                byte d = (byte)((etagHash >> 12) & 15);
-                byte e = (byte)((etagHash >> 16) & 15);
-                byte f = (byte)((etagHash >> 20) & 15);
-                byte g = (byte)((etagHash >> 24) & 15);
-                byte h = (byte)((etagHash >> 28) & 15);
-                byte i = (byte)((etagHash >> 32) & 15);
-                byte j = (byte)((etagHash >> 36) & 15);
-                byte k = (byte)((etagHash >> 40) & 15);
-                byte l = (byte)((etagHash >> 44) & 15);
-                byte m = (byte)((etagHash >> 48) & 15);
-                byte n = (byte)((etagHash >> 52) & 15);
-                byte o = (byte)((etagHash >> 56) & 15);
-                byte p = (byte)((etagHash >> 60) & 15);
+                byte a = (byte)(hash & 15);
+                byte b = (byte)((hash >> 4) & 15);
+                byte c = (byte)((hash >> 8) & 15);
+                byte d = (byte)((hash >> 12) & 15);
+                byte e = (byte)((hash >> 16) & 15);
+                byte f = (byte)((hash >> 20) & 15);
+                byte g = (byte)((hash >> 24) & 15);
+                byte h = (byte)((hash >> 28) & 15);
+                byte i = (byte)((hash >> 32) & 15);
+                byte j = (byte)((hash >> 36) & 15);
+                byte k = (byte)((hash >> 40) & 15);
+                byte l = (byte)((hash >> 44) & 15);
+                byte m = (byte)((hash >> 48) & 15);
+                byte n = (byte)((hash >> 52) & 15);
+                byte o = (byte)((hash >> 56) & 15);
+                byte p = (byte)((hash >> 60) & 15);
 
                 span[0] = '"';
-                span[1] = (char)(a + (a < 10 ? asciiZero : asciiA));
-                span[2] = (char)(b + (b < 10 ? asciiZero : asciiA));
-                span[3] = (char)(c + (c < 10 ? asciiZero : asciiA));
-                span[4] = (char)(d + (d < 10 ? asciiZero : asciiA));
-                span[5] = (char)(e + (e < 10 ? asciiZero : asciiA));
-                span[6] = (char)(f + (f < 10 ? asciiZero : asciiA));
-                span[7] = (char)(g + (g < 10 ? asciiZero : asciiA));
-                span[8] = (char)(h + (h < 10 ? asciiZero : asciiA));
-                span[9] = (char)(i + (i < 10 ? asciiZero : asciiA));
-                span[10] = (char)(j + (j < 10 ? asciiZero : asciiA));
-                span[11] = (char)(k + (k < 10 ? asciiZero : asciiA));
-                span[12] = (char)(l + (l < 10 ? asciiZero : asciiA));
-                span[13] = (char)(m + (m < 10 ? asciiZero : asciiA));
-                span[14] = (char)(n + (n < 10 ? asciiZero : asciiA));
-                span[15] = (char)(o + (o < 10 ? asciiZero : asciiA));
-                span[16] = (char)(p + (p < 10 ? asciiZero : asciiA));
+                span[1] = (char)(a + (a < 10 ? 48 : 87));
+                span[2] = (char)(b + (b < 10 ? 48 : 87));
+                span[3] = (char)(c + (c < 10 ? 48 : 87));
+                span[4] = (char)(d + (d < 10 ? 48 : 87));
+                span[5] = (char)(e + (e < 10 ? 48 : 87));
+                span[6] = (char)(f + (f < 10 ? 48 : 87));
+                span[7] = (char)(g + (g < 10 ? 48 : 87));
+                span[8] = (char)(h + (h < 10 ? 48 : 87));
+                span[9] = (char)(i + (i < 10 ? 48 : 87));
+                span[10] = (char)(j + (j < 10 ? 48 : 87));
+                span[11] = (char)(k + (k < 10 ? 48 : 87));
+                span[12] = (char)(l + (l < 10 ? 48 : 87));
+                span[13] = (char)(m + (m < 10 ? 48 : 87));
+                span[14] = (char)(n + (n < 10 ? 48 : 87));
+                span[15] = (char)(o + (o < 10 ? 48 : 87));
+                span[16] = (char)(p + (p < 10 ? 48 : 87));
                 span[17] = '"';
             }
         });

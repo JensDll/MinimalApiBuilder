@@ -331,7 +331,7 @@ dotnet_naming_rule.private_fields.severity = warning
 # https://www.jetbrains.com/help/resharper/EditorConfig_CSHARP_CSharpCodeStylePageImplSchema.html
 csharp_for_built_in_types = use_explicit_type
 csharp_for_simple_types = use_explicit_type
-csharp_for_other_types = use_var_when_evident
+csharp_for_other_types = use_explicit_type
 
 # C# Braces Layout
 # https://www.jetbrains.com/help/resharper/EditorConfig_CSHARP_BracesPageSchema.html
