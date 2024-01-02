@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Globalization;
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.TestHost;
@@ -133,6 +134,40 @@ internal sealed class CompressedStaticFileMiddlewareTests
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
             Assert.That(response.Content.Headers.LastModified, Is.Not.EqualTo(last));
             Assert.That(response.Content.Headers.LastModified, Is.EqualTo(trimmed));
+        });
+    }
+
+    [Test]
+    public async Task Etag_Is_Combination_Of_LastModified_And_ContentLength()
+    {
+        using PhysicalFileProvider provider = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "static"));
+        using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync(new CompressedStaticFileOptions
+        {
+            FileProvider = provider
+        });
+
+        IFileInfo fileInfo = provider.GetFileInfo(StaticUri.DataTxtUri.ToString());
+
+        Assert.That(fileInfo.Exists, Is.True);
+
+        using HttpResponseMessage response = await server.Client.GetAsync(StaticUri.DataTxtUri);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.Headers.ETag, Is.Not.Null);
+            Assert.That(response.Content.Headers.ContentLength, Is.Not.Null);
+            Assert.That(response.Content.Headers.LastModified, Is.Not.Null);
+        });
+
+        long etagHash = response.Content.Headers.LastModified!.Value.ToFileTime() ^
+                        response.Content.Headers.ContentLength!.Value;
+        string etag = $"\"0{etagHash.ToString("x", CultureInfo.InvariantCulture)}\"";
+        etag = new string(etag.Reverse().ToArray());
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+            Assert.That(response.Headers.ETag!.Tag, Is.EqualTo(etag));
         });
     }
 
