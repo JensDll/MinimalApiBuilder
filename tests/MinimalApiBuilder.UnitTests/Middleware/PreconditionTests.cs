@@ -87,8 +87,6 @@ internal sealed class PreconditionTests
     {
         using StaticFilesTestServer server = await StaticFilesTestServer.CreateAsync();
 
-        using HttpResponseMessage original = await server.Client.GetAsync(StaticUri.DataTxtUri);
-
         using HttpRequestMessage request = new(HttpMethod.Get, StaticUri.DataTxtUri);
         request.Headers.Add(HeaderNames.IfNoneMatch, "*");
 
