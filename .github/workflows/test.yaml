@@ -41,7 +41,7 @@ jobs:
     env:
       MINIMALAPIBUILDER_TEST_TYPE: Local
       DOTNET_EnableHWIntrinsic: 0
-    name: Local ${{ matrix.os }} (${{ matrix.configuration }})
+    name: Local no intrinsic ${{ matrix.os }} (${{ matrix.configuration }})
     steps:
       - name: Allowing git long paths
         run: git config --global core.longpaths true
