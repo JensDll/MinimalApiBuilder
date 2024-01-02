@@ -280,11 +280,11 @@ public class CompressedStaticFileMiddleware : IMiddleware
                     (short)((hash >> 52) & 15),
                     (short)((hash >> 56) & 15),
                     (short)((hash >> 60) & 15));
-                Vector256<short> numbers = Vector256.Create<short>(48);
-                Vector256<short> letters = Vector256.Create<short>(87);
 
-                Vector256<short> mask = Vector256.LessThan(values, Vector256.Create<short>(10));
-                Vector256<short> blend = Vector256.ConditionalSelect(mask, numbers, letters);
+                Vector256<short> condition = Vector256.LessThan(values, Vector256.Create<short>(10));
+                Vector256<short> blend = Vector256.ConditionalSelect(condition,
+                    Vector256.Create<short>(48), // 0-9 when less than 10
+                    Vector256.Create<short>(87)); // a-f else
                 Vector256<short> result = Vector256.Add(values, blend);
 
                 span[0] = '"';
