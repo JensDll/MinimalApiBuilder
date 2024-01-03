@@ -161,7 +161,7 @@ internal sealed class CompressedStaticFileMiddlewareTests
 
         long etagHash = response.Content.Headers.LastModified!.Value.ToFileTime() ^
                         response.Content.Headers.ContentLength!.Value;
-        string etag = $"\"0{etagHash.ToString("x", CultureInfo.InvariantCulture)}\"";
+        string etag = $"\"{etagHash.ToString("x16", CultureInfo.InvariantCulture)}\"";
         etag = new string(etag.Reverse().ToArray());
 
         Assert.Multiple(() =>
