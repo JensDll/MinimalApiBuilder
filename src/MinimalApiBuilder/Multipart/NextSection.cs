@@ -35,7 +35,7 @@ public class NextSection
             return new FormMultipartSection(_section, contentDisposition);
         }
 
-        _endpoint.AddValidationError("multipart",
+        _endpoint.AddMultipartError(
             $"The multipart section with the name '{contentDisposition?.Name}' is not form data");
 
         return null;
@@ -67,7 +67,7 @@ public class NextSection
             return section;
         }
 
-        _endpoint.AddValidationError("multipart",
+        _endpoint.AddMultipartError(
             $"The multipart section with the name '{section.Name}' does not match the expected name '{sectionName}'");
 
         return null;
@@ -107,7 +107,7 @@ public class NextSection
             return new FileMultipartSection(_section, contentDisposition);
         }
 
-        _endpoint.AddValidationError("multipart",
+        _endpoint.AddMultipartError(
             $"The multipart section with the name '{contentDisposition?.Name}' is not a file");
 
         return null;
@@ -137,7 +137,7 @@ public class NextSection
             return section;
         }
 
-        _endpoint.AddValidationError("multipart",
+        _endpoint.AddMultipartError(
             $"The multipart section with the name '{section.Name}' does not match the expected name '{sectionName}'");
 
         return null;

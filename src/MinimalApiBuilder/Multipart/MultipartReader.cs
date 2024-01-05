@@ -17,6 +17,19 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     private readonly FormOptions _formOptions;
     private readonly MinimalApiBuilderEndpoint _endpoint;
 
+    private MultipartReader(HttpContext context, MinimalApiBuilderEndpoint endpoint, FormOptions formOptions)
+        : base(context.GetBoundary(endpoint, formOptions), context.Request.Body)
+    {
+        if (!context.IsMultipart())
+        {
+            endpoint.AddMultipartError("Content-Type must be multipart/form-data");
+        }
+
+        _context = context;
+        _formOptions = formOptions;
+        _endpoint = endpoint;
+    }
+
     /// <summary>
     /// Initializes a new instance of <see cref="MultipartReader" />. Multipart request errors are added to the
     /// <see cref="MinimalApiBuilderEndpoint.ValidationErrors" /> without throwing an exception.
@@ -28,19 +41,7 @@ public class MultipartReader : Microsoft.AspNetCore.WebUtilities.MultipartReader
     /// The current <see cref="MinimalApiBuilderEndpoint" /> handling the request.
     /// </param>
     public MultipartReader(HttpContext context, MinimalApiBuilderEndpoint endpoint)
-        : base(context.GetBoundary(endpoint), context.Request.Body)
-    {
-        if (!context.IsMultipart())
-        {
-            endpoint.AddValidationError("multipart", "Content-Type must be multipart/form-data");
-        }
-
-        IOptions<FormOptions> formOptions = context.RequestServices.GetRequiredService<IOptions<FormOptions>>();
-
-        _context = context;
-        _formOptions = formOptions.Value;
-        _endpoint = endpoint;
-    }
+        : this(context, endpoint, context.RequestServices.GetRequiredService<IOptions<FormOptions>>().Value) { }
 
     /// <summary>
     /// Reads the next <see cref="NextSection" /> from the underlying
