@@ -12,7 +12,7 @@ Based on the Vertical Slice Architecture with `Feature` folder.
 There is one class for every API endpoint. A basic example looks like the following:
 
 ```csharp
-using MinimalApiBuilder;
+using MinimalApiBuilder.Generator;
 
 public partial class BasicEndpoint : MinimalApiBuilderEndpoint
 {
@@ -68,7 +68,7 @@ which expects a comma-separated list
 of [`RouteHandlerBuilder`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.builder.routehandlerbuilder):
 
 ```csharp
-using static MinimalApiBuilder.ConfigureEndpoints;
+using static MinimalApiBuilder.Generator.ConfigureEndpoints;
 
 Configure(app.MapGet("/hello/{name}", BasicRequestEndpoint.Handle));
 ```
