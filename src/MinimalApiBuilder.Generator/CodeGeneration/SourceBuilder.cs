@@ -16,7 +16,6 @@ internal abstract class SourceBuilder
     protected SourceBuilder(GeneratorOptions options)
     {
         Options = options;
-        _builder.AppendLine();
     }
 
     protected GeneratorOptions Options { get; set; }
