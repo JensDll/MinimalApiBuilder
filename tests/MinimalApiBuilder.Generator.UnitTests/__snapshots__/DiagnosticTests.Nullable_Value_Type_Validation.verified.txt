@@ -7,8 +7,8 @@
       WarningLevel: 1,
       Location: : (24,37)-(24,38),
       HelpLink: https://github.com/JensDll/MinimalApiBuilder,
-      MessageFormat: The nullable value type '{0}' will not take part in automatic request validation. Consider using a reference type.,
-      Message: The nullable value type 'global::R?' will not take part in automatic request validation. Consider using a reference type.,
+      MessageFormat: The nullable value type '{0}' will not be validated by the generator. Consider using a reference type.,
+      Message: The nullable value type 'global::R?' will not be validated by the generator. Consider using a reference type.,
       Category: Usage
     }
   ]

@@ -10,7 +10,7 @@ internal static class DiagnosticDescriptors
     public static readonly DiagnosticDescriptor NullableValueTypeWillNotBeValidated = new(
         $"{Prefix}001",
         "Nullable value type will not be validated",
-        "The nullable value type '{0}' will not take part in automatic request validation. Consider using a reference type.",
+        "The nullable value type '{0}' will not be validated by the generator. Consider using a reference type.",
         "Usage",
         DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
