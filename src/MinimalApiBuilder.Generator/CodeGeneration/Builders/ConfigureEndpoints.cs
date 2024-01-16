@@ -31,21 +31,32 @@ internal sealed class ConfigureEndpoints : SourceBuilder
             return;
         }
 
-        string builders = string.Join(", ", Enumerable.Range(0, configures[0].Arity)
-            .Select(static i => $"{Fqn.RouteHandlerBuilder} b{i}"));
+        int arity = configures[0].Arity;
+
+        string[] configureArgs = new string[arity];
+        string[] configureNames = new string[arity];
+
+        for (int i = 0; i < arity; i++)
+        {
+            configureArgs[i] = $"{Fqn.RouteHandlerBuilder} b{i}";
+            configureNames[i] = $"b{i}";
+        }
+
+        string args = string.Join(", ", configureArgs);
+        string names = string.Join(", ", configureNames);
 
         if (configures.Length == 1)
         {
-            AddConfigure(configures[0], builders);
+            AddConfigure(configures[0], args);
             return;
         }
 
-        AddConfigureWithLookup(configures, builders);
+        AddConfigureWithLookup(configures, args, names);
     }
 
-    private void AddConfigure(ConfigureToGenerate configure, string builders)
+    private void AddConfigure(ConfigureToGenerate configure, string args)
     {
-        using (OpenBlock(Sources.GeneratedCodeAttribute, $"public static void Configure({builders})"))
+        using (OpenBlock(Sources.GeneratedCodeAttribute, $"public static void Configure({args})"))
         {
             foreach ((int i, string endpoint) in configure.Endpoints)
             {
@@ -55,14 +66,14 @@ internal sealed class ConfigureEndpoints : SourceBuilder
         }
     }
 
-    private void AddConfigureWithLookup(ImmutableArray<ConfigureToGenerate> configures, string builders)
+    private void AddConfigureWithLookup(ImmutableArray<ConfigureToGenerate> configures, string args, string names)
     {
         string map = $"s_map{_mapCount++}";
 
         using (OpenBlockExtra(";", Sources.GeneratedCodeAttribute,
             $"private static readonly {Fqn.Dictionary}<(string, int), {Fqn.Action}<{Fqn.RouteHandlerBuilder}[]>> {map} = new()"))
         {
-            foreach (var configure in configures)
+            foreach (ConfigureToGenerate configure in configures)
             {
                 using (OpenBlockExtra(",",
                     $"[(@\"{configure.FilePath}\", {configure.LineNumber})] = static ({Fqn.RouteHandlerBuilder}[] builders) =>"))
@@ -77,11 +88,10 @@ internal sealed class ConfigureEndpoints : SourceBuilder
         }
 
         using (OpenBlock(Sources.GeneratedCodeAttribute,
-            $"public static void Configure({builders}, [{Fqn.CallerFilePath}] string filePath = \"\", [{Fqn.CallerLineNumber}] int lineNumber = 0)"))
+            $"public static void Configure({args}, [{Fqn.CallerFilePath}] string filePath = \"\", [{Fqn.CallerLineNumber}] int lineNumber = 0)"))
         {
             AppendLine($"var configure = {map}[(filePath, lineNumber)];");
-            string args = string.Join(", ", Enumerable.Range(0, configures[0].Arity).Select(static i => $"b{i}"));
-            AppendLine($"configure(new[] {{ {args} }});");
+            AppendLine($"configure(new[] {{ {names} }});");
         }
     }
 }
