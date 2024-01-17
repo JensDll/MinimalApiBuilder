@@ -33,25 +33,25 @@ internal sealed class ConfigureEndpoints : SourceBuilder
 
         int arity = configures[0].Arity;
 
-        string[] configureArgs = new string[arity];
-        string[] configureNames = new string[arity];
+        string[] args = new string[arity];
+        string[] names = new string[arity];
 
-        for (int i = 0; i < arity; i++)
+        for (int i = 0; i < arity; ++i)
         {
-            configureArgs[i] = $"{Fqn.RouteHandlerBuilder} b{i}";
-            configureNames[i] = $"b{i}";
+            args[i] = $"{Fqn.RouteHandlerBuilder} b{i}";
+            names[i] = $"b{i}";
         }
 
-        string args = string.Join(", ", configureArgs);
-        string names = string.Join(", ", configureNames);
+        string joinedArgs = string.Join(", ", args);
+        string joinedNames = string.Join(", ", names);
 
         if (configures.Length == 1)
         {
-            AddConfigure(configures[0], args);
+            AddConfigure(configures[0], joinedArgs);
             return;
         }
 
-        AddConfigureWithLookup(configures, args, names);
+        AddConfigureWithLookup(configures, joinedArgs, joinedNames);
     }
 
     private void AddConfigure(ConfigureToGenerate configure, string args)
