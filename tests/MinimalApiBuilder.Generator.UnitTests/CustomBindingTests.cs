@@ -4,14 +4,6 @@ namespace MinimalApiBuilder.Generator.UnitTests;
 
 internal sealed class CustomBindingTests : GeneratorUnitTest
 {
-    private static IEnumerable<(string, string)> Validation()
-    {
-        yield return ("Must", "Must");
-        yield return ("MustAsync", "Must");
-        yield return ("Must", "MustAsync");
-        yield return ("MustAsync", "MustAsync");
-    }
-
     [Test]
     public Task BindAsync([Values] bool nullable, [ValueSource(nameof(Validation))] (string, string) validation)
     {
@@ -201,6 +193,14 @@ internal sealed class CustomBindingTests : GeneratorUnitTest
             """;
 
         return VerifyGeneratorAsync(source);
+    }
+
+    private static IEnumerable<(string, string)> Validation()
+    {
+        yield return ("Must", "Must");
+        yield return ("MustAsync", "Must");
+        yield return ("Must", "MustAsync");
+        yield return ("MustAsync", "MustAsync");
     }
 
     private static string GetNullableMark(bool nullable) => nullable ? "?" : "";
