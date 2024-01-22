@@ -135,9 +135,13 @@ public class CompressedStaticFileMiddleware : IMiddleware
                 responseHeaders.Headers.ContentEncoding = contentCoding;
                 context.Response.ContentType = contentType;
 
+                // https://www.rfc-editor.org/rfc/rfc9110.html#section-13.1.5-6
+                // A server MUST ignore an If-Range header field received in a request that does not contain a Range header field.
                 if (RangeHelper.HasRangeHeaderField(context) &&
                     PreconditionHelper.EvaluateIfRange(requestHeaders, etag, lastModified) == (true, false))
                 {
+                    // https://www.rfc-editor.org/rfc/rfc9110.html#section-13.2.2-3.5.1
+                    // Respond with the entire representation when the If-Range precondition is false.
                     _logger.IfRangePreconditionFailed(subPath);
                     return SendFileAsync(responseContext, fileInfo, next, subPath);
                 }

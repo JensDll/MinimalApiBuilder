@@ -31,16 +31,14 @@ internal static class AcceptEncodingHelper
 
         for (int i = 0; i < acceptEncoding.Count; ++i)
         {
-            StringWithQualityHeaderValue value = acceptEncoding[i];
-
-            if (!options.ContentCodingOrder.TryGetValue(value.Value, out int order))
+            if (!options.ContentCodingOrder.TryGetValue(acceptEncoding[i].Value, out int order))
             {
                 continue;
             }
 
             visited[order] = true;
 
-            double quality = value.Quality.GetValueOrDefault(1);
+            double quality = acceptEncoding[i].Quality.GetValueOrDefault(1);
 
             if (quality < double.Epsilon)
             {
@@ -119,9 +117,7 @@ internal static class AcceptEncodingHelper
 
         for (int i = 0; i < acceptEncoding.Count; ++i)
         {
-            StringWithQualityHeaderValue value = acceptEncoding[i];
-
-            if (!options.ContentCodingOrder.TryGetValue(value.Value, out int order))
+            if (!options.ContentCodingOrder.TryGetValue(acceptEncoding[i].Value, out int order))
             {
                 continue;
             }
@@ -131,7 +127,7 @@ internal static class AcceptEncodingHelper
                 continue;
             }
 
-            double quality = value.Quality.GetValueOrDefault(1);
+            double quality = acceptEncoding[i].Quality.GetValueOrDefault(1);
 
             if (quality < double.Epsilon)
             {
