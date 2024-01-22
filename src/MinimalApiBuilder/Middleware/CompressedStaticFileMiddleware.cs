@@ -1,6 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using System.Runtime.Intrinsics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Headers;
@@ -110,7 +108,7 @@ public class CompressedStaticFileMiddleware : IMiddleware
         }
 
         CompressedStaticFileResponseContext responseContext = new(context, filename, contentCoding);
-        (EntityTagHeaderValue etag, DateTimeOffset lastModified) = GetEtagAndLastModified(fileInfo);
+        (EntityTagHeaderValue etag, DateTimeOffset lastModified) = EtagHelper.GetEtagAndLastModified(fileInfo);
 
         if (isHead)
         {
@@ -254,88 +252,6 @@ public class CompressedStaticFileMiddleware : IMiddleware
     private static bool HasEndpointDelegate(HttpContext context)
     {
         return context.GetEndpoint()?.RequestDelegate is not null;
-    }
-
-    private static (EntityTagHeaderValue, DateTimeOffset) GetEtagAndLastModified(IFileInfo fileInfo)
-    {
-        DateTimeOffset last = fileInfo.LastModified;
-        // Truncate to second precision
-        DateTimeOffset lastModified = new DateTimeOffset(last.Year, last.Month, last.Day,
-            last.Hour, last.Minute, last.Second, last.Offset).ToUniversalTime();
-
-        string etagValue = string.Create(18, lastModified.ToFileTime() ^ fileInfo.Length, static (span, hash) =>
-        {
-            if (Vector256.IsHardwareAccelerated)
-            {
-                Vector256<short> values = Vector256.Create(
-                    (short)(hash & 15),
-                    (short)((hash >> 4) & 15),
-                    (short)((hash >> 8) & 15),
-                    (short)((hash >> 12) & 15),
-                    (short)((hash >> 16) & 15),
-                    (short)((hash >> 20) & 15),
-                    (short)((hash >> 24) & 15),
-                    (short)((hash >> 28) & 15),
-                    (short)((hash >> 32) & 15),
-                    (short)((hash >> 36) & 15),
-                    (short)((hash >> 40) & 15),
-                    (short)((hash >> 44) & 15),
-                    (short)((hash >> 48) & 15),
-                    (short)((hash >> 52) & 15),
-                    (short)((hash >> 56) & 15),
-                    (short)((hash >> 60) & 15));
-
-                Vector256<short> condition = Vector256.LessThan(values, Vector256.Create<short>(10));
-                Vector256<short> blend = Vector256.ConditionalSelect(condition,
-                    Vector256.Create<short>(48), // 0-9 when less than 10
-                    Vector256.Create<short>(87)); // a-f else
-                Vector256<short> result = Vector256.Add(values, blend);
-
-                span[0] = '"';
-                result.StoreUnsafe(ref Unsafe.As<char, short>(ref span[1]));
-                span[17] = '"';
-            }
-            else
-            {
-                byte a = (byte)(hash & 15);
-                byte b = (byte)((hash >> 4) & 15);
-                byte c = (byte)((hash >> 8) & 15);
-                byte d = (byte)((hash >> 12) & 15);
-                byte e = (byte)((hash >> 16) & 15);
-                byte f = (byte)((hash >> 20) & 15);
-                byte g = (byte)((hash >> 24) & 15);
-                byte h = (byte)((hash >> 28) & 15);
-                byte i = (byte)((hash >> 32) & 15);
-                byte j = (byte)((hash >> 36) & 15);
-                byte k = (byte)((hash >> 40) & 15);
-                byte l = (byte)((hash >> 44) & 15);
-                byte m = (byte)((hash >> 48) & 15);
-                byte n = (byte)((hash >> 52) & 15);
-                byte o = (byte)((hash >> 56) & 15);
-                byte p = (byte)((hash >> 60) & 15);
-
-                span[0] = '"';
-                span[1] = (char)(a + (a < 10 ? 48 : 87));
-                span[2] = (char)(b + (b < 10 ? 48 : 87));
-                span[3] = (char)(c + (c < 10 ? 48 : 87));
-                span[4] = (char)(d + (d < 10 ? 48 : 87));
-                span[5] = (char)(e + (e < 10 ? 48 : 87));
-                span[6] = (char)(f + (f < 10 ? 48 : 87));
-                span[7] = (char)(g + (g < 10 ? 48 : 87));
-                span[8] = (char)(h + (h < 10 ? 48 : 87));
-                span[9] = (char)(i + (i < 10 ? 48 : 87));
-                span[10] = (char)(j + (j < 10 ? 48 : 87));
-                span[11] = (char)(k + (k < 10 ? 48 : 87));
-                span[12] = (char)(l + (l < 10 ? 48 : 87));
-                span[13] = (char)(m + (m < 10 ? 48 : 87));
-                span[14] = (char)(n + (n < 10 ? 48 : 87));
-                span[15] = (char)(o + (o < 10 ? 48 : 87));
-                span[16] = (char)(p + (p < 10 ? 48 : 87));
-                span[17] = '"';
-            }
-        });
-
-        return (new EntityTagHeaderValue(etagValue), lastModified);
     }
 
     private void SetCompressionMode(HttpContext context)

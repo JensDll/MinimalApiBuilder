@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.TestHost;
@@ -137,6 +136,15 @@ internal sealed class CompressedStaticFileMiddlewareTests
         });
     }
 
+    private static readonly char[] s_etagChars =
+    {
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+        'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
+        'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '=', '-'
+    };
+
     [Test]
     public async Task Etag_Is_Combination_Of_LastModified_And_ContentLength()
     {
@@ -161,8 +169,23 @@ internal sealed class CompressedStaticFileMiddlewareTests
 
         long etagHash = response.Content.Headers.LastModified!.Value.ToFileTime() ^
                         response.Content.Headers.ContentLength!.Value;
-        string etag = $"\"{etagHash.ToString("x16", CultureInfo.InvariantCulture)}\"";
-        etag = new string(etag.Reverse().ToArray());
+
+        string etag = string.Create(13, etagHash, static (span, hash) =>
+        {
+            span[0] = '"';
+            span[1] = s_etagChars[hash & 63];
+            span[2] = s_etagChars[(hash >> 6) & 63];
+            span[3] = s_etagChars[(hash >> 12) & 63];
+            span[4] = s_etagChars[(hash >> 18) & 63];
+            span[5] = s_etagChars[(hash >> 24) & 63];
+            span[6] = s_etagChars[(hash >> 30) & 63];
+            span[7] = s_etagChars[(hash >> 36) & 63];
+            span[8] = s_etagChars[(hash >> 42) & 63];
+            span[9] = s_etagChars[(hash >> 48) & 63];
+            span[10] = s_etagChars[(hash >> 54) & 63];
+            span[11] = s_etagChars[(hash >> 60) & 63];
+            span[12] = '"';
+        });
 
         Assert.Multiple(() =>
         {
