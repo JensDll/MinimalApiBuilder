@@ -16,10 +16,7 @@ internal static class EtagHelper
 
     internal static (EntityTagHeaderValue, DateTimeOffset) GetEtagAndLastModified(IFileInfo fileInfo)
     {
-        DateTimeOffset last = fileInfo.LastModified;
-        // Truncate to second precision
-        DateTimeOffset lastModified = new DateTimeOffset(last.Year, last.Month, last.Day,
-            last.Hour, last.Minute, last.Second, last.Offset).ToUniversalTime();
+        DateTimeOffset lastModified = fileInfo.LastModified.ToSecondPrecision().ToUniversalTime();
 
         string etagValue = string.Create(13, lastModified.ToFileTime() ^ fileInfo.Length, static (span, hash) =>
         {
@@ -39,5 +36,11 @@ internal static class EtagHelper
         });
 
         return (new EntityTagHeaderValue(etagValue), lastModified);
+    }
+
+    private static DateTimeOffset ToSecondPrecision(this DateTimeOffset date)
+    {
+        return new DateTimeOffset(date.Year, date.Month, date.Day,
+            date.Hour, date.Minute, date.Second, date.Offset);
     }
 }
