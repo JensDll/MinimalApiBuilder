@@ -58,8 +58,7 @@ internal abstract class GeneratorUnitTest
 
     private static readonly Dictionary<string, ReportDiagnostic> s_diagnosticsOptions =
         s_analyzers
-            .SelectMany(static analyzer => analyzer.SupportedDiagnostics)
-            .Select(descriptor => descriptor.Id)
+            .SelectMany(static analyzer => analyzer.SupportedDiagnostics, static (_, descriptor) => descriptor.Id)
             .Distinct()
             .Where(static id => id.StartsWith("CA", StringComparison.Ordinal))
             .ToDictionary(static id => id, _ => ReportDiagnostic.Warn)
