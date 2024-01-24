@@ -88,7 +88,7 @@ internal abstract class GeneratorUnitTest
         EndpointProvider.TrackingName,
         GeneratorOptionsProvider.TrackingName,
         ValidatorProvider.TrackingName,
-        MinimalApiBuilderGenerator.TrackingNames.EndpointsAndValidatorAndOptions
+        MinimalApiBuilderGenerator.TrackingNames.EndpointsAndValidatorsAndOptions
     ];
 
     protected static Task VerifyGenerator(string source)
@@ -135,21 +135,19 @@ internal abstract class GeneratorUnitTest
             AssertCompilation(newCompilation),
             AssertCompilationWithAnalyzers(newCompilation),
             Verify(driver).DisableDiff(),
-            VerifyCaching(driver, compilation.Clone()));
+            VerifyCaching(driver.RunGenerators(compilation.Clone())));
     }
 
-    private static Task VerifyCaching(GeneratorDriver driver, Compilation compilation)
+    private static Task VerifyCaching(GeneratorDriver driver)
     {
-        GeneratorDriverRunResult runResult = driver.RunGenerators(compilation).GetRunResult();
+        GeneratorDriverRunResult runResult = driver.GetRunResult();
 
         Assert.That(runResult.Results, Has.Length.EqualTo(1));
 
-        IncrementalGeneratorRunStep[] trackedSteps = runResult.Results[0].TrackedSteps
+        var notCached = runResult.Results[0].TrackedSteps
             .Where(static steps => s_trackingNames.Contains(steps.Key))
             .SelectMany(static steps => steps.Value)
-            .ToArray();
-
-        var notCached = trackedSteps.SelectMany(static step => step.Outputs)
+            .SelectMany(static step => step.Outputs)
             .Where(static tuple => tuple.Reason is not IncrementalStepRunReason.Cached
                 and not IncrementalStepRunReason.Unchanged);
 

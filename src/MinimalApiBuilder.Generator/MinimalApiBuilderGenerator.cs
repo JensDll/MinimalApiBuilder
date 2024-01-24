@@ -18,7 +18,7 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
         var configures = context.ForConfigure().Collect();
 
         var endpointsAndValidatorsAndOptions = endpoints.Combine(validators).Combine(options)
-            .WithTrackingName(TrackingNames.EndpointsAndValidatorAndOptions);
+            .WithTrackingName(TrackingNames.EndpointsAndValidatorsAndOptions);
 
         context.RegisterSourceOutput(endpointsAndValidatorsAndOptions, static (sourceProductionContext, source) =>
             Execute(source.Left.Left, source.Left.Right, source.Right, sourceProductionContext));
@@ -93,6 +93,6 @@ internal sealed class MinimalApiBuilderGenerator : IIncrementalGenerator
 
     internal static class TrackingNames
     {
-        public const string EndpointsAndValidatorAndOptions = nameof(EndpointsAndValidatorAndOptions);
+        public const string EndpointsAndValidatorsAndOptions = nameof(EndpointsAndValidatorsAndOptions);
     }
 }
