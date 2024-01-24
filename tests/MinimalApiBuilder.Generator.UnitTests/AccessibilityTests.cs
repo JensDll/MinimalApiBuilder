@@ -17,6 +17,6 @@ internal sealed class AccessibilityTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 }

@@ -18,7 +18,7 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source, provider);
+        return VerifyGenerator(source, provider);
     }
 
     [Test]
@@ -50,7 +50,7 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source, provider);
+        return VerifyGenerator(source, provider);
     }
 
     [Test]
@@ -80,7 +80,7 @@ internal sealed class ConfigurationTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source, s_emptyProvider);
+        return VerifyGenerator(source, s_emptyProvider);
     }
 
     private static readonly TestAnalyzerConfigOptionsProvider s_emptyProvider = new(

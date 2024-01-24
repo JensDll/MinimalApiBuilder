@@ -14,6 +14,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.Extensions.DependencyInjection;
+using MinimalApiBuilder.Generator.Providers;
 
 namespace MinimalApiBuilder.Generator.UnitTests.Infrastructure;
 
@@ -57,8 +58,7 @@ internal abstract class GeneratorUnitTest
 
     private static readonly Dictionary<string, ReportDiagnostic> s_diagnosticsOptions =
         s_analyzers
-            .SelectMany(static analyzer => analyzer.SupportedDiagnostics)
-            .Select(descriptor => descriptor.Id)
+            .SelectMany(static analyzer => analyzer.SupportedDiagnostics, static (_, descriptor) => descriptor.Id)
             .Distinct()
             .Where(static id => id.StartsWith("CA", StringComparison.Ordinal))
             .ToDictionary(static id => id, _ => ReportDiagnostic.Warn)
@@ -78,71 +78,98 @@ internal abstract class GeneratorUnitTest
 
     private static readonly CSharpParseOptions s_parseOptions = new(LanguageVersion.CSharp11);
 
-    protected static Task VerifyGeneratorAsync(string source)
+    private static readonly GeneratorDriverOptions s_driverOptions =
+        new(disabledOutputs: IncrementalGeneratorOutputKind.None, trackIncrementalGeneratorSteps: true);
+
+    private static readonly string[] s_trackingNames =
+    [
+        ConfigureProvider.TrackingName,
+        EndpointProvider.TrackingName,
+        GeneratorOptionsProvider.TrackingName,
+        ValidatorProvider.TrackingName,
+        MinimalApiBuilderGenerator.TrackingNames.EndpointsAndValidatorsAndOptions
+    ];
+
+    protected static Task VerifyGenerator(string source)
     {
-        return VerifyGeneratorAsync(source, TestAnalyzerConfigOptionsProvider.Default);
+        return VerifyGenerator(source, TestAnalyzerConfigOptionsProvider.Default);
     }
 
-    protected static Task VerifyGeneratorAsync(string source, string mapActions)
+    protected static Task VerifyGenerator(string source, string mapActions)
     {
-        return VerifyGeneratorAsync(source, mapActions, TestAnalyzerConfigOptionsProvider.Default);
+        return VerifyGenerator(source, mapActions, TestAnalyzerConfigOptionsProvider.Default);
     }
 
-    protected static Task VerifyGeneratorAsync(
-        string source,
+    protected static Task VerifyGenerator(string source, AnalyzerConfigOptionsProvider optionsProvider)
+    {
+        return RunAndVerify(GetSource(source), optionsProvider);
+    }
+
+    private static Task VerifyGenerator(string source, string mapActions,
         AnalyzerConfigOptionsProvider optionsProvider)
     {
-        return VerifyGeneratorAsyncImpl(GetSource(source), optionsProvider);
+        return RunAndVerify(GetSource(source, mapActions), optionsProvider);
     }
 
-    private static Task VerifyGeneratorAsync(
-        string source,
-        string mapActions,
-        AnalyzerConfigOptionsProvider optionsProvider)
-    {
-        return VerifyGeneratorAsyncImpl(GetSource(source, mapActions), optionsProvider);
-    }
-
-    private static Task VerifyGeneratorAsyncImpl(string source, AnalyzerConfigOptionsProvider optionsProvider)
+    private static Task RunAndVerify(string source, AnalyzerConfigOptionsProvider optionsProvider)
     {
         SyntaxTree syntaxTree = CSharpSyntaxTree.ParseText(source, options: s_parseOptions);
 
-        var compilation = CSharpCompilation.Create(
+        CSharpCompilation compilation = CSharpCompilation.Create(
             assemblyName: nameof(GeneratorUnitTest) + "Assembly",
             syntaxTrees: new[] { syntaxTree },
             references: s_metadataReferences,
             options: s_compilationOptions);
 
-        IIncrementalGenerator generator = new MinimalApiBuilderGenerator();
-        IEnumerable<ISourceGenerator> generators = GetSourceGenerators(generator);
+        ISourceGenerator[] generators = [new MinimalApiBuilderGenerator().AsSourceGenerator()];
 
-        GeneratorDriver driver = CSharpGeneratorDriver
-            .Create(generators, optionsProvider: optionsProvider, parseOptions: s_parseOptions)
-            .RunGeneratorsAndUpdateCompilation(compilation, out var newCompilation, out _);
+        GeneratorDriver driver = CSharpGeneratorDriver.Create(
+                generators: generators,
+                optionsProvider: optionsProvider,
+                parseOptions: s_parseOptions,
+                driverOptions: s_driverOptions)
+            .RunGeneratorsAndUpdateCompilation(compilation, out Compilation newCompilation, out _);
 
         return Task.WhenAll(
-            Task.Run(() => AssertCompilation(newCompilation)),
-            AssertCompilationWithAnalyzersAsync(newCompilation),
-            Verify(driver).DisableDiff());
+            AssertCompilation(newCompilation),
+            AssertCompilationWithAnalyzers(newCompilation),
+            Verify(driver).DisableDiff(),
+            VerifyCaching(driver.RunGenerators(compilation.Clone())));
     }
 
-    private static IEnumerable<ISourceGenerator> GetSourceGenerators(params IIncrementalGenerator[] generators)
+    private static Task VerifyCaching(GeneratorDriver driver)
     {
-        return generators.Select(GeneratorExtensions.AsSourceGenerator);
+        GeneratorDriverRunResult runResult = driver.GetRunResult();
+
+        Assert.That(runResult.Results, Has.Length.EqualTo(1));
+
+        var notCached = runResult.Results[0].TrackedSteps
+            .Where(static steps => s_trackingNames.Contains(steps.Key))
+            .SelectMany(static steps => steps.Value)
+            .SelectMany(static step => step.Outputs)
+            .Where(static tuple => tuple.Reason is not IncrementalStepRunReason.Cached
+                and not IncrementalStepRunReason.Unchanged);
+
+        Assert.That(notCached, Is.Empty);
+
+        return Task.CompletedTask;
     }
 
-    private static void AssertCompilation(Compilation compilation)
+    private static Task AssertCompilation(Compilation compilation)
     {
         using MemoryStream output = new();
         EmitResult result = compilation.Emit(output);
+
         Assert.Multiple(() =>
         {
             Assert.That(result.Success, Is.True);
             Assert.That(result.Diagnostics.WarningsOrWorse(), Is.Empty);
         });
+
+        return Task.CompletedTask;
     }
 
-    private static async Task AssertCompilationWithAnalyzersAsync(Compilation compilation)
+    private static async Task AssertCompilationWithAnalyzers(Compilation compilation)
     {
         compilation = RemoveAnnotationsPreventingCodeAnalysis(compilation);
         CompilationWithAnalyzers withAnalyzers = compilation.WithAnalyzers(s_analyzers);

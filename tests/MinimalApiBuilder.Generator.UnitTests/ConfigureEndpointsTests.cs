@@ -20,7 +20,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             Configure(app.MapGet("/test", E.Handle));
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 
     [Test]
@@ -39,7 +39,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
             ConfigureEndpoints.Configure(app.MapGet("/test", E.Handle));
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 
     [Test]
@@ -65,7 +65,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
                 app.MapGet("/test2", E2.Handle));
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 
     [Test]
@@ -93,7 +93,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
                 app.MapGet("/bar", static () => 0));
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 
     [Test]
@@ -125,7 +125,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
                 app.MapGet("/test4", E2.Handle));
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 
     [Test]
@@ -157,7 +157,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
                 app.MapGet("/test4", E2.Handle));
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 
     [Test]
@@ -203,7 +203,7 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
                 app.MapGet("/test6", E4.Handle));
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 
     [Test]
@@ -230,6 +230,6 @@ internal sealed class ConfigureEndpointsTests : GeneratorUnitTest
                 app.MapGet("/test4", E.Handle));
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 }

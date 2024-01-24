@@ -24,6 +24,6 @@ internal sealed class DiagnosticTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 }

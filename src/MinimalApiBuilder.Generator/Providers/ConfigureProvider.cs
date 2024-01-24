@@ -8,13 +8,16 @@ namespace MinimalApiBuilder.Generator.Providers;
 
 internal static class ConfigureProvider
 {
+    public const string TrackingName = nameof(ConfigureProvider);
+
     public static IncrementalValuesProvider<ConfigureToGenerate> ForConfigure(
         this IncrementalGeneratorInitializationContext context)
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsConfigure, Transform)
             .WhereNotNull()
-            .WithComparer(ConfigureToGenerateEqualityComparer.Instance);
+            .WithComparer(ConfigureToGenerateEqualityComparer.Instance)
+            .WithTrackingName(TrackingName);
     }
 
     private static bool IsConfigure(SyntaxNode node, CancellationToken cancellationToken)

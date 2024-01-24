@@ -8,13 +8,16 @@ namespace MinimalApiBuilder.Generator.Providers;
 
 internal static class EndpointProvider
 {
+    public const string TrackingName = nameof(EndpointProvider);
+
     public static IncrementalValuesProvider<EndpointToGenerate> ForEndpoints(
         this IncrementalGeneratorInitializationContext context)
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsEndpointDeclaration, Transform)
             .WhereNotNull()
-            .WithComparer(EndpointToGenerateEqualityComparer.Instance);
+            .WithComparer(EndpointToGenerateEqualityComparer.Instance)
+            .WithTrackingName(TrackingName);
     }
 
     private static bool IsEndpointDeclaration(SyntaxNode node, CancellationToken cancellationToken)

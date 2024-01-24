@@ -71,7 +71,7 @@ internal sealed class CustomBindingTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     [Test]
@@ -143,7 +143,7 @@ internal sealed class CustomBindingTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     [Test]
@@ -167,7 +167,7 @@ internal sealed class CustomBindingTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     [Test]
@@ -192,7 +192,7 @@ internal sealed class CustomBindingTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     private static IEnumerable<(string, string)> Validation()
