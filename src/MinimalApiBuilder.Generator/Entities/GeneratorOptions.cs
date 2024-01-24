@@ -4,7 +4,7 @@ using MinimalApiBuilder.Generator.Common;
 
 namespace MinimalApiBuilder.Generator.Entities;
 
-internal readonly struct GeneratorOptions
+internal readonly record struct GeneratorOptions
 {
     private const string DefaultProblemType = "https://tools.ietf.org/html/rfc9110#section-15.5.1";
 

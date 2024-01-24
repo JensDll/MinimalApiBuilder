@@ -5,27 +5,28 @@ internal sealed class EndpointToGenerateHandlerParameterEqualityComparer :
 {
     public static readonly EndpointToGenerateHandlerParameterEqualityComparer Instance = new();
 
-    public bool Equals(EndpointToGenerateHandlerParameter? x, EndpointToGenerateHandlerParameter? y)
+    public bool Equals(EndpointToGenerateHandlerParameter? left, EndpointToGenerateHandlerParameter? right)
     {
-        if (ReferenceEquals(x, y))
+        if (ReferenceEquals(left, right))
         {
             return true;
         }
 
-        if (x is null)
+        if (left is null)
         {
             return false;
         }
 
-        if (y is null)
+        if (right is null)
         {
             return false;
         }
 
-        return x.Position == y.Position &&
-               x.IsNullable == y.IsNullable &&
-               x.IsValueType == y.IsValueType &&
-               x.HasCustomBinding == y.HasCustomBinding;
+        return left.Position == right.Position &&
+               left.IsNullable == right.IsNullable &&
+               left.IsValueType == right.IsValueType &&
+               left.HasCustomBinding == right.HasCustomBinding &&
+               left.NeedsCustomBindingNullCheck == right.NeedsCustomBindingNullCheck;
     }
 
     public int GetHashCode(EndpointToGenerateHandlerParameter obj)

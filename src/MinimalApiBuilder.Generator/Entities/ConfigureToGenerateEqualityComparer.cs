@@ -4,27 +4,27 @@ internal sealed class ConfigureToGenerateEqualityComparer : IEqualityComparer<Co
 {
     public static readonly ConfigureToGenerateEqualityComparer Instance = new();
 
-    public bool Equals(ConfigureToGenerate? x, ConfigureToGenerate? y)
+    public bool Equals(ConfigureToGenerate? left, ConfigureToGenerate? right)
     {
-        if (ReferenceEquals(x, y))
+        if (ReferenceEquals(left, right))
         {
             return true;
         }
 
-        if (x is null)
+        if (left is null)
         {
             return false;
         }
 
-        if (y is null)
+        if (right is null)
         {
             return false;
         }
 
-        return x.Arity == y.Arity &&
-               x.FilePath == y.FilePath &&
-               x.LineNumber == y.LineNumber &&
-               EndpointsEquals(x, y);
+        return left.Arity == right.Arity &&
+               left.FilePath == right.FilePath &&
+               left.LineNumber == right.LineNumber &&
+               EndpointsEquals(left, right);
     }
 
     public int GetHashCode(ConfigureToGenerate obj)
@@ -32,16 +32,16 @@ internal sealed class ConfigureToGenerateEqualityComparer : IEqualityComparer<Co
         throw new NotImplementedException();
     }
 
-    private static bool EndpointsEquals(ConfigureToGenerate x, ConfigureToGenerate y)
+    private static bool EndpointsEquals(ConfigureToGenerate left, ConfigureToGenerate right)
     {
-        if (x.Endpoints.Count != y.Endpoints.Count)
+        if (left.Endpoints.Count != right.Endpoints.Count)
         {
             return false;
         }
 
-        for (int i = 0; i < x.Endpoints.Count; ++i)
+        for (int i = 0; i < left.Endpoints.Count; ++i)
         {
-            if (x.Endpoints[i] != y.Endpoints[i])
+            if (left.Endpoints[i] != right.Endpoints[i])
             {
                 return false;
             }

@@ -4,28 +4,28 @@ internal sealed class EndpointToGenerateEqualityComparer : IEqualityComparer<End
 {
     public static readonly EndpointToGenerateEqualityComparer Instance = new();
 
-    public bool Equals(EndpointToGenerate? x, EndpointToGenerate? y)
+    public bool Equals(EndpointToGenerate? left, EndpointToGenerate? right)
     {
-        if (ReferenceEquals(x, y))
+        if (ReferenceEquals(left, right))
         {
             return true;
         }
 
-        if (x is null)
+        if (left is null)
         {
             return false;
         }
 
-        if (y is null)
+        if (right is null)
         {
             return false;
         }
 
-        return x.ClassName == y.ClassName &&
-               x.NamespaceName == y.NamespaceName &&
-               x.NeedsConfigure == y.NeedsConfigure &&
-               x.Accessibility == y.Accessibility &&
-               EndpointToGenerateHandlerEqualityComparer.Instance.Equals(x.Handler, y.Handler);
+        return left.ClassName == right.ClassName &&
+               left.NamespaceName == right.NamespaceName &&
+               left.NeedsConfigure == right.NeedsConfigure &&
+               left.Accessibility == right.Accessibility &&
+               EndpointToGenerateHandlerEqualityComparer.Instance.Equals(left.Handler, right.Handler);
     }
 
     public int GetHashCode(EndpointToGenerate obj)

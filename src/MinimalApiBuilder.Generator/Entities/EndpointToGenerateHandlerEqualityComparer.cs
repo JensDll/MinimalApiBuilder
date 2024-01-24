@@ -4,43 +4,43 @@ internal sealed class EndpointToGenerateHandlerEqualityComparer : IEqualityCompa
 {
     public static readonly EndpointToGenerateHandlerEqualityComparer Instance = new();
 
-    public bool Equals(EndpointToGenerateHandler? x, EndpointToGenerateHandler? y)
+    public bool Equals(EndpointToGenerateHandler? left, EndpointToGenerateHandler? right)
     {
-        if (ReferenceEquals(x, y))
+        if (ReferenceEquals(left, right))
         {
             return true;
         }
 
-        if (x is null)
+        if (left is null)
         {
             return false;
         }
 
-        if (y is null)
+        if (right is null)
         {
             return false;
         }
 
-        if (x.Name != y.Name)
+        if (left.Name != right.Name)
         {
             return false;
         }
 
-        var parameterComparer = EndpointToGenerateHandlerParameterEqualityComparer.Instance;
-
-        if (!parameterComparer.Equals(x.EndpointParameter, y.EndpointParameter))
+        if (!EndpointToGenerateHandlerParameterEqualityComparer.Instance.Equals(
+            left.EndpointParameter, right.EndpointParameter))
         {
             return false;
         }
 
-        if (x.Parameters.Length != y.Parameters.Length)
+        if (left.Parameters.Length != right.Parameters.Length)
         {
             return false;
         }
 
-        for (int i = 0; i < x.Parameters.Length; ++i)
+        for (int i = 0; i < left.Parameters.Length; ++i)
         {
-            if (!parameterComparer.Equals(x.Parameters[i], y.Parameters[i]))
+            if (!EndpointToGenerateHandlerParameterEqualityComparer.Instance.Equals(
+                left.Parameters[i], right.Parameters[i]))
             {
                 return false;
             }
