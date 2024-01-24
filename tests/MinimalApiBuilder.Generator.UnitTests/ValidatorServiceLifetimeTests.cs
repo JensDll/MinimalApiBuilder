@@ -31,7 +31,7 @@ internal sealed class ValidatorServiceLifetimeTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     [Test]
@@ -61,6 +61,6 @@ internal sealed class ValidatorServiceLifetimeTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 }

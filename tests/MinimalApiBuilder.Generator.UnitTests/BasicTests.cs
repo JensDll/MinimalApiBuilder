@@ -18,7 +18,7 @@ internal sealed class BasicTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     [Test]
@@ -32,7 +32,7 @@ internal sealed class BasicTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     [Test]
@@ -48,7 +48,7 @@ internal sealed class BasicTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     [Test]
@@ -82,7 +82,7 @@ internal sealed class BasicTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 
     [Test]
@@ -113,7 +113,7 @@ internal sealed class BasicTests : GeneratorUnitTest
             app.MapDelete("/test/{a:int}/{b:int}", E.Handle);
             """;
 
-        return VerifyGeneratorAsync(source, mapActions);
+        return VerifyGenerator(source, mapActions);
     }
 
     [Test]
@@ -143,6 +143,6 @@ internal sealed class BasicTests : GeneratorUnitTest
             }
             """;
 
-        return VerifyGeneratorAsync(source);
+        return VerifyGenerator(source);
     }
 }

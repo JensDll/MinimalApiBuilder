@@ -8,13 +8,16 @@ namespace MinimalApiBuilder.Generator.Providers;
 
 internal static class ValidatorProvider
 {
+    public const string TrackingName = nameof(ValidatorProvider);
+
     public static IncrementalValuesProvider<ValidatorToGenerate> ForValidators(
         this IncrementalGeneratorInitializationContext context)
     {
         return context.SyntaxProvider
             .CreateSyntaxProvider(IsValidator, Transform)
             .WhereNotNull()
-            .WithComparer(ValidatorToGenerateEqualityComparer.Instance);
+            .WithComparer(ValidatorToGenerateEqualityComparer.Instance)
+            .WithTrackingName(TrackingName);
     }
 
     private static bool IsValidator(SyntaxNode node, CancellationToken cancellationToken)
