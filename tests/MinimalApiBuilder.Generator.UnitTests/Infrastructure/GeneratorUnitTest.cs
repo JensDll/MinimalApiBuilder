@@ -131,13 +131,13 @@ internal abstract class GeneratorUnitTest
             .RunGeneratorsAndUpdateCompilation(compilation, out Compilation newCompilation, out _);
 
         return Task.WhenAll(
-            AssertCompilation(newCompilation),
+            Task.Run(() => AssertCompilation(newCompilation)),
             AssertCompilationWithAnalyzers(newCompilation),
             Verify(driver).DisableDiff(),
-            VerifyCaching(driver.RunGenerators(compilation.Clone())));
+            Task.Run(() => VerifyCaching(driver.RunGenerators(compilation.Clone()))));
     }
 
-    private static Task VerifyCaching(GeneratorDriver driver)
+    private static void VerifyCaching(GeneratorDriver driver)
     {
         GeneratorDriverRunResult runResult = driver.GetRunResult();
 
@@ -151,11 +151,9 @@ internal abstract class GeneratorUnitTest
                 and not IncrementalStepRunReason.Unchanged);
 
         Assert.That(notCached, Is.Empty);
-
-        return Task.CompletedTask;
     }
 
-    private static Task AssertCompilation(Compilation compilation)
+    private static void AssertCompilation(Compilation compilation)
     {
         using MemoryStream output = new();
         EmitResult result = compilation.Emit(output);
@@ -165,8 +163,6 @@ internal abstract class GeneratorUnitTest
             Assert.That(result.Success, Is.True);
             Assert.That(result.Diagnostics.WarningsOrWorse(), Is.Empty);
         });
-
-        return Task.CompletedTask;
     }
 
     private static async Task AssertCompilationWithAnalyzers(Compilation compilation)
