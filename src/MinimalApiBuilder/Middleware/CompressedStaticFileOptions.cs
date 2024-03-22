@@ -45,14 +45,14 @@ public class CompressedStaticFileOptions : StaticFileOptions
 #endif
 
 #if NET8_0_OR_GREATER
-    internal FrozenDictionary<StringSegment, int> ContentCodingOrder { get; private set; } = null!;
+    internal FrozenDictionary<StringSegment, int> ContentCodingOrder = null!;
 #else
-    internal Dictionary<StringSegment, int> ContentCodingOrder { get; private set; } = null!;
+    internal Dictionary<StringSegment, int> ContentCodingOrder = null!;
 #endif
 
-    internal (string? ContentCoding, string? Extension)[] OrderLookup { get; private set; } = null!;
+    internal (string? ContentCoding, string? Extension)[] OrderLookup = null!;
 
-    internal StringValues AcceptEncoding { get; private set; }
+    internal StringValues AcceptEncoding;
 
     internal void Initialize()
     {

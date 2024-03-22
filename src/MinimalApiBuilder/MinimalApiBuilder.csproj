@@ -28,7 +28,9 @@
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="[11,)"/>
     <FrameworkReference Include="Microsoft.AspNetCore.App"/>
-    <ProjectReference Include="..\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj" PrivateAssets="All"/>
+    <ProjectReference Include="..\MinimalApiBuilder.Generator\MinimalApiBuilder.Generator.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
   </ItemGroup>
 
   <Target Name="IncludeGenerator" AfterTargets="Build">

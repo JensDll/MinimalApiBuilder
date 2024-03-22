@@ -356,6 +356,7 @@ csharp_blank_lines_around_field = 0
 resharper_inconsistent_naming_highlighting = suggestion
 resharper_convert_to_primary_constructor_highlighting = none
 resharper_for_can_be_converted_to_foreach_highlighting = none
+resharper_use_collection_expression_highlighting = none
 resharper_null_coalescing_condition_is_always_not_null_according_to_api_contract_highlighting = suggestion
 
 # XMLDOC Formatting Style
