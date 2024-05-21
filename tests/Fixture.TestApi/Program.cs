@@ -6,6 +6,7 @@ using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -42,6 +43,11 @@ builder.Services.ConfigureHttpJsonOptions(static options =>
     options.SerializerOptions.TypeInfoResolverChain.RemoveAt(1); // Remove DefaultJsonTypeInfoResolver
     options.SerializerOptions.TypeInfoResolverChain.Add(MultipartJsonContext.Default);
     options.SerializerOptions.TypeInfoResolverChain.Add(ValidationJsonContext.Default);
+});
+
+builder.Services.Configure<RouteOptions>(static options =>
+{
+    options.SetParameterPolicy<RegexInlineRouteConstraint>("regex");
 });
 #endif
 
