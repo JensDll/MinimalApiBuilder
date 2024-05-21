@@ -6,7 +6,6 @@ using Fixture.TestApi.Features.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using MinimalApiBuilder.Generator;
 using MinimalApiBuilder.Middleware;
 using static MinimalApiBuilder.Generator.ConfigureEndpoints;
+#if NET8_0_OR_GREATER
+using Microsoft.AspNetCore.Routing.Constraints;
+#endif
 
 #if NET8_0_OR_GREATER
 WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
