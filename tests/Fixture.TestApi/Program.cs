@@ -13,6 +13,9 @@ using Microsoft.Extensions.Logging;
 using MinimalApiBuilder.Generator;
 using MinimalApiBuilder.Middleware;
 using static MinimalApiBuilder.Generator.ConfigureEndpoints;
+#if NET8_0_OR_GREATER
+using Microsoft.AspNetCore.Routing.Constraints;
+#endif
 
 #if NET8_0_OR_GREATER
 WebApplicationBuilder builder = WebApplication.CreateSlimBuilder();
@@ -42,6 +45,11 @@ builder.Services.ConfigureHttpJsonOptions(static options =>
     options.SerializerOptions.TypeInfoResolverChain.RemoveAt(1); // Remove DefaultJsonTypeInfoResolver
     options.SerializerOptions.TypeInfoResolverChain.Add(MultipartJsonContext.Default);
     options.SerializerOptions.TypeInfoResolverChain.Add(ValidationJsonContext.Default);
+});
+
+builder.Services.Configure<RouteOptions>(static options =>
+{
+    options.SetParameterPolicy<RegexInlineRouteConstraint>("regex");
 });
 #endif
 
