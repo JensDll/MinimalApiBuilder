@@ -25,7 +25,7 @@ jobs:
         with:
           dotnet-version: |
             7.x.x
-            8.x.x
+            8.0.205
 
       - name: Restoring the solution
         run: dotnet restore
@@ -58,7 +58,7 @@ jobs:
         with:
           dotnet-version: |
             7.x.x
-            8.x.x
+            8.0.205
 
       - name: Restoring the solution
         run: dotnet restore
@@ -92,7 +92,7 @@ jobs:
         with:
           dotnet-version: |
             7.x.x
-            8.x.x
+            8.0.205
 
       - name: Restoring src
         run: dotnet restore MinimalApiBuilder.src.slnf
