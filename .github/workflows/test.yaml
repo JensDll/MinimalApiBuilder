@@ -22,6 +22,10 @@ jobs:
 
       - name: Setting up dotnet
         uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: |
+            7.x.x
+            8.x.x
 
       - name: Restoring the solution
         run: dotnet restore
@@ -51,6 +55,10 @@ jobs:
 
       - name: Setting up dotnet
         uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: |
+            7.x.x
+            8.x.x
 
       - name: Restoring the solution
         run: dotnet restore
@@ -81,6 +89,10 @@ jobs:
 
       - name: Setting up dotnet
         uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: |
+            7.x.x
+            8.x.x
 
       - name: Restoring src
         run: dotnet restore MinimalApiBuilder.src.slnf
